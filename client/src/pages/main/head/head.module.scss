@@ -1,9 +1,9 @@
-.main {
+.head {
   height: 100%;
   margin-top: 15px;
 }
 
-.main__wrapper {
+.head__wrapper {
   background: var(--color-blue);
   border-radius: 20px;
 
@@ -11,7 +11,7 @@
   height: 100%;
 }
 
-.main__text {
+.head__text {
   display: flex;
   flex-direction: column;
   align-items: start;

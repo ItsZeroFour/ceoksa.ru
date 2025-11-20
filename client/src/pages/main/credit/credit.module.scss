@@ -1,0 +1,255 @@
+.credit {
+  margin-top: 100px;
+}
+
+.credit__wrapper {
+  background: var(--color-gray-secondary);
+  padding: 40px;
+  border-radius: 20px;
+
+  .credit__title {
+    font-size: 42px;
+    font-weight: 600;
+  }
+
+  .credit__desc {
+    font-size: 16px;
+    font-weight: 300;
+    width: 605px;
+  }
+}
+
+.credit__main {
+  background: var(--color-white);
+  border-radius: 18px;
+  padding: 25px;
+  margin-top: 40px;
+
+  h3 {
+    font-weight: 500;
+    font-size: 26px;
+  }
+}
+
+.credit__main__form {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.credit__main__form__elem {
+  display: flex;
+
+  .credit__main__form__item {
+    display: flex;
+    align-items: center;
+    gap: 35px;
+    width: 220px;
+
+    &:first-child {
+      border-bottom-left-radius: 16px;
+      border-top-left-radius: 16px;
+
+      padding-right: 16px;
+    }
+
+    &:last-child {
+      border-bottom-right-radius: 16px;
+      border-top-right-radius: 16px;
+      padding-left: 16px;
+
+      justify-content: space-between;
+
+      position: relative;
+
+      .dropdown__list {
+        position: absolute;
+
+        display: flex;
+        flex-direction: column;
+        background: var(--color-gray-secondary);
+        width: 225px;
+        height: 245px;
+
+        overflow-y: auto;
+
+        top: 110%;
+        left: 0;
+
+        border-radius: 16px;
+
+        gap: 4px;
+        padding: 16px;
+
+        li {
+          font-weight: 300;
+          font-size: 16px;
+          padding: 10px 15px;
+
+          cursor: pointer;
+
+          transition: background 0.2s ease;
+
+          &:hover {
+            background: rgba(2, 180, 251, 0.1);
+          }
+        }
+      }
+
+      &::before {
+        content: "";
+        position: absolute;
+        left: 0;
+
+        width: 1px;
+        height: 100%;
+
+        background: var(--color-gray-third);
+      }
+    }
+  }
+}
+
+.credit__main__form__item,
+.credit__main__form__target,
+.credit__main__form__cash {
+  background: var(--color-gray-secondary);
+  padding: 10px;
+
+  button {
+    background: none;
+  }
+
+  .credit__main__form__item__value {
+    p {
+      &:first-child {
+        font-size: 13px;
+        font-weight: 300;
+      }
+
+      &:last-child {
+        font-size: 17px;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+.credit__main__form__item__total {
+  width: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.credit__main__form__target {
+  display: flex;
+  justify-content: space-between;
+  width: 250px;
+  border-radius: 16px;
+
+  position: relative;
+
+  .dropdown__list {
+    position: absolute;
+
+    display: flex;
+    flex-direction: column;
+    background: var(--color-gray-secondary);
+    width: 225px;
+    height: 245px;
+
+    overflow-y: auto;
+
+    top: 110%;
+    left: 0;
+
+    border-radius: 16px;
+
+    gap: 4px;
+    padding: 16px;
+
+    li {
+      font-weight: 300;
+      font-size: 16px;
+      padding: 10px 15px;
+
+      cursor: pointer;
+
+      transition: background 0.2s ease;
+
+      &:hover {
+        background: rgba(2, 180, 251, 0.1);
+      }
+    }
+  }
+}
+
+.credit__main__form__cash {
+  border-radius: 16px;
+
+  position: relative;
+
+  border: 1px solid var(--color-gray-secondary);
+
+  input {
+    margin-top: 6px;
+    background: none;
+    font-size: 17px;
+    font-weight: 500;
+  }
+}
+
+.credit__main__form__cash__error {
+  font-size: 13px !important;
+  font-weight: 300 !important;
+  color: var(--color-red);
+
+  position: absolute;
+
+  left: 5px;
+  top: 65px;
+}
+
+.credit__main__form__cash.error {
+  border: 1px solid var(--color-red);
+}
+
+.credit__main__form__auth {
+  width: 30%;
+  font-size: 17px;
+  font-weight: 600;
+  padding: 20px;
+  background: var(--color-blue);
+  color: var(--color-white);
+
+  border-radius: 16px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+
+  img {
+    width: 24px;
+    height: auto;
+  }
+}
+
+.credit__main__info {
+  padding: 20px;
+  margin-top: 20px;
+
+  display: flex;
+  gap: 16px;
+  border-radius: 14px;
+
+  background: #ecf8ff;
+  border: 1px solid #b6dfff;
+
+  p {
+    font-weight: 300;
+    font-size: 16px;
+  }
+}
