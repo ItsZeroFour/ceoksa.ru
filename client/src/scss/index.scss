@@ -1,0 +1,98 @@
+@use "./_reset";
+@use "./vars";
+@use "./fonts";
+
+/* BASIC SETTINGS */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-display: swap;
+
+  background: var(--color-white);
+  color: var(--color-black);
+
+  overflow-x: hidden !important;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-block-start: 75px;
+  min-height: 100vh;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+footer {
+  margin-top: auto;
+}
+
+::-webkit-scrollbar {
+  background: var(--color-gray);
+  display: block;
+  width: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-blue-light);
+  display: block;
+  width: 8px;
+  border-radius: 5px;
+}
+
+.container {
+  max-width: 1440px;
+  padding: 0 10px;
+  margin: 0 auto;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+a {
+  color: inherit;
+  font-family: inherit;
+  line-height: 140%;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Rubik", sans-serif;
+}
+
+a {
+  outline: none !important;
+}
+
+ul,
+li {
+  list-style-type: none;
+}
+
+button {
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+}

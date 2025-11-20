@@ -1,0 +1,44 @@
+.header {
+  padding: 20px 0;
+}
+
+.header__wrapper {
+  display: flex;
+
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header__buttons {
+  display: flex;
+  gap: 12px;
+
+  button {
+    display: flex;
+    gap: 10px;
+    padding: 13px 22px;
+    border-radius: 14px;
+
+    font-weight: 500;
+
+    &.header__button_business {
+      background: var(--color-gray-light);
+      color: var(--color-blue);
+      transition: opacity 0.2s ease;
+
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+
+    &.header__button_signin {
+      background: var(--color-blue);
+      color: var(--color-white);
+      transition: opacity 0.2s ease;
+
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
+}
