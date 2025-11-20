@@ -2,6 +2,7 @@ import React from "react";
 import style from "./head.module.scss";
 import img from "../../../assets/images/main/head.png";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const Head = () => {
   return (
@@ -16,7 +17,16 @@ const Head = () => {
           </div>
 
           <div className={style.head__img}>
-            <img src={img} alt="main" />
+            <motion.img
+              src={img}
+              alt="main"
+              animate={{ rotate: 360 }}
+              transition={{
+                duration: 8,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+            />
           </div>
         </div>
       </div>
