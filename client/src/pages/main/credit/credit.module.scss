@@ -231,9 +231,15 @@
   align-items: center;
   gap: 10px;
 
+  transition: opacity 0.2s ease;
+
   img {
     width: 24px;
     height: auto;
+  }
+
+  &:hover {
+    opacity: 0.8;
   }
 }
 
@@ -252,4 +258,8 @@
     font-weight: 300;
     font-size: 16px;
   }
+}
+
+.credit__main__form__item__input__container {
+  position: relative;
 }

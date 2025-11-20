@@ -1,0 +1,37 @@
+.advantages {
+  margin-top: 70px;
+}
+
+.advantages__wrapper {
+  ul {
+    display: flex;
+    justify-content: space-between;
+
+    li {
+      display: flex;
+      background: var(--color-gray-secondary);
+      width: 440px;
+      position: relative;
+      overflow: hidden;
+
+      padding: 25px;
+      border-radius: 16px;
+
+      p {
+        font-size: 24px;
+        font-weight: 600;
+
+      }
+
+      img {
+        width: 148px;
+        height: 148px;
+        object-fit: contain;
+        position: absolute;
+
+        left: 77%;
+        top: -10%;
+      }
+    }
+  }
+}

@@ -2,11 +2,28 @@ import React from "react";
 import style from "./head.module.scss";
 import img from "../../../assets/images/main/head.png";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import {
+  motion,
+  useMotionValue,
+  useTransform,
+  useAnimationFrame,
+} from "framer-motion";
 
 const Head = () => {
+  const angle = useMotionValue(0);
+
+  useAnimationFrame((t) => {
+    const newAngle = (t / 8000) * Math.PI * 2;
+    angle.set(newAngle);
+  });
+
+  const radius = 100;
+
+  const x = useTransform(angle, (a) => Math.cos(a) * radius);
+  const y = useTransform(angle, (a) => Math.sin(a) * radius);
+
   return (
-    <div className={style.head}>
+    <section className={style.head}>
       <div className="container">
         <div className={style.head__wrapper}>
           <div className={style.head__text}>
@@ -20,17 +37,19 @@ const Head = () => {
             <motion.img
               src={img}
               alt="main"
-              animate={{ rotate: 360 }}
+              animate={{
+                x: [-50, 50, -50],
+              }}
               transition={{
-                duration: 8,
+                duration: 10,
                 repeat: Infinity,
-                ease: "linear",
+                ease: "easeInOut",
               }}
             />
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
