@@ -4,6 +4,7 @@ import Credit from "./credit/Credit";
 import Advantages from "./advantages/Advantages";
 import BestOffer from "./best_offer/BestOffer";
 import Service from "./service/Service";
+import HowGet from "./how_get/HowGet";
 
 const Main = () => {
   return (
@@ -13,6 +14,7 @@ const Main = () => {
       <Advantages />
       <BestOffer />
       <Service />
+      <HowGet />
     </div>
   );
 };
