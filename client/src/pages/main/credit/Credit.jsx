@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import style from "./credit.module.scss";
 import { ReactComponent as Minus } from "../../../assets/icons/minus.svg";
 import { ReactComponent as Plus } from "../../../assets/icons/plus.svg";
@@ -21,10 +21,43 @@ const Credit = () => {
     title: "Кредит наличными",
   });
 
+  const [openDropdown, setOpenDropdown] = useState(null);
+
   const [cashValue, setCashValue] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const [isTouched, setIsTouched] = useState(false);
   const [error, setError] = useState("");
+
+  const termRef = useRef(null);
+  const targetRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        termRef.current &&
+        !termRef.current.contains(event.target) &&
+        targetRef.current &&
+        !targetRef.current.contains(event.target)
+      ) {
+        setOpenDropdown(null);
+      }
+    };
+
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
+
+  const toggleTermDropdown = (e) => {
+    e.stopPropagation();
+    setOpenDropdown(openDropdown === "term" ? null : "term");
+  };
+
+  const toggleTargetDropdown = (e) => {
+    e.stopPropagation();
+    setOpenDropdown(openDropdown === "target" ? null : "target");
+  };
 
   const terms = [
     { value: 3, title: "3 месяца" },
@@ -120,36 +153,35 @@ const Credit = () => {
                   </button>
                 </div>
 
-                <div className={style.credit__main__form__item}>
-                  <div
-                    className={style.credit__main__form__item__value}
-                    onClick={() => setIsOpen(!isOpen)}
-                    style={{ cursor: "pointer" }}
-                  >
+                <div
+                  ref={termRef}
+                  className={style.credit__main__form__item}
+                  onClick={() => setOpenDropdown("term")}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div className={style.credit__main__form__item__value}>
                     <p>На срок</p>
                     <p>{selectedTerm.title}</p>
                   </div>
 
                   <button
                     type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsOpen(!isOpen);
-                    }}
+                    onClick={toggleTermDropdown}
                     aria-label="Выбрать срок кредита"
                   >
                     <Angle />
                   </button>
 
-                  {isOpen && (
+                  {openDropdown === "term" && (
                     <ul className={style.dropdown__list}>
                       {terms.map((term) => (
                         <li
                           key={term.value}
                           className={style.dropdown__item}
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setSelectedTerm(term);
-                            setIsOpen(false);
+                            setOpenDropdown(null);
                           }}
                         >
                           {term.title}
@@ -160,36 +192,35 @@ const Credit = () => {
                 </div>
               </div>
 
-              <div className={style.credit__main__form__target}>
-                <div
-                  className={style.credit__main__form__item__value}
-                  onClick={() => setIsOpen(!isOpenTarget)}
-                  style={{ cursor: "pointer" }}
-                >
+              <div
+                ref={targetRef}
+                className={style.credit__main__form__target}
+                onClick={() => setOpenDropdown("target")}
+                style={{ cursor: "pointer" }}
+              >
+                <div className={style.credit__main__form__item__value}>
                   <p>Цель кредита</p>
                   <p>{selectedTarget.title}</p>
                 </div>
 
                 <button
                   type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsOpenTarget(!isOpenTarget);
-                  }}
+                  onClick={toggleTargetDropdown}
                   aria-label="Выбрать цель кредита"
                 >
                   <Angle />
                 </button>
 
-                {isOpenTarget && (
+                {openDropdown === "target" && (
                   <ul className={style.dropdown__list}>
                     {targets.map((target) => (
                       <li
                         key={target.value}
                         className={style.dropdown__item}
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
                           setSelectedTarget(target);
-                          setIsOpenTarget(false);
+                          setOpenDropdown(null);
                         }}
                       >
                         {target.title}
