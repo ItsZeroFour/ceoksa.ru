@@ -38,7 +38,7 @@ const Head = () => {
               src={img}
               alt="main"
               animate={{
-                x: [-50, 50, -50],
+                x: [-20, 20, -20],
               }}
               transition={{
                 duration: 10,
