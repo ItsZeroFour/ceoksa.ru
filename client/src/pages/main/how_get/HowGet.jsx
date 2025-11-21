@@ -22,11 +22,13 @@ const HowGet = () => {
 
               <p>Полностью онлайн за 5 минут</p>
 
-              <img
-                className={style.howget__item__img}
-                src={howGetImg1}
-                alt="Заполните заявку"
-              />
+              <div className={style.howget__item__img__container}>
+                <img
+                  className={style.howget__item__img}
+                  src={howGetImg1}
+                  alt="Заполните заявку"
+                />
+              </div>
 
               <Link to="/">Оставить заявку</Link>
             </li>
@@ -39,11 +41,13 @@ const HowGet = () => {
 
               <p>Банки пришлют свои ответы за пару минут</p>
 
-              <img
-                className={style.howget__item__img}
-                src={howGetImg2}
-                alt="Дождитесь одобрения"
-              />
+              <div className={style.howget__item__img__container}>
+                <img
+                  className={style.howget__item__img}
+                  src={howGetImg2}
+                  alt="Заполните заявку"
+                />
+              </div>
             </li>
 
             <li className={style.howget__item}>
@@ -54,27 +58,33 @@ const HowGet = () => {
 
               <p>Получите деньги напрямую на дебетовую карту</p>
 
-              <div className={style.howget__item__notification}>
-                <img src={notification} alt="Уведомление" />
+              <div className={style.howget__item__notification__container}>
+                <div className={style.howget__item__notification}>
+                  <img src={notification} alt="Уведомление" />
 
-                <div className={style.howget__item__notification__text}>
-                  <div className={style.howget__item__notification__text__top}>
-                    <h4>T-Bank</h4>
-                    <p>34m ago</p>
+                  <div className={style.howget__item__notification__text}>
+                    <div
+                      className={style.howget__item__notification__text__top}
+                    >
+                      <h4>T-Bank</h4>
+                      <p>34m ago</p>
+                    </div>
+
+                    <p>
+                      Пополнение. Счёт RUB. 1 200 000 ₽. Выдача кредита.
+                      Доступно 1 235 089,76 ₽
+                    </p>
                   </div>
-
-                  <p>
-                    Пополнение. Счёт RUB. 1 200 000 ₽. Выдача кредита. Доступно
-                    1 235 089,76 ₽
-                  </p>
                 </div>
               </div>
 
-              <img
-                className={style.howget__item__img}
-                src={howGetImg3}
-                alt="Заполните заявку"
-              />
+              <div className={style.howget__item__img__container}>
+                <img
+                  className={style.howget__item__img}
+                  src={howGetImg3}
+                  alt="Заполните заявку"
+                />
+              </div>
             </li>
           </ul>
         </div>

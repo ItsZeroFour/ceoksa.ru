@@ -1,5 +1,9 @@
 .best_offer {
   margin-top: 100px;
+
+  @media (max-width: 768px) {
+    margin-top: 60px;
+  }
 }
 
 .best_offer__wrapper {
@@ -19,12 +23,21 @@
     position: absolute;
 
     left: 0;
+    top: 0;
 
     width: 100%;
     height: 100%;
 
     background: url("../../../assets/icons/ruble.svg");
     background-repeat: no-repeat;
+
+
+  }
+
+  @media (max-width: 710px) {
+    flex-direction: column;
+    padding: 20px;
+    padding-bottom: 150px;
   }
 }
 
@@ -40,6 +53,18 @@
   h2 {
     font-size: 42px;
     color: var(--color-white);
+
+    @media (max-width: 1024px) {
+      font-size: 32px;
+    }
+
+    @media (max-width: 960px) {
+      font-size: 28px;
+    }
+
+    @media (max-width: 768px) {
+      font-size: 24px;
+    }
   }
 
   p {
@@ -47,6 +72,14 @@
     margin-top: 20px;
     font-weight: 300;
     font-size: 16px;
+
+    @media (max-width: 1024px) {
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      font-size: 12px;
+    }
   }
 
   a {
@@ -64,6 +97,27 @@
     &:hover {
       transform: scale(1.05);
     }
+
+    @media (max-width: 1024px) {
+      font-size: 14px;
+    }
+
+    @media (max-width: 710px) {
+      width: calc(100% - 80px);
+      text-align: center;
+
+      padding: 15px;
+
+      position: absolute;
+      bottom: 40px; /* отступ от низа wrapper (как padding) */
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: 0; /* отменяем margin-top, он не нужен */
+    }
+  }
+
+  @media (max-width: 710px) {
+    width: 100%;
   }
 }
 
@@ -97,6 +151,11 @@
       width: 56px;
       height: 56px;
       object-fit: contain;
+
+      @media (max-width: 960px) {
+        width: 45px;
+        height: 45px;
+      }
     }
 
     .best_offer__right__top__title {
@@ -107,11 +166,23 @@
       p {
         font-size: 14px;
         font-weight: 300;
+
+        @media (max-width: 1024px) {
+          font-size: 12px;
+        }
+
+        @media (max-width: 960px) {
+          font-size: 10px;
+        }
       }
 
       h3 {
         font-weight: 500;
         font-size: 20px;
+
+        @media (max-width: 1024px) {
+          font-size: 16px;
+        }
       }
     }
   }
@@ -154,6 +225,10 @@
 
     transform: translateZ(-2px);
   }
+
+  @media (max-width: 710px) {
+    width: 100%;
+  }
 }
 
 .best_offer__right__top__die {
@@ -162,6 +237,18 @@
   background: var(--color-black);
 
   border-radius: 8px;
+
+  @media (max-width: 1024px) {
+    font-size: 14px;
+  }
+
+  @media (max-width: 960px) {
+    padding: 5px 10px;
+  }
+
+  @media (max-width: 860px) {
+    display: none;
+  }
 }
 
 .best_offer__right__main {
@@ -181,11 +268,31 @@
       &:first-child {
         font-size: 14px;
         font-weight: 300;
+
+        @media (max-width: 1024px) {
+          font-size: 12px;
+        }
+
+        @media (max-width: 768px) {
+          font-size: 10px;
+        }
       }
 
       &:last-child {
         font-weight: 800;
         font-size: 22px;
+
+        @media (max-width: 1024px) {
+          font-size: 16px;
+        }
+
+        @media (max-width: 960px) {
+          font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+          font-size: 12px;
+        }
       }
     }
   }

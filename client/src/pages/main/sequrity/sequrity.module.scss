@@ -1,6 +1,18 @@
 .sequrity {
   margin-top: 100px;
   margin-bottom: 120px;
+
+  @media (max-width: 1390px) {
+    margin-bottom: 200px;
+  }
+
+  @media (max-width: 768px) {
+    margin-top: 60px;
+  }
+
+  @media (max-width: 710px) {
+    margin-bottom: 100px;
+  }
 }
 
 .sequrity__wrapper {
@@ -11,32 +23,49 @@
 
   position: relative;
 
-  &::before {
-    content: "";
-    position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 
-    top: -50%;
-    left: 73%;
+  // &::before {
+  //   content: "";
+  //   position: absolute;
 
-    width: 400px;
-    height: 400px;
+  //   top: -50%;
+  //   left: 73%;
 
-    background: url("../../../assets/icons/lock.svg");
-    background-repeat: no-repeat;
-  }
+  //   width: 400px;
+  //   height: 400px;
+
+  //   background: url("../../../assets/icons/lock.svg");
+  //   background-repeat: no-repeat;
+  // }
 
   h2 {
     font-size: 42px;
     font-weight: 600;
     color: var(--color-white);
+    text-align: left;
+    width: 100%;
+
+    @media (max-width: 1024px) {
+      font-size: 32px;
+    }
+
+    @media (max-width: 960px) {
+      font-size: 28px;
+    }
   }
 
   ul {
     display: flex;
     justify-content: space-between;
+    align-items: stretch;
     position: absolute;
     top: 50%;
     gap: 18px;
+    height: fit-content;
 
     & > li {
       display: flex;
@@ -56,6 +85,15 @@
         font-size: 16px;
         font-weight: 300;
         line-height: 22px;
+
+        @media (max-width: 1024px) {
+          font-size: 14px;
+        }
+
+        @media (max-width: 860px) {
+          font-size: 12px;
+          line-height: 18px;
+        }
       }
 
       ol {
@@ -71,6 +109,15 @@
           font-size: 16px;
           font-weight: 300;
           line-height: 22px;
+
+          @media (max-width: 1024px) {
+            font-size: 14px;
+          }
+
+          @media (max-width: 860px) {
+            font-size: 12px;
+            line-height: 18px;
+          }
         }
       }
 
@@ -78,6 +125,14 @@
         font-size: 18px;
         font-family: "Inter", sans-serif;
         font-weight: 600;
+
+        @media (max-width: 1024px) {
+          font-size: 16px;
+        }
+
+        @media (max-width: 860px) {
+          font-size: 14px;
+        }
       }
 
       .sequrity__item__contacts {
@@ -85,11 +140,71 @@
         background: var(--color-gray-secondary);
         border-radius: 14px;
 
+        p {
+          @media (max-width: 1024px) {
+            font-size: 12px;
+          }
+        }
+
         a {
           margin-top: 5px;
           display: block;
           font-weight: 500;
+
+          @media (max-width: 1024px) {
+            font-size: 14px;
+          }
         }
+      }
+
+      @media (max-width: 1390px) {
+        width: 325px;
+        // height: 100%;
+        height: auto;
+      }
+
+      @media (max-width: 1024px) {
+        width: 255px;
+      }
+
+      @media (max-width: 860px) {
+        width: 220px;
+      }
+
+      @media (max-width: 768px) {
+        padding: 15px;
+      }
+
+      // @media (max-width: 710px) {
+      //   width: 350px;
+      // }
+    }
+
+    @media (max-width: 768px) {
+      gap: 10px;
+    }
+
+    @media (max-width: 710px) {
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      width: 100%;
+      padding: 0 10px;
+      -webkit-overflow-scrolling: touch;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+
+      & > li {
+        flex: 0 0 auto;
+        width: 300px;
+        white-space: normal;
       }
     }
   }

@@ -147,53 +147,57 @@ const Credit = () => {
                 />
               </div>
 
-              <DropdownSelector
-                ref={targetRef}
-                label="Цель кредита"
-                selected={selectedTarget}
-                options={TARGETS}
-                isOpen={openDropdown}
-                onToggle={() => toggleDropdown("target")}
-                onSelect={(target) => {
-                  setSelectedTarget(target);
-                  setOpenDropdown(null);
-                }}
-                dropdownType="target"
-                ariaLabel="Выбрать цель кредита"
-              />
+              <div className={style.credit__main__form__other}>
+                <DropdownSelector
+                  ref={targetRef}
+                  label="Цель кредита"
+                  selected={selectedTarget}
+                  options={TARGETS}
+                  isOpen={openDropdown}
+                  onToggle={() => toggleDropdown("target")}
+                  onSelect={(target) => {
+                    setSelectedTarget(target);
+                    setOpenDropdown(null);
+                  }}
+                  dropdownType="target"
+                  ariaLabel="Выбрать цель кредита"
+                />
 
-              <div
-                className={`${style.credit__main__form__cash} ${
-                  salaryError && style.error
-                }`}
-              >
-                <div className={style.credit__main__form__item__value}>
-                  <p>Размер заработной платы</p>
-                  <div
-                    className={style.credit__main__form__item__input__container}
-                  >
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      placeholder="Например, 100 000 ₽"
-                      value={displaySalary}
-                      onChange={handleSalaryChange}
-                      onFocus={handleSalaryFocus}
-                      onBlur={handleSalaryBlur}
-                      className={`${style.salaryInput} ${
-                        salaryError ? style.inputError : ""
-                      }`}
-                    />
-                  </div>
-
-                  {salaryError && (
-                    <p
-                      id="salary-error"
-                      className={style.credit__main__form__cash__error}
+                <div
+                  className={`${style.credit__main__form__cash} ${
+                    salaryError && style.error
+                  }`}
+                >
+                  <div className={style.credit__main__form__item__value}>
+                    <p>Размер заработной платы</p>
+                    <div
+                      className={
+                        style.credit__main__form__item__input__container
+                      }
                     >
-                      {salaryError}
-                    </p>
-                  )}
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        placeholder="Например, 100 000 ₽"
+                        value={displaySalary}
+                        onChange={handleSalaryChange}
+                        onFocus={handleSalaryFocus}
+                        onBlur={handleSalaryBlur}
+                        className={`${style.salaryInput} ${
+                          salaryError ? style.inputError : ""
+                        }`}
+                      />
+                    </div>
+
+                    {salaryError && (
+                      <p
+                        id="salary-error"
+                        className={style.credit__main__form__cash__error}
+                      >
+                        {salaryError}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
 

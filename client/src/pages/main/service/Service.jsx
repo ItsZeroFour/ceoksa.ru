@@ -57,20 +57,20 @@ const Service = () => {
               <img src={servicePhoneImg} alt="Сервис" />
             </div>
           </div>
-
-          <ul className={style.service__list}>
-            {serviceItems.map((item, index) => (
-              <li key={index} className={style.service__item}>
-                <div className={style.service__item__text}>
-                  <h3>{item.title}</h3>
-                  <p>{item.description}</p>
-                </div>
-                <img src={item.img} alt={item.alt} />
-              </li>
-            ))}
-          </ul>
         </div>
       </div>
+
+      <ul className={style.service__list}>
+        {serviceItems.map((item, index) => (
+          <li key={index} className={style.service__item}>
+            <div className={style.service__item__text}>
+              <h3>{item.title}</h3>
+              <p>{item.description}</p>
+            </div>
+            <img src={item.img} alt={item.alt} />
+          </li>
+        ))}
+      </ul>
     </section>
   );
 };

@@ -20,6 +20,14 @@
     font-weight: 300;
 
     width: 70%;
+
+    @media (max-width: 1024px) {
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      font-size: 12px;
+    }
   }
 
   a {
@@ -27,8 +35,20 @@
     opacity: 0.6;
     font-weight: 300;
 
+    @media (max-width: 1024px) {
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      font-size: 12px;
+    }
+
     &:hover {
       text-decoration: underline;
     }
+  }
+
+  @media (max-width: 768px) {
+    gap: 15px;
   }
 }

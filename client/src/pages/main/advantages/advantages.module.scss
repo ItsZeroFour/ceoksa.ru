@@ -1,11 +1,16 @@
 .advantages {
   margin-top: 70px;
+
+  @media (max-width: 768px) {
+    margin-top: 40px;
+  }
 }
 
 .advantages__wrapper {
   ul {
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
     gap: 20px;
 
     li {
@@ -15,6 +20,8 @@
       position: relative;
       overflow: hidden;
 
+      transition: all 0.2s ease;
+
       padding: 25px;
       border-radius: 16px;
 
@@ -22,6 +29,13 @@
         font-size: 24px;
         font-weight: 600;
 
+        @media (max-width: 1024px) {
+          font-size: 18px;
+        }
+
+        @media (max-width: 860px) {
+          font-size: 16px;
+        }
       }
 
       img {
@@ -32,7 +46,57 @@
 
         left: 77%;
         top: -10%;
+
+        @media (max-width: 960px) {
+          left: 65%;
+        }
+
+        @media (max-width: 480px) {
+          left: 80%;
+        }
+
+        @media (max-width: 390px) {
+          left: 70%;
+        }
+      }
+
+      @media (max-width: 1400px) {
+        width: 32%;
+      }
+
+      &:hover {
+        transform: scale(1.05);
+      }
+
+      @media (max-width: 768px) {
+        width: calc((100% - 20px) / 2);
+      }
+
+      @media (max-width: 768px) {
+        &:last-child {
+          width: 100%;
+
+          img {
+            left: 85%;
+
+            @media (max-width: 390px) {
+              left: 70%;
+            }
+          }
+        }
+      }
+
+      @media (max-width: 480px) {
+        width: 100%;
       }
     }
+
+    @media (max-width: 480px) {
+      flex-direction: column;
+    }
+  }
+
+  @media (max-width: 1400px) {
+    gap: 20px;
   }
 }

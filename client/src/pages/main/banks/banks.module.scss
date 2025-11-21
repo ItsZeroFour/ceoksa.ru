@@ -1,5 +1,9 @@
 .banks {
   margin-top: 100px;
+
+  @media (max-width: 768px) {
+    margin-top: 60px;
+  }
 }
 
 .banks__wrapper {
@@ -11,6 +15,14 @@
   h2 {
     font-weight: 600;
     font-size: 42px;
+
+    @media (max-width: 1024px) {
+      font-size: 32px;
+    }
+
+    @media (max-width: 960px) {
+      font-size: 28px;
+    }
   }
 
   ul {
@@ -30,6 +42,17 @@
       border-radius: 12px;
       background: var(--color-white);
       box-shadow: 0px 4px 20px rgba(0, 0, 32, 0.15);
+
+      @media (max-width: 1024px) {
+        padding: 20px 40px;
+
+        height: 100px;
+
+        img {
+          width: auto;
+          height: 70%;
+        }
+      }
     }
   }
 }

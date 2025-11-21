@@ -37,16 +37,20 @@ const Head = () => {
             <motion.img
               src={img}
               alt="main"
-              animate={{
-                x: [-20, 20, -20],
-              }}
-              transition={{
-                duration: 10,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
+              // animate={{
+              //   x: [-20, 20, -20],
+              // }}
+              // transition={{
+              //   duration: 10,
+              //   repeat: Infinity,
+              //   ease: "easeInOut",
+              // }}
             />
           </div>
+
+          <Link className={style.head__link__mobile} to="/">
+            Оставить заявку
+          </Link>
         </div>
       </div>
     </section>
