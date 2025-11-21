@@ -6,6 +6,7 @@ import BestOffer from "./best_offer/BestOffer";
 import Service from "./service/Service";
 import HowGet from "./how_get/HowGet";
 import Banks from "./banks/Banks";
+import Sequrity from "./sequrity/Sequrity";
 
 const Main = () => {
   return (
@@ -17,6 +18,7 @@ const Main = () => {
       <Service />
       <HowGet />
       <Banks />
+      <Sequrity />
     </div>
   );
 };
