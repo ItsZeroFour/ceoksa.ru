@@ -1,0 +1,34 @@
+.banks {
+  margin-top: 100px;
+}
+
+.banks__wrapper {
+  border-radius: 20px;
+  padding: 40px;
+  background: var(--color-gray-secondary);
+
+  h2 {
+    font-weight: 600;
+    font-size: 42px;
+  }
+
+  ul {
+    display: flex;
+    gap: 15px;
+    margin-top: 40px;
+
+    li {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      padding: 30px 14px;
+      width: 250px;
+      height: 130px;
+      border-radius: 12px;
+      background: var(--color-white);
+      box-shadow: 0px 4px 20px rgba(0, 0, 32, 0.15);
+    }
+  }
+}
