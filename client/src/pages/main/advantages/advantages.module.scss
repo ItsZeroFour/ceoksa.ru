@@ -1,4 +1,9 @@
 .advantages {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
   margin-top: 70px;
 
   @media (max-width: 768px) {
@@ -7,16 +12,20 @@
 }
 
 .advantages__wrapper {
+  // width: 95%;
+
   ul {
     display: flex;
     justify-content: space-between;
+    justify-content: center;
+    align-items: center;
     flex-wrap: wrap;
     gap: 20px;
 
     li {
       display: flex;
       background: var(--color-gray-secondary);
-      width: 440px;
+      width: 435px;
       position: relative;
       overflow: hidden;
 
@@ -61,7 +70,7 @@
       }
 
       @media (max-width: 1400px) {
-        width: 32%;
+        width: 30vw;
       }
 
       &:hover {
@@ -87,7 +96,7 @@
       }
 
       @media (max-width: 480px) {
-        width: 100%;
+        width: 85vw;
       }
     }
 

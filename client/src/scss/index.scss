@@ -32,6 +32,10 @@ html {
   min-height: 100vh;
 }
 
+.App {
+  overflow-x: hidden;
+}
+
 .wrapper {
   display: flex;
   flex-direction: column;

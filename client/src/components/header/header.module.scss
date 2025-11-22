@@ -12,12 +12,9 @@
     }
 
     @media (max-width: 525px) {
-      width: 150px;
+      width: 170px;
     }
 
-    @media (max-width: 425px) {
-      width: 100px;
-    }
   }
 }
 
@@ -67,8 +64,21 @@
     }
 
     @media (max-width: 525px) {
-      padding: 10px;
-      font-size: 12px;
+      padding: 13px;
+    }
+
+    p {
+      @media (max-width: 525px) {
+        display: none;
+      }
+    }
+
+    img {
+      @media (max-width: 525px) {
+        width: 18px;
+        height: 18px;
+        object-fit: contain;
+      }
     }
   }
 }

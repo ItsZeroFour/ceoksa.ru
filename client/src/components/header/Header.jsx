@@ -19,12 +19,12 @@ const Header = () => {
           <div className={style.header__buttons}>
             <button className={style.header__button_business}>
               <img src={business} alt="Бизнесу" />
-              Бизнесу
+              <p>Бизнесу</p>
             </button>
 
             <button className={style.header__button_signin}>
               <img src={signin} alt="Войти" />
-              Войти
+              <p>Войти</p>
             </button>
           </div>
         </div>

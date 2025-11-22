@@ -30,8 +30,6 @@
 
     background: url("../../../assets/icons/ruble.svg");
     background-repeat: no-repeat;
-
-
   }
 
   @media (max-width: 710px) {
@@ -276,6 +274,10 @@
         @media (max-width: 768px) {
           font-size: 10px;
         }
+
+        @media (max-width: 425px) {
+          font-size: 12px;
+        }
       }
 
       &:last-child {
@@ -293,6 +295,10 @@
         @media (max-width: 768px) {
           font-size: 12px;
         }
+
+        @media (max-width: 425px) {
+          font-size: 16px;
+        }
       }
     }
   }
@@ -305,5 +311,11 @@
 
   .best_offer__right__main__credit_item {
     width: 100%;
+  }
+
+  @media (max-width: 425px) {
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
   }
 }
