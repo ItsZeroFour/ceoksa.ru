@@ -129,7 +129,6 @@
       }
 
       @media (max-width: 425px) {
-        font-size: 12px;
         margin-top: 10px;
       }
     }
@@ -144,6 +143,8 @@
 
     .howget__item__img {
       position: absolute;
+
+      user-select: none;
 
       @media (max-width: 768px) {
         width: 300px;
@@ -420,6 +421,10 @@
     position: absolute;
     top: 55%;
     left: 60%;
+  }
+
+  @media (max-width: 480px) {
+    padding: 10px;
   }
 }
 

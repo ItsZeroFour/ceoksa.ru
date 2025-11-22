@@ -22,14 +22,35 @@
     content: "";
     position: absolute;
 
-    left: 0;
-    top: 0;
+    top: -15%;
+    left: -10%;
 
-    width: 100%;
-    height: 100%;
+    width: 140%;
+    height: 140%;
 
     background: url("../../../assets/icons/ruble.svg");
     background-repeat: no-repeat;
+    background-size: contain;
+
+    @media (max-width: 710px) {
+      top: 35%;
+      left: -15%;
+
+      width: 80%;
+      height: 90%;
+    }
+
+    @media (max-width: 520px) {
+      top: 50%;
+    }
+
+    @media (max-width: 425px) {
+      top: 60%;
+    }
+
+    @media (max-width: 380px) {
+      top: 70%;
+    }
   }
 
   @media (max-width: 710px) {
@@ -59,10 +80,6 @@
     @media (max-width: 960px) {
       font-size: 28px;
     }
-
-    @media (max-width: 768px) {
-      font-size: 24px;
-    }
   }
 
   p {
@@ -71,12 +88,9 @@
     font-weight: 300;
     font-size: 16px;
 
-    @media (max-width: 1024px) {
+    @media (max-width: 425px) {
       font-size: 14px;
-    }
-
-    @media (max-width: 768px) {
-      // font-size: 12px;
+      margin-top: 10px;
     }
   }
 
@@ -90,6 +104,8 @@
     color: var(--color-white);
     font-weight: 600;
 
+    touch-action: manipulation;
+
     transition: transform 0.2s ease;
 
     &:hover {
@@ -101,16 +117,17 @@
     }
 
     @media (max-width: 710px) {
-      width: calc(100% - 80px);
-      text-align: center;
-
-      padding: 15px;
-
+      width: calc(100% - 40px);
       position: absolute;
-      bottom: 40px; /* отступ от низа wrapper (как padding) */
-      left: 50%;
-      transform: translateX(-50%);
-      margin-top: 0; /* отменяем margin-top, он не нужен */
+      margin: 60px auto 0 auto;
+      transform: none;
+      padding: 15px;
+      text-align: center;
+      top: 72%;
+    }
+
+    @media (max-width: 425px) {
+      top: 77%;
     }
   }
 

@@ -38,6 +38,11 @@
     padding: 25px;
     padding-bottom: 300px;
   }
+
+  @media (max-width: 490px) {
+    padding: 25px;
+    padding-bottom: 350px;
+  }
 }
 
 .service__text {
@@ -70,18 +75,18 @@
         font-size: 15px;
       }
 
-      @media (max-width: 680px) {
-        font-size: 12px;
-      }
+      // @media (max-width: 680px) {
+      //   font-size: 12px;
+      // }
     }
 
     @media (max-width: 1024px) {
       font-size: 14px;
     }
 
-    @media (max-width: 680px) {
-      font-size: 12px;
-    }
+    // @media (max-width: 680px) {
+    //   font-size: 12px;
+    // }
   }
 
   @media (max-width: 1400px) {
@@ -132,8 +137,12 @@
     top: 45%;
   }
 
-  @media (max-width: 490px) {
+  @media (max-width: 640px) {
     top: 50%;
+  }
+
+  @media (max-width: 490px) {
+    top: 55%;
   }
 
   @media (max-width: 360px) {

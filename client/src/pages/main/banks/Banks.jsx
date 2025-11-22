@@ -25,7 +25,7 @@ const Banks = () => {
   useEffect(() => {
     const updateDuration = () => {
       if (window.innerWidth <= 710) {
-        setDuration(9);
+        setDuration(13);
       } else {
         setDuration(20);
       }
