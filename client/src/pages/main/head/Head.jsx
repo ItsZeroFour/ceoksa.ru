@@ -1,6 +1,6 @@
 import React from "react";
 import style from "./head.module.scss";
-import img from "../../../assets/images/main/head.png";
+import img from "../../../assets/images/main/head.webp";
 import { Link } from "react-router-dom";
 import {
   motion,

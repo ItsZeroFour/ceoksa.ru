@@ -1,12 +1,9 @@
 import React from "react";
 import style from "./service.module.scss";
-import servicePhoneImg from "../../../assets/images/main/service_phone.png";
+import servicePhoneImg from "../../../assets/images/main/service_phone.webp";
 import serviceItemImg1 from "../../../assets/images/main/service-1.webp";
 import serviceItemImg2 from "../../../assets/images/main/service-2.webp";
 import serviceItemImg3 from "../../../assets/images/main/service-3.webp";
-
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
 
 const Service = () => {
   const serviceItems = [
@@ -74,20 +71,6 @@ const Service = () => {
           </li>
         ))}
       </ul>
-
-      <div className={style.service__slider_mobile}>
-        <Swiper spaceBetween={15} slidesPerView={1.15} loop={true}>
-          {serviceItems.map((item, index) => (
-            <SwiperSlide key={index} className={style.service__item}>
-              <div className={style.service__item__text}>
-                <h3>{item.title}</h3>
-                <p>{item.description}</p>
-              </div>
-              <img src={item.img} alt={item.alt} />
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </div>
     </section>
   );
 };

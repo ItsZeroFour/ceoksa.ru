@@ -1,8 +1,8 @@
 import React from "react";
 import style from "./howget.module.scss";
-import howGetImg1 from "../../../assets/images/main/how_get-1.png";
-import howGetImg2 from "../../../assets/images/main/how_get-2.png";
-import howGetImg3 from "../../../assets/images/main/how_get-3.png";
+import howGetImg1 from "../../../assets/images/main/how_get-1.webp";
+import howGetImg2 from "../../../assets/images/main/how_get-2.webp";
+import howGetImg3 from "../../../assets/images/main/how_get-3.webp";
 import { Link } from "react-router-dom";
 import notification from "../../../assets/icons/notification.png";
 

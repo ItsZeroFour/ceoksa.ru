@@ -2,11 +2,11 @@ import React, { useEffect, useRef } from "react";
 import style from "./banks.module.scss";
 import { motion, useAnimation } from "framer-motion";
 import sber from "../../../assets/images/main/banks/sber.png";
-import vtb from "../../../assets/images/main/banks/vtb.png";
-import tbank from "../../../assets/images/main/banks/tbank.png";
-import alfa from "../../../assets/images/main/banks/alfa.png";
-import mkb from "../../../assets/images/main/banks/mkb.png";
-import sovkom from "../../../assets/images/main/banks/sovkom.png";
+import vtb from "../../../assets/images/main/banks/vtb.webp";
+import tbank from "../../../assets/images/main/banks/tbank.webp";
+import alfa from "../../../assets/images/main/banks/alfa.webp";
+import mkb from "../../../assets/images/main/banks/mkb.webp";
+import sovkom from "../../../assets/images/main/banks/sovkom.webp";
 
 const Banks = () => {
   const bankLogos = [
