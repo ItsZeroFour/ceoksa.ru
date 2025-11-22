@@ -102,7 +102,7 @@ const Sequrity = () => {
 
           <div className={style.sequrity__slider_mobile}>
             <Swiper
-              spaceBetween={15}
+              spaceBetween={10}
               slidesPerView={1.15}
               loop={true}
             >
