@@ -111,6 +111,7 @@
 
       @media (max-width: 425px) {
         align-items: start;
+        height: 45px;
       }
     }
 
@@ -129,7 +130,15 @@
 
       @media (max-width: 425px) {
         font-size: 12px;
-        margin-top: 20px;
+        margin-top: 10px;
+      }
+    }
+
+    &:last-child {
+      & > p {
+        @media (max-width: 425px) {
+          margin-top: 30px;
+        }
       }
     }
 
