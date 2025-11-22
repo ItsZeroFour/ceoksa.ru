@@ -32,6 +32,11 @@ html {
   min-height: 100vh;
 }
 
+img {
+  pointer-events: none;
+  user-select: none;
+}
+
 .App {
   overflow-x: hidden;
 }

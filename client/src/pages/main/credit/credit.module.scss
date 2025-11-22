@@ -228,11 +228,15 @@
 }
 
 .credit__main__form__item__total {
-  width: 100px;
+  width: 90px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
+  text-align: center;
+
+  background: none;
 
   font-weight: 600;
 

@@ -9,11 +9,12 @@ import DropdownSelector from "../../../components/dropdown_selector/DropdownSele
 const TERMS = [
   { value: 3, title: "3 месяца" },
   { value: 6, title: "6 месяцев" },
+  { value: 9, title: "9 месяцев" },
   { value: 12, title: "1 год" },
   { value: 24, title: "2 года" },
   { value: 36, title: "3 года" },
+  { value: 48, title: "4 года" },
   { value: 60, title: "5 лет" },
-  { value: 120, title: "10 лет" },
 ];
 
 const TARGETS = [
@@ -65,6 +66,31 @@ const Credit = () => {
     return value.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   };
 
+  const handleTotalChange = (event) => {
+    let inputValue = event.target.value;
+    inputValue = inputValue.replace(/\D/g, "");
+
+    if (inputValue === "") {
+      setValue(0);
+      return;
+    }
+
+    const numValue = Number(inputValue);
+    setValue(numValue < 0 ? 0 : numValue);
+  };
+
+  const handleTotalFocus = (event) => {
+    if (value === 0) {
+      event.target.value = "";
+    }
+  };
+
+  const handleTotalBlur = (event) => {
+    if (event.target.value === "") {
+      setValue(0);
+    }
+  };
+
   const handleSalaryChange = (e) => {
     const digitsOnly = e.target.value.replace(/\D/g, "");
     setSalaryRaw(digitsOnly);
@@ -112,20 +138,22 @@ const Credit = () => {
                 <div className={style.credit__main__form__item}>
                   <button
                     type="button"
-                    onClick={() =>
-                      setValue((prev) => Math.max(0, prev - 100_000))
-                    }
+                    onClick={() => setValue((prev) => Math.max(0, prev - 1000))}
                   >
                     <Minus />
                   </button>
 
-                  <p className={style.credit__main__form__item__total}>
-                    {value.toLocaleString()}
-                  </p>
+                  <input
+                    className={style.credit__main__form__item__total}
+                    value={value === 0 ? "0" : value.toLocaleString()}
+                    onChange={handleTotalChange}
+                    onFocus={handleTotalFocus}
+                    onBlur={handleTotalBlur}
+                  />
 
                   <button
                     type="button"
-                    onClick={() => setValue((prev) => prev + 100_000)}
+                    onClick={() => setValue((prev) => prev + 1000)}
                   >
                     <Plus />
                   </button>
