@@ -1,12 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import style from "./bestoffer.module.scss";
 import { Link } from "react-router-dom";
 import tbank from "../../../assets/icons/tbank.png";
 import vtb from "../../../assets/icons/vtb.png";
 import sber from "../../../assets/icons/sber.svg";
-import { motion, AnimatePresence } from "framer-motion";
 
-const cards = [
+const initialCards = [
   {
     id: 1,
     subtitle: "На любые цели",
@@ -39,26 +38,81 @@ const cards = [
   },
 ];
 
+const MAX_DRAG = 140;
+const SWIPE_THRESHOLD = 120;
+const NEXT_SCALE_MIN = 0.95;
+const NEXT_SCALE_MAX = 1;
+
 const BestOffer = () => {
-  const [index, setIndex] = useState(0);
-  const intervalRef = useRef(null);
+  const [stack, setStack] = useState(initialCards);
+  const [posX, setPosX] = useState(0);
+  const [swiping, setSwiping] = useState(false);
+  const startX = useRef(0);
+  const auto = useRef(null);
 
-  const swipeRight = () => {
-    setIndex((prev) => (prev + 1) % cards.length);
-  };
+  const swipeProgress = Math.min(posX / SWIPE_THRESHOLD, 1);
+  const nextScale =
+    NEXT_SCALE_MIN + (NEXT_SCALE_MAX - NEXT_SCALE_MIN) * swipeProgress;
 
-  const resetTimer = () => {
-    clearInterval(intervalRef.current);
-    intervalRef.current = setInterval(() => swipeRight(), 5000);
+  const current = stack[0];
+  const next = stack.length > 1 ? stack[1] : initialCards[0];
+
+  const resetAuto = () => {
+    clearTimeout(auto.current);
+    auto.current = setTimeout(() => {
+      forceSwipe();
+    }, 5000);
   };
 
   useEffect(() => {
-    resetTimer();
-    return () => clearInterval(intervalRef.current);
-  }, []);
+    resetAuto();
+    return () => clearTimeout(auto.current);
+  }, [stack]);
 
-  const card = cards[index];
-  const next = cards[(index + 1) % cards.length];
+  const start = (e) => {
+    resetAuto();
+    setSwiping(true);
+    startX.current = e.touches ? e.touches[0].clientX : e.clientX;
+  };
+
+  const move = (e) => {
+    if (!swiping) return;
+
+    const x = e.touches ? e.touches[0].clientX : e.clientX;
+    let delta = x - startX.current;
+
+    if (delta < 0) delta = 0;
+
+    if (delta > MAX_DRAG) delta = MAX_DRAG;
+
+    setPosX(delta);
+  };
+
+  const end = () => {
+    if (!swiping) return;
+
+    if (posX > SWIPE_THRESHOLD) {
+      forceSwipe();
+    } else {
+      setSwiping(false);
+      setPosX(0);
+    }
+  };
+
+  const forceSwipe = () => {
+    setSwiping(false);
+
+    setPosX(600);
+
+    setTimeout(() => {
+      setStack((prev) => {
+        const [, ...rest] = prev;
+        return rest.length === 0 ? initialCards : rest;
+      });
+
+      setPosX(0);
+    }, 120);
+  };
 
   return (
     <section className={style.best_offer}>
@@ -72,104 +126,97 @@ const BestOffer = () => {
               Лучшие предложения от ведущих банков с минимальными ставками и
               прозрачными условиями
             </p>
-
             <Link to="/">Оставить заявку</Link>
           </div>
 
           <div className={style.best_offer__right__container}>
-            <div
-              key={next.id}
-              className={`${style.best_offer__right} ${style.best_offer__right__next}`}
-            >
-              <div className={style.best_offer__right__top}>
-                <div className={style.best_offer__right__top__bank}>
-                  <img src={next.img} alt="Т-банк" />
-
-                  <div className={style.best_offer__right__top__title}>
-                    <p>{next.subtitle}</p>
-                    <h3>{next.bank}</h3>
-                  </div>
-                </div>
-
-                <div className={style.best_offer__right__top__die}>
-                  <p>{next.offer}</p>
-                </div>
-              </div>
-
-              <div className={style.best_offer__right__main}>
-                <div className={style.best_offer__right__main__credit_item}>
-                  <p>Полная стоимость кредита</p>
-                  <p>{next.cost}</p>
-                </div>
-
-                <div className={style.best_offer__right__main__other}>
-                  <div className={style.best_offer__right__main__credit_item}>
-                    <p>Платёж в месяц</p>
-                    <p>{next.monthly}</p>
-                  </div>
-
-                  <div className={style.best_offer__right__main__credit_item}>
-                    <p>Сумма кредита</p>
-                    <p>{next.sum}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={card.id}
-                className={style.best_offer__right}
-                drag="x"
-                dragConstraints={{ left: 0, right: 350 }}
-                dragElastic={0}
-                dragMomentum={false}
-                onDragEnd={(e, info) => {
-                  if (info.offset.x > 150 || info.velocity.x > 500) {
-                    swipeRight();
-                    resetTimer();
-                  }
+            <div className={style.stack}>
+              <div
+                className={`${style.best_offer__right} ${style.best_offer__right__next}`}
+                style={{
+                  transform: `scale(${nextScale})`,
+                  transition: swiping ? "none" : "0.2s ease",
                 }}
-                initial={{ opacity: 0, x: 60 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 350, rotate: 15 }}
-                transition={{ duration: 0.35 }}
               >
                 <div className={style.best_offer__right__top}>
                   <div className={style.best_offer__right__top__bank}>
-                    <img src={card.img} alt="Т-банк" />
-
+                    <img src={next.img} alt={next.bank} />
                     <div className={style.best_offer__right__top__title}>
-                      <p>{card.subtitle}</p>
-                      <h3>{card.bank}</h3>
+                      <p>{next.subtitle}</p>
+                      <h3>{next.bank}</h3>
                     </div>
                   </div>
-
                   <div className={style.best_offer__right__top__die}>
-                    <p>{card.offer}</p>
+                    <p>{next.offer}</p>
                   </div>
                 </div>
 
                 <div className={style.best_offer__right__main}>
                   <div className={style.best_offer__right__main__credit_item}>
                     <p>Полная стоимость кредита</p>
-                    <p>{card.cost}</p>
+                    <p>{next.cost}</p>
                   </div>
 
                   <div className={style.best_offer__right__main__other}>
                     <div className={style.best_offer__right__main__credit_item}>
                       <p>Платёж в месяц</p>
-                      <p>{card.monthly}</p>
+                      <p>{next.monthly}</p>
                     </div>
-
                     <div className={style.best_offer__right__main__credit_item}>
                       <p>Сумма кредита</p>
-                      <p>{card.sum}</p>
+                      <p>{next.sum}</p>
                     </div>
                   </div>
                 </div>
-              </motion.div>
-            </AnimatePresence>
+              </div>
+
+              <div
+                key={current.id}
+                className={style.best_offer__right}
+                onMouseDown={start}
+                onMouseMove={move}
+                onMouseUp={end}
+                onMouseLeave={() => swiping && end()}
+                onTouchStart={start}
+                onTouchMove={move}
+                onTouchEnd={end}
+                style={{
+                  transform: `translateX(${posX}px) rotate(${posX / 18}deg)`,
+                  transition: swiping ? "none" : "0.15s linear",
+                }}
+              >
+                <div className={style.best_offer__right__top}>
+                  <div className={style.best_offer__right__top__bank}>
+                    <img src={current.img} alt={current.bank} />
+                    <div className={style.best_offer__right__top__title}>
+                      <p>{current.subtitle}</p>
+                      <h3>{current.bank}</h3>
+                    </div>
+                  </div>
+                  <div className={style.best_offer__right__top__die}>
+                    <p>{current.offer}</p>
+                  </div>
+                </div>
+
+                <div className={style.best_offer__right__main}>
+                  <div className={style.best_offer__right__main__credit_item}>
+                    <p>Полная стоимость кредита</p>
+                    <p>{current.cost}</p>
+                  </div>
+
+                  <div className={style.best_offer__right__main__other}>
+                    <div className={style.best_offer__right__main__credit_item}>
+                      <p>Платёж в месяц</p>
+                      <p>{current.monthly}</p>
+                    </div>
+                    <div className={style.best_offer__right__main__credit_item}>
+                      <p>Сумма кредита</p>
+                      <p>{current.sum}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
