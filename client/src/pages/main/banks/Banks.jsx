@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import style from "./banks.module.scss";
 import { motion, useAnimation } from "framer-motion";
 import sber from "../../../assets/images/main/banks/sber.png";
@@ -20,6 +20,26 @@ const Banks = () => {
 
   const controls = useAnimation();
   const containerRef = useRef(null);
+  const [duration, setDuration] = useState(20);
+
+  useEffect(() => {
+    const updateDuration = () => {
+      if (window.innerWidth <= 710) {
+        setDuration(9);
+      } else {
+        setDuration(20);
+      }
+    };
+
+    updateDuration();
+
+    const handleResize = () => {
+      updateDuration();
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const animate = async () => {
@@ -31,7 +51,7 @@ const Banks = () => {
       await controls.start({
         x: -containerWidth,
         transition: {
-          duration: 20,
+          duration: duration,
           ease: "linear",
           repeat: Infinity,
           repeatType: "loop",
@@ -40,7 +60,7 @@ const Banks = () => {
     };
 
     animate();
-  }, [controls]);
+  }, [controls, duration]);
 
   return (
     <section className={style.banks}>
