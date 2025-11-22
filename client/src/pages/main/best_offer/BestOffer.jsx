@@ -59,7 +59,7 @@ const BestOffer = () => {
       <div className="container">
         <div className={style.best_offer__wrapper}>
           <div className={style.best_offer__left}>
-            <h2>Лучшие предложения на сегодня</h2>
+            <h2>Лучшие предложения <br /> на сегодня</h2>
             <p>
               Лучшие предложения от ведущих банков с минимальными ставками и
               прозрачными условиями

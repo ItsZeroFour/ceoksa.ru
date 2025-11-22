@@ -1,5 +1,9 @@
 .howget {
   margin-top: 160px;
+
+  @media (max-width: 768px) {
+    margin-top: 130px;
+  }
 }
 
 .howget__wrapper {
