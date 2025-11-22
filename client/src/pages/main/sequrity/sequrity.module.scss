@@ -83,6 +83,8 @@
     position: absolute;
     top: 50%;
     gap: 18px;
+    height: -webkit-fit-content;
+    height: -moz-fit-content;
     height: fit-content;
 
     & > li {

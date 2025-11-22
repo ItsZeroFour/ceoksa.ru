@@ -107,7 +107,14 @@
   img {
     width: 505px;
     height: auto;
-    object-fit: contain;
+    -o-object-fit: contain;
+       object-fit: contain;
+
+    pointer-events: none;
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
 
     @media (max-width: 860px) {
       width: 500px;
@@ -207,7 +214,8 @@
     img {
       width: 178px;
       height: auto;
-      object-fit: contain;
+      -o-object-fit: contain;
+         object-fit: contain;
       position: absolute;
 
       left: 70%;

@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import style from "./bestoffer.module.scss";
 import { Link } from "react-router-dom";
 import tbank from "../../../assets/icons/tbank.png";
+import vtb from "../../../assets/icons/vtb.png";
+import sber from "../../../assets/icons/sber.svg";
 import { motion, AnimatePresence } from "framer-motion";
 
 const cards = [
@@ -13,6 +15,7 @@ const cards = [
     cost: "22,9-24,95%",
     monthly: "от 373 ₽",
     sum: "до 2 млн ₽",
+    img: tbank,
   },
   {
     id: 2,
@@ -22,6 +25,7 @@ const cards = [
     cost: "17,3-19,4%",
     monthly: "от 510 ₽",
     sum: "до 3 млн ₽",
+    img: sber,
   },
   {
     id: 3,
@@ -31,6 +35,7 @@ const cards = [
     cost: "19,2-21,5%",
     monthly: "от 420 ₽",
     sum: "до 1.5 млн ₽",
+    img: vtb,
   },
 ];
 
@@ -53,13 +58,16 @@ const BestOffer = () => {
   }, []);
 
   const card = cards[index];
+  const next = cards[(index + 1) % cards.length];
 
   return (
     <section className={style.best_offer}>
       <div className="container">
         <div className={style.best_offer__wrapper}>
           <div className={style.best_offer__left}>
-            <h2>Лучшие предложения <br /> на сегодня</h2>
+            <h2>
+              Лучшие предложения <br /> на сегодня
+            </h2>
             <p>
               Лучшие предложения от ведущих банков с минимальными ставками и
               прозрачными условиями
@@ -68,63 +76,101 @@ const BestOffer = () => {
             <Link to="/">Оставить заявку</Link>
           </div>
 
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={card.id}
-              className={style.best_offer__right}
-              drag="x"
-              dragConstraints={{ left: 0, right: 350 }}
-              dragElastic={0}
-              dragMomentum={false}
-              // onDrag={(e, info) => {
-              //   if (info.offset.x < 0) e.preventDefault();
-              // }}
-              onDragEnd={(e, info) => {
-                if (info.offset.x > 150 || info.velocity.x > 500) {
-                  swipeRight();
-                  resetTimer();
-                }
-              }}
-              initial={{ opacity: 0, x: 60 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 350, rotate: 15 }}
-              transition={{ duration: 0.35 }}
+          <div className={style.best_offer__right__container}>
+            <div
+              key={next.id}
+              className={`${style.best_offer__right} ${style.best_offer__right__next}`}
             >
               <div className={style.best_offer__right__top}>
                 <div className={style.best_offer__right__top__bank}>
-                  <img src={tbank} alt="Т-банк" />
+                  <img src={next.img} alt="Т-банк" />
 
                   <div className={style.best_offer__right__top__title}>
-                    <p>{card.subtitle}</p>
-                    <h3>{card.bank}</h3>
+                    <p>{next.subtitle}</p>
+                    <h3>{next.bank}</h3>
                   </div>
                 </div>
 
                 <div className={style.best_offer__right__top__die}>
-                  <p>{card.offer}</p>
+                  <p>{next.offer}</p>
                 </div>
               </div>
 
               <div className={style.best_offer__right__main}>
                 <div className={style.best_offer__right__main__credit_item}>
                   <p>Полная стоимость кредита</p>
-                  <p>{card.cost}</p>
+                  <p>{next.cost}</p>
                 </div>
 
                 <div className={style.best_offer__right__main__other}>
                   <div className={style.best_offer__right__main__credit_item}>
                     <p>Платёж в месяц</p>
-                    <p>{card.monthly}</p>
+                    <p>{next.monthly}</p>
                   </div>
 
                   <div className={style.best_offer__right__main__credit_item}>
                     <p>Сумма кредита</p>
-                    <p>{card.sum}</p>
+                    <p>{next.sum}</p>
                   </div>
                 </div>
               </div>
-            </motion.div>
-          </AnimatePresence>
+            </div>
+
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={card.id}
+                className={style.best_offer__right}
+                drag="x"
+                dragConstraints={{ left: 0, right: 350 }}
+                dragElastic={0}
+                dragMomentum={false}
+                onDragEnd={(e, info) => {
+                  if (info.offset.x > 150 || info.velocity.x > 500) {
+                    swipeRight();
+                    resetTimer();
+                  }
+                }}
+                initial={{ opacity: 0, x: 60 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 350, rotate: 15 }}
+                transition={{ duration: 0.35 }}
+              >
+                <div className={style.best_offer__right__top}>
+                  <div className={style.best_offer__right__top__bank}>
+                    <img src={card.img} alt="Т-банк" />
+
+                    <div className={style.best_offer__right__top__title}>
+                      <p>{card.subtitle}</p>
+                      <h3>{card.bank}</h3>
+                    </div>
+                  </div>
+
+                  <div className={style.best_offer__right__top__die}>
+                    <p>{card.offer}</p>
+                  </div>
+                </div>
+
+                <div className={style.best_offer__right__main}>
+                  <div className={style.best_offer__right__main__credit_item}>
+                    <p>Полная стоимость кредита</p>
+                    <p>{card.cost}</p>
+                  </div>
+
+                  <div className={style.best_offer__right__main__other}>
+                    <div className={style.best_offer__right__main__credit_item}>
+                      <p>Платёж в месяц</p>
+                      <p>{card.monthly}</p>
+                    </div>
+
+                    <div className={style.best_offer__right__main__credit_item}>
+                      <p>Сумма кредита</p>
+                      <p>{card.sum}</p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </section>
