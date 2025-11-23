@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import style from "./banks.module.scss";
 import sber from "../../../assets/images/main/banks/sber.png";
 import vtb from "../../../assets/images/main/banks/vtb.webp";
@@ -19,8 +19,6 @@ const Banks = () => {
 
   const [duration, setDuration] = useState(20);
   const [isReducedMotion, setIsReducedMotion] = useState(false);
-  const marqueeRef = useRef(null);
-  const scrollRef = useRef(0);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -46,30 +44,17 @@ const Banks = () => {
     return () => window.removeEventListener("resize", updateDuration);
   }, [bankLogos.length]);
 
-  useEffect(() => {
-    const marquee = marqueeRef.current;
-    if (!marquee) return;
+  const generateLogos = () => {
+    const doubledLogos = [...bankLogos, ...bankLogos];
+    const totalWidth = doubledLogos.length * 200;
+    const containerWidth = window.innerWidth || 1200;
 
-    let animationId;
-
-    const handleWheel = (e) => {
-      e.preventDefault();
-      marquee.style.animationPlayState = "paused";
-
-      scrollRef.current -= e.deltaY;
-      marquee.style.transform = `translate3d(${scrollRef.current}px, 0, 0)`;
-
-      clearTimeout(animationId);
-      animationId = setTimeout(() => {
-        marquee.style.animationPlayState = "running";
-        scrollRef.current = 0;
-      }, 500);
-    };
-
-    marquee.addEventListener("wheel", handleWheel, { passive: false });
-
-    return () => marquee.removeEventListener("wheel", handleWheel);
-  }, []);
+    const clonesNeeded = Math.max(
+      2,
+      Math.ceil((containerWidth * 2) / totalWidth)
+    );
+    return Array(clonesNeeded).fill(doubledLogos).flat();
+  };
 
   return (
     <section className={style.banks}>
@@ -78,7 +63,6 @@ const Banks = () => {
           <h2>Банки-партнёры</h2>
           <div className={style.marquee}>
             <ul
-              ref={marqueeRef}
               className={style.marquee__content}
               style={{
                 animationDuration: `${duration}s`,
