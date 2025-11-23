@@ -58,8 +58,29 @@
   }
 }
 
+.marquee {
+  // overflow: hidden;
+  width: 100%;
+  margin-top: 40px;
+}
+
 .marquee__content {
   display: flex;
   white-space: nowrap;
   width: max-content;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+
+  animation: marqueeScroll linear infinite;
+  animation-duration: 15s;
+
+  @keyframes marqueeScroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
 }
