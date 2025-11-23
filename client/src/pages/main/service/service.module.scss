@@ -40,7 +40,7 @@
   }
 
   @media (max-width: 490px) {
-    padding: 25px;
+    padding: 18px;
     padding-bottom: 350px;
   }
 }
@@ -108,13 +108,13 @@
     width: 505px;
     height: auto;
     -o-object-fit: contain;
-       object-fit: contain;
+    object-fit: contain;
 
     pointer-events: none;
     -webkit-user-select: none;
-       -moz-user-select: none;
-        -ms-user-select: none;
-            user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 
     @media (max-width: 860px) {
       width: 500px;
@@ -215,7 +215,7 @@
       width: 178px;
       height: auto;
       -o-object-fit: contain;
-         object-fit: contain;
+      object-fit: contain;
       position: absolute;
 
       left: 70%;

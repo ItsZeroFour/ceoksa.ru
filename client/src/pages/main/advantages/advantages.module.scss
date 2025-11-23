@@ -47,7 +47,7 @@
         width: 148px;
         height: 148px;
         -o-object-fit: contain;
-           object-fit: contain;
+        object-fit: contain;
         position: absolute;
 
         left: 77%;
@@ -59,13 +59,13 @@
 
         @media (max-width: 480px) {
           left: 75%;
+
+          width: 120px;
+          height: 120px;
         }
 
         @media (max-width: 390px) {
           left: 70%;
-
-          width: 120px;
-          height: 120px;
         }
       }
 
@@ -101,6 +101,7 @@
 
       @media (max-width: 480px) {
         width: 85vw;
+        padding: 18px;
       }
     }
 

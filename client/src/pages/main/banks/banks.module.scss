@@ -55,6 +55,14 @@
         }
       }
     }
+
+    @media (max-width: 560px) {
+      margin-top: 25px;
+    }
+  }
+
+  @media (max-width: 560px) {
+    padding: 18px;
   }
 }
 
@@ -130,5 +138,9 @@
       box-shadow: none !important;
       transition: none !important;
     }
+  }
+
+  @media (max-width: 560px) {
+    margin-top: 25px;
   }
 }
