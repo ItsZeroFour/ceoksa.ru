@@ -20,7 +20,6 @@ const Banks = () => {
   const [duration, setDuration] = useState(20);
   const [isReducedMotion, setIsReducedMotion] = useState(false);
 
-  // Проверка prefers-reduced-motion
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     setIsReducedMotion(mediaQuery.matches);
@@ -31,13 +30,11 @@ const Banks = () => {
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
-  // Расчет скорости в зависимости от ширины
   useEffect(() => {
     const updateDuration = () => {
       const baseSpeed = window.innerWidth <= 768 ? 15 : 30;
-      // Динамический расчет скорости в зависимости от количества логотипов
-      const totalLogos = bankLogos.length * 2; // Два набора для плавного зацикливания
-      const speedFactor = Math.max(1, totalLogos / 6); // Коэффициент для адаптации под разное количество логотипов
+      const totalLogos = bankLogos.length * 2;
+      const speedFactor = Math.max(1, totalLogos / 6);
       setDuration(baseSpeed * speedFactor);
     };
 
@@ -47,13 +44,11 @@ const Banks = () => {
     return () => window.removeEventListener("resize", updateDuration);
   }, [bankLogos.length]);
 
-  // Генерация контента с правильным количеством копий
   const generateLogos = () => {
     const doubledLogos = [...bankLogos, ...bankLogos];
-    const totalWidth = doubledLogos.length * 200; // Приблизительная ширина (200px на логотип)
+    const totalWidth = doubledLogos.length * 200;
     const containerWidth = window.innerWidth || 1200;
 
-    // Добавляем копии пока контент не заполнит 200% ширины контейнера
     const clonesNeeded = Math.max(
       2,
       Math.ceil((containerWidth * 2) / totalWidth)
@@ -70,24 +65,23 @@ const Banks = () => {
             <ul
               className={style.marquee__content}
               style={{
-                animationDuration: isReducedMotion ? "0s" : `${duration}s`,
-                animationPlayState: isReducedMotion ? "paused" : "running",
+                animationDuration: `${duration}s`,
+                transform: `translate3d(0, 0, 0)`,
               }}
             >
-              {generateLogos().map((bank, index) => (
-                <li
-                  key={`${bank.alt}-${index}`}
-                  className={style.marquee__item}
-                >
-                  <img
-                    src={bank.src}
-                    alt={bank.alt}
-                    loading="lazy"
-                    width="160"
-                    height="60"
-                  />
-                </li>
-              ))}
+              {Array(6)
+                .fill(0)
+                .map((_, setIndex) =>
+                  bankLogos.map((bank, logoIndex) => (
+                    <li
+                      key={`${setIndex}-${logoIndex}`}
+                      className={style.marquee__item}
+                      style={{ willChange: "transform" }}
+                    >
+                      <img src={bank.src} alt={bank.alt} />
+                    </li>
+                  ))
+                )}
             </ul>
           </div>
         </div>

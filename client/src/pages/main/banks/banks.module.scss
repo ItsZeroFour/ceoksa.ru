@@ -59,28 +59,76 @@
 }
 
 .marquee {
-  // overflow: hidden;
   width: 100%;
   margin-top: 40px;
-}
+  position: relative;
 
-.marquee__content {
-  display: flex;
-  white-space: nowrap;
-  width: max-content;
-  will-change: transform;
-  transform: translateZ(0);
-  backface-visibility: hidden;
+  // mask-image: linear-gradient(
+  //   90deg,
+  //   transparent 0%,
+  //   black 10%,
+  //   black 90%,
+  //   transparent 100%
+  // );
 
-  animation: marqueeScroll linear infinite;
-  animation-duration: 15s;
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 50px;
+    z-index: 2;
+  }
 
-  @keyframes marqueeScroll {
-    0% {
-      transform: translateX(0);
+  // &::before {
+  //   left: 0;
+  //   background: linear-gradient(
+  //     to right,
+  //     var(--color-gray-secondary),
+  //     transparent
+  //   );
+  // }
+
+  // &::after {
+  //   right: 0;
+  //   background: linear-gradient(
+  //     to left,
+  //     var(--color-gray-secondary),
+  //     transparent
+  //   );
+  // }
+
+  &__content {
+    display: flex;
+    white-space: nowrap;
+    width: max-content;
+    // Критические флаги производительности
+    will-change: transform;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+
+    // Бесконечная анимация с точным расчётом
+    animation: marqueeScroll linear infinite;
+
+    @keyframes marqueeScroll {
+      0% {
+        transform: translate3d(0, 0, 0);
+      }
+      100% {
+        transform: translate3d(-33.3333%, 0, 0);
+      }
     }
-    100% {
-      transform: translateX(-50%);
+  }
+
+  &__item {
+    flex: 0 0 auto;
+    // Фикс субпиксельных сдвигов
+    contain: layout paint;
+    // Отключение теней во время анимации
+    @media (prefers-reduced-motion: no-preference) {
+      box-shadow: none !important;
+      transition: none !important;
     }
   }
 }
