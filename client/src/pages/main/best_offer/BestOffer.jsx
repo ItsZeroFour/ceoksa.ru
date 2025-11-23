@@ -101,17 +101,31 @@ const BestOffer = () => {
 
   const forceSwipe = () => {
     setSwiping(false);
+    let start = null;
+    const duration = 200;
+    const startX = 0;
+    const endX = 800;
 
-    setPosX(600);
+    const animate = (timestamp) => {
+      if (!start) start = timestamp;
+      const progress = timestamp - start;
+      const nextX = Math.min(
+        startX + (endX - startX) * Math.min(progress / duration, 1),
+        endX
+      );
+      setPosX(nextX);
+      if (progress < duration) {
+        requestAnimationFrame(animate);
+      } else {
+        setStack((prev) => {
+          const [, ...rest] = prev;
+          return rest.length === 0 ? initialCards : rest;
+        });
+        setPosX(0);
+      }
+    };
 
-    setTimeout(() => {
-      setStack((prev) => {
-        const [, ...rest] = prev;
-        return rest.length === 0 ? initialCards : rest;
-      });
-
-      setPosX(0);
-    }, 120);
+    requestAnimationFrame(animate);
   };
 
   return (
