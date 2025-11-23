@@ -357,3 +357,13 @@
     width: 100%;
   }
 }
+
+.best_offer__right {
+  will-change: transform;
+  backface-visibility: hidden;
+  transition: transform 0.15s linear;
+}
+
+.best_offer__right__next {
+  transition: all 5s ease;
+}

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import style from "./bestoffer.module.scss";
 import { Link } from "react-router-dom";
 import tbank from "../../../assets/icons/tbank.png";
@@ -42,6 +42,7 @@ const MAX_DRAG = 140;
 const SWIPE_THRESHOLD = 120;
 const NEXT_SCALE_MIN = 0.95;
 const NEXT_SCALE_MAX = 1;
+const easeOutQuint = (x) => 1 - Math.pow(1 - x, 5);
 
 const BestOffer = ({ scrollToBlock }) => {
   const [stack, setStack] = useState(initialCards);
@@ -49,6 +50,9 @@ const BestOffer = ({ scrollToBlock }) => {
   const [swiping, setSwiping] = useState(false);
   const startX = useRef(0);
   const auto = useRef(null);
+
+  const nextCardRef = useRef(null);
+  const currentCardRef = useRef(null);
 
   const swipeProgress = Math.min(posX / SWIPE_THRESHOLD, 1);
   const nextScale =
@@ -61,7 +65,7 @@ const BestOffer = ({ scrollToBlock }) => {
     clearTimeout(auto.current);
     auto.current = setTimeout(() => {
       forceSwipe();
-    }, 5000);
+    }, 3000);
   };
 
   useEffect(() => {
@@ -75,29 +79,49 @@ const BestOffer = ({ scrollToBlock }) => {
     startX.current = e.touches ? e.touches[0].clientX : e.clientX;
   };
 
-  const move = (e) => {
+  const move = useCallback(
+    (e) => {
+      if (!swiping) return;
+
+      const x = e.touches ? e.touches[0].clientX : e.clientX;
+      let delta = x - startX.current;
+
+      if (Math.abs(delta - posX) > 5) {
+        delta = Math.max(0, Math.min(delta, MAX_DRAG));
+        setPosX(delta);
+
+        if (currentCardRef.current) {
+          currentCardRef.current.style.transform = `translateX(${delta}px) rotate(${
+            delta / 18
+          }deg)`;
+        }
+      }
+    },
+    [swiping, posX]
+  );
+
+  const end = useCallback(() => {
     if (!swiping) return;
 
-    const x = e.touches ? e.touches[0].clientX : e.clientX;
-    let delta = x - startX.current;
-
-    if (delta < 0) delta = 0;
-
-    if (delta > MAX_DRAG) delta = MAX_DRAG;
-
-    setPosX(delta);
-  };
-
-  const end = () => {
-    if (!swiping) return;
+    if (currentCardRef.current) {
+      currentCardRef.current.style.transition =
+        "transform 0.4s cubic-bezier(0.23, 1, 0.32, 1)";
+    }
 
     if (posX > SWIPE_THRESHOLD) {
       forceSwipe();
     } else {
       setSwiping(false);
       setPosX(0);
+
+      setTimeout(() => {
+        if (currentCardRef.current) {
+          currentCardRef.current.style.transition = "none";
+          currentCardRef.current.style.transform = "translateX(0) rotate(0)";
+        }
+      }, 400);
     }
-  };
+  }, [swiping, posX]);
 
   const forceSwipe = () => {
     setSwiping(false);
@@ -128,6 +152,20 @@ const BestOffer = ({ scrollToBlock }) => {
     requestAnimationFrame(animate);
   };
 
+  // useEffect(() => {
+  //   if (!nextCardRef.current) return;
+
+  //   const progress = Math.min(posX / SWIPE_THRESHOLD, 1);
+  //   const easedProgress = easeOutQuint(progress);
+  //   const scale =
+  //     NEXT_SCALE_MIN + (NEXT_SCALE_MAX - NEXT_SCALE_MIN) * easedProgress;
+
+  //   nextCardRef.current.style.transform = `scale(${scale})`;
+  //   nextCardRef.current.style.transition = swiping
+  //     ? "none"
+  //     : "transform 0.5s cubic-bezier(0.23, 1, 0.32, 1)";
+  // }, [posX, swiping]);
+
   return (
     <section className={style.best_offer}>
       <div className="container">
@@ -148,6 +186,7 @@ const BestOffer = ({ scrollToBlock }) => {
           <div className={style.best_offer__right__container}>
             <div className={style.stack}>
               <div
+                ref={nextCardRef}
                 className={`${style.best_offer__right} ${style.best_offer__right__next}`}
                 style={{
                   transform: `scale(${nextScale})`,
@@ -188,6 +227,7 @@ const BestOffer = ({ scrollToBlock }) => {
 
               <div
                 key={current.id}
+                ref={currentCardRef}
                 className={style.best_offer__right}
                 onMouseDown={start}
                 onMouseMove={move}

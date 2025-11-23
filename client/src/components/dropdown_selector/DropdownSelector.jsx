@@ -22,6 +22,10 @@ const DropdownSelector = forwardRef(
         className={`${style.credit__main__form__item} ${style.credit__main__form__target}`}
         // onClick={() => onToggle(dropdownType)}
         style={{ cursor: "pointer" }}
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggle(dropdownType, e);
+        }}
       >
         <div className={style.credit__main__form__item__value}>
           <p>{label}</p>
