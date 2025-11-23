@@ -44,9 +44,10 @@
       box-shadow: 0px 4px 20px rgba(0, 0, 32, 0.15);
 
       @media (max-width: 1024px) {
-        padding: 20px 40px;
+        padding: 20px;
 
         height: 100px;
+        width: 180px;
 
         img {
           width: auto;
@@ -55,4 +56,10 @@
       }
     }
   }
+}
+
+.marquee__content {
+  display: flex;
+  white-space: nowrap;
+  width: max-content;
 }
