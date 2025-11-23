@@ -9,7 +9,7 @@ import {
   useAnimationFrame,
 } from "framer-motion";
 
-const Head = () => {
+const Head = ({ scrollToBlock }) => {
   const angle = useMotionValue(0);
 
   useAnimationFrame((t) => {
@@ -30,7 +30,9 @@ const Head = () => {
             <h1>Кредитная биржа ОКСА. Экономия на кредите до 30%</h1>
             <p>Подберём кредит в любом банке на лучших условиях</p>
 
-            <Link to="/">Оставить заявку</Link>
+            <Link to="#" onClick={() => scrollToBlock("credit")}>
+              Оставить заявку
+            </Link>
           </div>
 
           <div className={style.head__img}>
@@ -48,7 +50,11 @@ const Head = () => {
             />
           </div>
 
-          <Link className={style.head__link__mobile} to="/">
+          <Link
+            className={style.head__link__mobile}
+            to="#"
+            onClick={() => scrollToBlock("credit")}
+          >
             Оставить заявку
           </Link>
         </div>

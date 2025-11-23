@@ -6,7 +6,7 @@ import howGetImg3 from "../../../assets/images/main/how_get-3.webp";
 import { Link } from "react-router-dom";
 import notification from "../../../assets/icons/notification.png";
 
-const HowGet = () => {
+const HowGet = ({ scrollToBlock }) => {
   return (
     <section className={style.howget}>
       <div className="container">
@@ -30,7 +30,9 @@ const HowGet = () => {
                 />
               </div>
 
-              <Link to="/">Оставить заявку</Link>
+              <Link to="#" onClick={() => scrollToBlock("credit")}>
+                Оставить заявку
+              </Link>
             </li>
 
             <li className={style.howget__item}>

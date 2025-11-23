@@ -118,7 +118,7 @@ const Credit = () => {
     : "";
 
   return (
-    <section className={style.credit}>
+    <section className={style.credit} id="credit">
       <div className="container">
         <div className={style.credit__wrapper}>
           <h2 className={style.credit__title}>Подберём кредит</h2>

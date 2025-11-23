@@ -8,15 +8,15 @@ import HowGet from "./how_get/HowGet";
 import Banks from "./banks/Banks";
 import Sequrity from "./sequrity/Sequrity";
 
-const Main = () => {
+const Main = ({ scrollToBlock }) => {
   return (
     <div>
-      <Head />
+      <Head scrollToBlock={scrollToBlock} />
       <Credit />
       <Advantages />
-      <BestOffer />
+      <BestOffer scrollToBlock={scrollToBlock} />
       <Service />
-      <HowGet />
+      <HowGet scrollToBlock={scrollToBlock} />
       <Banks />
       <Sequrity />
     </div>

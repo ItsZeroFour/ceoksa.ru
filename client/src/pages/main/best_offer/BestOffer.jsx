@@ -43,7 +43,7 @@ const SWIPE_THRESHOLD = 120;
 const NEXT_SCALE_MIN = 0.95;
 const NEXT_SCALE_MAX = 1;
 
-const BestOffer = () => {
+const BestOffer = ({ scrollToBlock }) => {
   const [stack, setStack] = useState(initialCards);
   const [posX, setPosX] = useState(0);
   const [swiping, setSwiping] = useState(false);
@@ -140,7 +140,9 @@ const BestOffer = () => {
               Лучшие предложения от ведущих банков с минимальными ставками и
               прозрачными условиями
             </p>
-            <Link to="/">Оставить заявку</Link>
+            <Link to="#" onClick={() => scrollToBlock("credit")}>
+              Оставить заявку
+            </Link>
           </div>
 
           <div className={style.best_offer__right__container}>
