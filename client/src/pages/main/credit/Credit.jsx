@@ -5,6 +5,10 @@ import { ReactComponent as Plus } from "../../../assets/icons/plus.svg";
 import gosuslugi from "../../../assets/gosuslugi.png";
 import info from "../../../assets/icons/info.svg";
 import DropdownSelector from "../../../components/dropdown_selector/DropdownSelector";
+import { useOutsideClick } from "../../../hooks/useOutsideClick";
+import { useNumberFormatter } from "../../../hooks/useNumberFormatter";
+import { useDropdown } from "../../../hooks/useDropdown";
+import { useSalaryValidation } from "../../../hooks/useSalaryValidation";
 
 const TERMS = [
   { value: 3, title: "3 месяца" },
@@ -31,40 +35,22 @@ const Credit = () => {
   const [value, setValue] = useState(500_000);
   const [selectedTerm, setSelectedTerm] = useState(TERMS[5]);
   const [selectedTarget, setSelectedTarget] = useState(TARGETS[0]);
-  const [openDropdown, setOpenDropdown] = useState(null);
-  const [salaryRaw, setSalaryRaw] = useState("");
-  const [salaryError, setSalaryError] = useState("");
-  const [isSalaryFocused, setIsSalaryFocused] = useState(false);
-
   const termRef = useRef(null);
   const targetRef = useRef(null);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        termRef.current &&
-        !termRef.current.contains(event.target) &&
-        targetRef.current &&
-        !targetRef.current.contains(event.target)
-      ) {
-        setOpenDropdown(null);
-      }
-    };
-
-    document.addEventListener("click", handleClickOutside);
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
-  }, []);
-
-  const toggleDropdown = (type) => {
-    setOpenDropdown(openDropdown === type ? null : type);
-  };
-
-  const formatNumber = (value) => {
-    if (!value) return "";
-    return value.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-  };
+  /* HOOKS */
+  const { openDropdown, toggleDropdown, closeDropdown, setOpenDropdown } =
+    useDropdown();
+  useOutsideClick([termRef, targetRef], closeDropdown);
+  const { formatNumber } = useNumberFormatter();
+  const {
+    salaryRaw,
+    salaryError,
+    displaySalary,
+    handleSalaryChange,
+    handleSalaryFocus,
+    handleSalaryBlur,
+  } = useSalaryValidation();
 
   const handleTotalChange = (event) => {
     let inputValue = event.target.value;
@@ -90,32 +76,6 @@ const Credit = () => {
       setValue(0);
     }
   };
-
-  const handleSalaryChange = (e) => {
-    const digitsOnly = e.target.value.replace(/\D/g, "");
-    setSalaryRaw(digitsOnly);
-    if (salaryError) setSalaryError("");
-  };
-
-  const handleSalaryFocus = () => {
-    setIsSalaryFocused(true);
-    setSalaryError("");
-  };
-
-  const handleSalaryBlur = () => {
-    setIsSalaryFocused(false);
-    if (!salaryRaw) {
-      setSalaryError("Укажите размер заработной платы");
-    } else {
-      setSalaryError("");
-    }
-  };
-
-  const displaySalary = isSalaryFocused
-    ? formatNumber(salaryRaw)
-    : salaryRaw
-    ? `${formatNumber(salaryRaw)} ₽`
-    : "";
 
   return (
     <section className={style.credit} id="credit">

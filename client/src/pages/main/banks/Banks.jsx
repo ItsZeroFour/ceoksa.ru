@@ -18,17 +18,6 @@ const Banks = () => {
   ];
 
   const [duration, setDuration] = useState(20);
-  const [isReducedMotion, setIsReducedMotion] = useState(false);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setIsReducedMotion(mediaQuery.matches);
-
-    const handleChange = () => setIsReducedMotion(mediaQuery.matches);
-    mediaQuery.addEventListener("change", handleChange);
-
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, []);
 
   useEffect(() => {
     const updateDuration = () => {
@@ -43,18 +32,6 @@ const Banks = () => {
 
     return () => window.removeEventListener("resize", updateDuration);
   }, [bankLogos.length]);
-
-  const generateLogos = () => {
-    const doubledLogos = [...bankLogos, ...bankLogos];
-    const totalWidth = doubledLogos.length * 200;
-    const containerWidth = window.innerWidth || 1200;
-
-    const clonesNeeded = Math.max(
-      2,
-      Math.ceil((containerWidth * 2) / totalWidth)
-    );
-    return Array(clonesNeeded).fill(doubledLogos).flat();
-  };
 
   return (
     <section className={style.banks}>
