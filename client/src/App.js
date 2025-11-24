@@ -1,27 +1,31 @@
+import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
-import Header from "./components/header/Header";
-import Main from "./pages/main/Main";
-import Footer from "./components/footer/Footer";
+
+const Header = lazy(() => import("./components/header/Header"));
+const Main = lazy(() => import("./pages/main/Main"));
+const Footer = lazy(() => import("./components/footer/Footer"));
 
 function App() {
   const scrollToBlock = (id) => {
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      element.scrollIntoView({ behavior: "smooth" });
     }
   };
 
   return (
     <div className="App">
-      <div className="wrapper">
-        <Header />
+      <Suspense>
+        <div className="wrapper">
+          <Header />
 
-        <Routes>
-          <Route path="/" element={<Main scrollToBlock={scrollToBlock} />} />
-        </Routes>
+          <Routes>
+            <Route path="/" element={<Main scrollToBlock={scrollToBlock} />} />
+          </Routes>
 
-        <Footer />
-      </div>
+          <Footer />
+        </div>
+      </Suspense>
     </div>
   );
 }

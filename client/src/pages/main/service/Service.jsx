@@ -67,7 +67,7 @@ const Service = () => {
               <h3>{item.title}</h3>
               <p>{item.description}</p>
             </div>
-            <img src={item.img} alt={item.alt} />
+            <img src={item.img} loading="lazy" alt={item.alt} />
           </li>
         ))}
       </ul>

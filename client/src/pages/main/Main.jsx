@@ -1,12 +1,12 @@
-import React from "react";
-import Head from "./head/Head";
-import Credit from "./credit/Credit";
-import Advantages from "./advantages/Advantages";
-import BestOffer from "./best_offer/BestOffer";
-import Service from "./service/Service";
-import HowGet from "./how_get/HowGet";
-import Banks from "./banks/Banks";
-import Sequrity from "./sequrity/Sequrity";
+import React, { lazy } from "react";
+const Head = lazy(() => import("./head/Head"));
+const Credit = lazy(() => import("./credit/Credit"));
+const Advantages = lazy(() => import("./advantages/Advantages"));
+const BestOffer = lazy(() => import("./best_offer/BestOffer"));
+const Service = lazy(() => import("./service/Service"));
+const HowGet = lazy(() => import("./how_get/HowGet"));
+const Banks = lazy(() => import("./banks/Banks"));
+const Sequrity = lazy(() => import("./sequrity/Sequrity"));
 
 const Main = ({ scrollToBlock }) => {
   return (

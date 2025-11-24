@@ -38,7 +38,7 @@ const Advantages = () => {
                     </React.Fragment>
                   ))}
                 </p>
-                <img src={item.image} alt={item.alt} />
+                <img src={item.image} loading="lazy" alt={item.alt} />
               </li>
             ))}
           </ul>

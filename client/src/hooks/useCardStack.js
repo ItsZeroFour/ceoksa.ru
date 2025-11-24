@@ -302,20 +302,33 @@ export const useCardStack = (initialCards) => {
     };
   }, []);
 
-  return {
-    current,
-    next,
-    stack,
-    isSwiping,
-    isAutoSwiping,
-    currentCardRef,
-    nextCardRef,
-    containerRef,
-    handleMouseDown,
-    handleTouchStart,
-    handleTouchMove,
-    handleTouchEnd,
-    triggerSwipe,
-    resetAutoSwipe,
-  };
+  return useMemo(
+    () => ({
+      current,
+      next,
+      isSwiping,
+      isAutoSwiping,
+      currentCardRef,
+      nextCardRef,
+      containerRef,
+      handleMouseDown,
+      handleTouchStart,
+      handleTouchMove,
+      handleTouchEnd,
+      triggerSwipe,
+      resetAutoSwipe,
+    }),
+    [
+      current,
+      next,
+      isSwiping,
+      isAutoSwiping,
+      handleMouseDown,
+      handleTouchStart,
+      handleTouchMove,
+      handleTouchEnd,
+      triggerSwipe,
+      resetAutoSwipe,
+    ]
+  );
 };
