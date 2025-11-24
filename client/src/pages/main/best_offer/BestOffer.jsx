@@ -50,7 +50,7 @@ const MAX_ROTATION = 15;
 const NEXT_SCALE_MIN = 0.92;
 const NEXT_SCALE_MAX = 1;
 const AUTO_SWIPE_DELAY = 2000;
-const ANIMATION_DURATION = 400;
+const ANIMATION_DURATION = 800;
 const SWIPE_END_POSITION_MULTIPLIER = 1.5;
 
 const easeOutQuint = (x) => 1 - Math.pow(1 - x, 5);
