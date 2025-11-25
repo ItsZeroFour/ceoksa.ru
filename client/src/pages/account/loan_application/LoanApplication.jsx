@@ -1,8 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import LeftPanel from "../../../components/left_panel/LeftPanel";
 import Top from "./top/Top";
+import Passport from "./passport/Passport";
+import Address from "./address/Address";
+import RealAddress from "./real_address/RealAddress";
+import { motion, AnimatePresence } from "framer-motion";
 
 const LoanApplication = () => {
+  const [isChecked, setIsChecked] = useState(false);
+
   return (
     <div className="loan_application">
       <div className="container">
@@ -11,6 +17,22 @@ const LoanApplication = () => {
 
           <div className="loan_application__main">
             <Top />
+            <Passport />
+            <Address isChecked={isChecked} setIsChecked={setIsChecked} />
+            <AnimatePresence>
+              {!isChecked && (
+                <motion.div
+                  key="real-address"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                  className="animated-wrapper"
+                >
+                  <RealAddress />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>
