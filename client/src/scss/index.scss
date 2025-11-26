@@ -126,3 +126,275 @@ button {
   width: 100%;
   overflow: hidden;
 }
+
+/* CREDIT SECTION */
+
+.credit__main__form__item,
+.credit__main__form__target,
+.credit__main__form__cash {
+  background: var(--color-gray-secondary);
+  padding: 10px;
+
+  button {
+    background: none;
+  }
+
+  .credit__main__form__item__value {
+    p {
+      &:first-child {
+        font-size: 13px;
+        font-weight: 300;
+      }
+
+      &:last-child {
+        font-size: 17px;
+        font-weight: 500;
+
+        @media (max-width: 1024px) {
+          font-size: 15px;
+        }
+      }
+    }
+  }
+}
+
+.credit__main__form__elem {
+  display: flex;
+
+  .credit__main__form__item {
+    display: flex;
+    align-items: center;
+    gap: 35px;
+    width: 100%;
+
+    &:first-child {
+      border-bottom-left-radius: 16px;
+      border-top-left-radius: 16px;
+
+      padding-right: 16px;
+
+      @media (max-width: 480px) {
+        border-radius: 16px;
+        padding: 20px 15px;
+      }
+    }
+
+    &:last-child {
+      border-bottom-left-radius: 0 !important;
+      border-top-left-radius: 0 !important;
+      border-bottom-right-radius: 16px;
+      border-top-right-radius: 16px;
+      padding-left: 16px;
+
+      justify-content: space-between;
+
+      position: relative;
+
+      .dropdown__list {
+        position: absolute;
+
+        display: flex;
+        flex-direction: column;
+        background: var(--color-gray-secondary);
+        box-shadow: 0px 4px 20px rgba(0, 0, 32, 0.15);
+        width: 225px;
+        height: 245px;
+
+        overflow-y: auto;
+
+        top: 110%;
+        left: 0;
+
+        border-radius: 16px;
+
+        gap: 4px;
+        padding: 16px;
+
+        z-index: 9;
+
+        li {
+          font-weight: 300;
+          font-size: 16px;
+          padding: 10px 15px;
+
+          cursor: pointer;
+
+          transition: background 0.2s ease;
+
+          &:hover {
+            background: rgba(2, 180, 251, 0.1);
+          }
+
+          @media (max-width: 1024px) {
+            font-size: 14px;
+          }
+        }
+      }
+
+      &::before {
+        content: "";
+        position: absolute;
+        left: 0;
+
+        width: 1px;
+        height: 100%;
+
+        background: var(--color-gray-third);
+
+        @media (max-width: 480px) {
+          display: none;
+        }
+      }
+
+      @media (max-width: 480px) {
+        border-top-left-radius: 16px !important;
+        border-top-right-radius: 16px !important;
+      }
+    }
+
+    @media (max-width: 1400px) {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+.credit__main__form {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+
+  @media (max-width: 1400px) {
+    flex-direction: column;
+  }
+}
+
+.credit__main__form__other {
+  display: flex;
+  gap: 12px;
+
+  .credit__main__form__item,
+  .credit__main__form__cash {
+    @media (max-width: 1400px) {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 520px) {
+    flex-direction: column;
+  }
+}
+
+.credit__main__form__item__total {
+  width: 90px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+
+  background: none;
+
+  font-weight: 600;
+
+  @media (max-width: 1400px) {
+    width: 100%;
+  }
+}
+
+.credit__main__form__target {
+  display: flex;
+  justify-content: space-between;
+  width: 250px;
+  border-radius: 16px;
+
+  position: relative;
+
+  .dropdown__list {
+    position: absolute;
+
+    display: flex;
+    flex-direction: column;
+    background: var(--color-gray-secondary);
+    box-shadow: 0px 4px 20px rgba(0, 0, 32, 0.15);
+    width: 225px;
+    height: 245px;
+
+    overflow-y: auto;
+
+    top: 110%;
+    left: 0;
+
+    border-radius: 16px;
+
+    gap: 4px;
+    padding: 16px;
+
+    z-index: 9;
+
+    li {
+      font-weight: 300;
+      font-size: 16px;
+      padding: 10px 15px;
+
+      cursor: pointer;
+
+      transition: background 0.2s ease;
+
+      &:hover {
+        background: rgba(2, 180, 251, 0.1);
+      }
+
+      @media (max-width: 1024px) {
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+.credit__main__form__cash {
+  border-radius: 16px;
+
+  position: relative;
+
+  border: 1px solid var(--color-gray-secondary);
+
+  input {
+    margin-top: 6px;
+    background: none;
+    font-size: 17px;
+    font-weight: 500;
+
+    @media (max-width: 1024px) {
+      font-size: 16px;
+    }
+  }
+}
+
+.credit__main__form__cash__error {
+  font-size: 13px !important;
+  font-weight: 300 !important;
+  color: var(--color-red);
+
+  position: absolute;
+
+  left: 5px;
+  top: 65px;
+}
+
+.credit__main__form__cash.error {
+  border: 1px solid var(--color-red);
+}
+
+.credit__main__form__item__input__container {
+  position: relative;
+}
+
+// .credit__main__form__item {
+//   width: 100%;
+// }

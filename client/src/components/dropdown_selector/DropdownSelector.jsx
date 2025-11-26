@@ -19,7 +19,7 @@ const DropdownSelector = forwardRef(
     return (
       <div
         ref={ref}
-        className={`${style.credit__main__form__item} ${style.credit__main__form__target}`}
+        className="credit__main__form__item credit__main__form__target"
         // onClick={() => onToggle(dropdownType)}
         style={{ cursor: "pointer" }}
         onClick={(e) => {
@@ -27,7 +27,7 @@ const DropdownSelector = forwardRef(
           onToggle(dropdownType, e);
         }}
       >
-        <div className={style.credit__main__form__item__value}>
+        <div className="credit__main__form__item__value">
           <p>{label}</p>
           <p>{selected.title}</p>
         </div>
@@ -44,11 +44,11 @@ const DropdownSelector = forwardRef(
         </button>
 
         {isOpen === dropdownType && (
-          <ul className={style.dropdown__list}>
+          <ul className="dropdown__list">
             {options.map((option) => (
               <li
                 key={option.value}
-                className={style.dropdown__item}
+                className="dropdown__item"
                 onClick={(e) => {
                   e.stopPropagation();
                   onSelect(option);

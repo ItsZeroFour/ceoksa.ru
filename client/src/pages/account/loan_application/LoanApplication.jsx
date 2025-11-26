@@ -5,6 +5,8 @@ import Passport from "./passport/Passport";
 import Address from "./address/Address";
 import RealAddress from "./real_address/RealAddress";
 import { motion, AnimatePresence } from "framer-motion";
+import Contacts from "./contacts/Contacts";
+import Credit from "./credit/Credit";
 
 const LoanApplication = () => {
   const [isChecked, setIsChecked] = useState(false);
@@ -33,6 +35,8 @@ const LoanApplication = () => {
                 </motion.div>
               )}
             </AnimatePresence>
+            <Contacts />
+            <Credit />
           </div>
         </div>
       </div>

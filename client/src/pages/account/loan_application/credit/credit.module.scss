@@ -67,50 +67,19 @@
   }
 }
 
-.credit__main__form__auth {
-  width: 30%;
-  font-size: 17px;
-  font-weight: 600;
-  padding: 20px;
-  background: var(--color-blue);
-  color: var(--color-white);
-
-  border-radius: 16px;
-
+.credit__main__form__special {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+}
 
-  transition: opacity 0.2s ease;
+.credit__main__form__cash__special {
+  width: 100%;
+}
 
-  img {
-    width: 24px;
-    height: auto;
-  }
-
-  &:hover {
-    opacity: 0.8;
-  }
-
-  @media (max-width: 1400px) {
-    width: 100%;
-  }
-
-  @media (max-width: 1024px) {
-    font-size: 14px;
-  }
-
-  @media (max-width: 768px) {
-    padding: 15px;
-  }
-
-  @media (max-width: 390px) {
-    // font-size: 12px;
-  }
+.credit__main__form__item__special {
+  width: 100%;
 }
 
 .credit__main__form__item__total__con {
   width: 220px !important;
-  // background: red !important;
 }

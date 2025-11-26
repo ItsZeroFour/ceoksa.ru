@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import style from "./credit.module.scss";
-import { ReactComponent as Minus } from "../../../assets/icons/minus.svg";
-import { ReactComponent as Plus } from "../../../assets/icons/plus.svg";
-import gosuslugi from "../../../assets/gosuslugi.png";
-import DropdownSelector from "../../../components/dropdown_selector/DropdownSelector";
-import { useOutsideClick } from "../../../hooks/useOutsideClick";
-import { useNumberFormatter } from "../../../hooks/useNumberFormatter";
-import { useDropdown } from "../../../hooks/useDropdown";
-import { useSalaryValidation } from "../../../hooks/useSalaryValidation";
-import Notification from "../../../components/notification/Notification";
+import { ReactComponent as Minus } from "../../../../assets/icons/minus.svg";
+import { ReactComponent as Plus } from "../../../../assets/icons/plus.svg";
+import gosuslugi from "../../../../assets/gosuslugi.png";
+import DropdownSelector from "../../../../components/dropdown_selector/DropdownSelector";
+import { useOutsideClick } from "../../../../hooks/useOutsideClick";
+import { useNumberFormatter } from "../../../../hooks/useNumberFormatter";
+import { useDropdown } from "../../../../hooks/useDropdown";
+import { useSalaryValidation } from "../../../../hooks/useSalaryValidation";
+import Notification from "../../../../components/notification/Notification";
 
 const TERMS = [
   { value: 3, title: "3 месяца" },
@@ -93,9 +93,13 @@ const Credit = () => {
               Подберём банки, которые готовы выдать вам кредит
             </h3>
 
-            <form className="credit__main__form">
+            <form
+              className={`credit__main__form ${style.credit__main__form__special}`}
+            >
               <div className="credit__main__form__elem">
-                <div className={`credit__main__form__item`}>
+                <div
+                  className={`credit__main__form__item ${style.credit__main__form__item__total__con}`}
+                >
                   <button
                     type="button"
                     onClick={() => setValue((prev) => Math.max(0, prev - 1000))}
@@ -133,32 +137,38 @@ const Credit = () => {
                   dropdownType="term"
                   ariaLabel="Выбрать срок кредита"
                 />
+
+                <div className={style.credit__main__form__item__special}>
+                  <DropdownSelector
+                    ref={targetRef}
+                    label="Цель кредита"
+                    selected={selectedTarget}
+                    options={TARGETS}
+                    isOpen={openDropdown}
+                    onToggle={() => toggleDropdown("target")}
+                    onSelect={(target) => {
+                      setSelectedTarget(target);
+                      setOpenDropdown(null);
+                    }}
+                    dropdownType="target"
+                    ariaLabel="Выбрать цель кредита"
+                  />
+                </div>
               </div>
 
               <div className="credit__main__form__other">
-                <DropdownSelector
-                  ref={targetRef}
-                  label="Цель кредита"
-                  selected={selectedTarget}
-                  options={TARGETS}
-                  isOpen={openDropdown}
-                  onToggle={() => toggleDropdown("target")}
-                  onSelect={(target) => {
-                    setSelectedTarget(target);
-                    setOpenDropdown(null);
-                  }}
-                  dropdownType="target"
-                  ariaLabel="Выбрать цель кредита"
-                />
-
                 <div
                   className={`credit__main__form__cash ${
                     salaryError && "error"
-                  }`}
+                  } ${style.credit__main__form__cash__special}`}
                 >
-                  <div className="credit__main__form__item__value">
+                  <div
+                    className={`credit__main__form__item__value ${style.credit__main__form__item__value__special}`}
+                  >
                     <p>Размер заработной платы</p>
-                    <div className="credit__main__form__item__input__container">
+                    <div
+                      className={`credit__main__form__item__input__container ${style.credit__main__form__item__input__container__speacial}`}
+                    >
                       <input
                         type="text"
                         inputMode="numeric"
@@ -184,17 +194,7 @@ const Credit = () => {
                   </div>
                 </div>
               </div>
-
-              <button className={style.credit__main__form__auth}>
-                <img src={gosuslugi} alt="Госуслуги" /> Продолжить
-                через Госуслуги
-              </button>
             </form>
-
-            <Notification
-              text="Войдите через Госуслуги — мы заполним данные автоматически и рассчитаем
-                    ставку и сумму на основе кредитной истории"
-            />
           </div>
         </div>
       </div>
