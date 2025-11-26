@@ -78,8 +78,50 @@
 
 .credit__main__form__item__special {
   width: 100%;
+  margin-left: 15px;
 }
 
 .credit__main__form__item__total__con {
-  width: 220px !important;
+  width: 50% !important;
+}
+
+.credit__main__form__item__data__con {
+  width: 50% !important;
+}
+
+.credit__main__form__item__input__container__speacial {
+  input {
+    width: 100%;
+  }
+}
+
+.credit__bottom {
+  margin-top: 25px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  align-items: end;
+
+  button {
+    padding: 20px 60px;
+    background: var(--color-blue);
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--color-white);
+    border-radius: 16px;
+
+    transition: all 0.2s ease;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  p {
+    font-size: 14px;
+    font-weight: 300;
+    opacity: 0.7;
+    margin-top: 15px;
+  }
 }

@@ -96,7 +96,9 @@ const Credit = () => {
             <form
               className={`credit__main__form ${style.credit__main__form__special}`}
             >
-              <div className="credit__main__form__elem">
+              <div
+                className={`credit__main__form__elem ${style.credit__main__form__elem__con}`}
+              >
                 <div
                   className={`credit__main__form__item ${style.credit__main__form__item__total__con}`}
                 >
@@ -123,22 +125,26 @@ const Credit = () => {
                   </button>
                 </div>
 
-                <DropdownSelector
-                  ref={termRef}
-                  label="На срок"
-                  selected={selectedTerm}
-                  options={TERMS}
-                  isOpen={openDropdown}
-                  onToggle={() => toggleDropdown("term")}
-                  onSelect={(term) => {
-                    setSelectedTerm(term);
-                    setOpenDropdown(null);
-                  }}
-                  dropdownType="term"
-                  ariaLabel="Выбрать срок кредита"
-                />
+                <div className={style.credit__main__form__item__data__con}>
+                  <DropdownSelector
+                    ref={termRef}
+                    label="На срок"
+                    selected={selectedTerm}
+                    options={TERMS}
+                    isOpen={openDropdown}
+                    onToggle={() => toggleDropdown("term")}
+                    onSelect={(term) => {
+                      setSelectedTerm(term);
+                      setOpenDropdown(null);
+                    }}
+                    dropdownType="term"
+                    ariaLabel="Выбрать срок кредита"
+                  />
+                </div>
 
-                <div className={style.credit__main__form__item__special}>
+                <div
+                  className={`credit__main__form__item__special__con ${style.credit__main__form__item__special}`}
+                >
                   <DropdownSelector
                     ref={targetRef}
                     label="Цель кредита"
@@ -195,6 +201,14 @@ const Credit = () => {
                 </div>
               </div>
             </form>
+          </div>
+
+          <div className={style.credit__bottom}>
+            <button>Направить в банки</button>
+            <p>
+              Нажимая на кнопку «Направить в банки», вы соглашаетесь
+              с условиями политики конфиденциальностии
+            </p>
           </div>
         </div>
       </div>

@@ -119,20 +119,22 @@ const Credit = () => {
                   </button>
                 </div>
 
-                <DropdownSelector
-                  ref={termRef}
-                  label="На срок"
-                  selected={selectedTerm}
-                  options={TERMS}
-                  isOpen={openDropdown}
-                  onToggle={() => toggleDropdown("term")}
-                  onSelect={(term) => {
-                    setSelectedTerm(term);
-                    setOpenDropdown(null);
-                  }}
-                  dropdownType="term"
-                  ariaLabel="Выбрать срок кредита"
-                />
+                <div className="credit__main__data">
+                  <DropdownSelector
+                    ref={termRef}
+                    label="На срок"
+                    selected={selectedTerm}
+                    options={TERMS}
+                    isOpen={openDropdown}
+                    onToggle={() => toggleDropdown("term")}
+                    onSelect={(term) => {
+                      setSelectedTerm(term);
+                      setOpenDropdown(null);
+                    }}
+                    dropdownType="term"
+                    ariaLabel="Выбрать срок кредита"
+                  />
+                </div>
               </div>
 
               <div className="credit__main__form__other">

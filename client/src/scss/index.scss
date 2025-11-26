@@ -252,7 +252,7 @@ button {
       }
     }
 
-    @media (max-width: 1400px) {
+    @media (max-width: 1450px) {
       width: 100%;
     }
   }
@@ -268,7 +268,7 @@ button {
   gap: 12px;
   margin-top: 20px;
 
-  @media (max-width: 1400px) {
+  @media (max-width: 1450px) {
     flex-direction: column;
   }
 }
@@ -279,7 +279,7 @@ button {
 
   .credit__main__form__item,
   .credit__main__form__cash {
-    @media (max-width: 1400px) {
+    @media (max-width: 1450px) {
       width: 100%;
     }
   }
@@ -302,7 +302,7 @@ button {
 
   font-weight: 600;
 
-  @media (max-width: 1400px) {
+  @media (max-width: 1450px) {
     width: 100%;
   }
 }
@@ -398,3 +398,37 @@ button {
 // .credit__main__form__item {
 //   width: 100%;
 // }
+
+.credit__main__form__item__special__con {
+  .credit__main__form__item {
+    &:last-child {
+      border-radius: 16px !important;
+    }
+
+    &::before {
+      display: none;
+    }
+  }
+}
+
+.credit__main__data {
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+
+  .credit__main__form__target {
+    width: 220px;
+
+    @media (max-width: 1450px) {
+      width: 45vw;
+    }
+
+    @media (max-width: 768px) {
+      width: 100%;
+    }
+
+    @media (max-width: 480px) {
+      width: 100%;
+    }
+  }
+}
