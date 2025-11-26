@@ -3,12 +3,12 @@ import style from "./credit.module.scss";
 import { ReactComponent as Minus } from "../../../assets/icons/minus.svg";
 import { ReactComponent as Plus } from "../../../assets/icons/plus.svg";
 import gosuslugi from "../../../assets/gosuslugi.png";
-import info from "../../../assets/icons/info.svg";
 import DropdownSelector from "../../../components/dropdown_selector/DropdownSelector";
 import { useOutsideClick } from "../../../hooks/useOutsideClick";
 import { useNumberFormatter } from "../../../hooks/useNumberFormatter";
 import { useDropdown } from "../../../hooks/useDropdown";
 import { useSalaryValidation } from "../../../hooks/useSalaryValidation";
+import Notification from "../../../components/notification/Notification";
 
 const TERMS = [
   { value: 3, title: "3 месяца" },
@@ -195,13 +195,10 @@ const Credit = () => {
               </button>
             </form>
 
-            <div className={style.credit__main__info}>
-              <img src={info} alt="info" />
-              <p>
-                Войдите через Госуслуги — мы заполним данные автоматически и
-                рассчитаем ставку и сумму на основе кредитной истории
-              </p>
-            </div>
+            <Notification
+              text="Войдите через Госуслуги — мы заполним данные автоматически и рассчитаем
+                    ставку и сумму на основе кредитной истории"
+            />
           </div>
         </div>
       </div>

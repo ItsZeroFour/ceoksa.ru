@@ -50,7 +50,7 @@ img {
 .wrapper {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 footer {
@@ -111,4 +111,18 @@ button {
   font-family: "Inter", sans-serif;
   font-weight: 600;
   touch-action: manipulation;
+}
+
+.loan_application__wrapper {
+  display: flex;
+  gap: 30px;
+}
+
+.loan_application__main {
+  width: 100%;
+}
+
+.animated-wrapper {
+  width: 100%;
+  overflow: hidden;
 }

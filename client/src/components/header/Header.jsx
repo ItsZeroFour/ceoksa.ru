@@ -4,8 +4,11 @@ import logo from "../../assets/logo.svg";
 import { Link } from "react-router-dom";
 import business from "../../assets/icons/business.svg";
 import signin from "../../assets/icons/signin.svg";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+  const navigation = useNavigate();
+
   return (
     <header className={style.header}>
       <div className="container">
@@ -22,7 +25,10 @@ const Header = () => {
               <p>Бизнесу</p>
             </button>
 
-            <button className={style.header__button_signin}>
+            <button
+              className={style.header__button_signin}
+              onClick={() => navigation("/account/loan_applications")}
+            >
               <img src={signin} alt="Войти" />
               <p>Войти</p>
             </button>

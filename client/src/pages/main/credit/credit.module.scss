@@ -372,46 +372,6 @@
   }
 }
 
-.credit__main__info {
-  padding: 20px;
-  margin-top: 20px;
-
-  display: flex;
-  gap: 16px;
-  border-radius: 14px;
-
-  background: #ecf8ff;
-  border: 1px solid #b6dfff;
-
-  p {
-    font-weight: 300;
-    font-size: 16px;
-
-    @media (max-width: 1024px) {
-      font-size: 14px;
-    }
-  }
-
-  @media (max-width: 768px) {
-    padding: 15px;
-  }
-
-  @media (max-width: 425px) {
-    display: flex;
-    flex-direction: column;
-    justify-content: start;
-    align-items: start;
-
-    gap: 5px;
-    padding: 10px;
-
-    img {
-      width: 20px;
-      height: 20px;
-    }
-  }
-}
-
 .credit__main__form__item__input__container {
   position: relative;
 }

@@ -1,0 +1,123 @@
+.passport {
+  margin-top: 25px;
+}
+
+.passport__wrapper {
+  padding: 35px;
+  border-radius: 20px;
+  background: var(--color-gray-secondary);
+
+  h2 {
+    font-weight: 600;
+    font-family: "Inter", sans-serif;
+  }
+
+  ul {
+    margin-top: 15px;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+
+    li {
+      padding: 20px;
+
+      background: var(--color-white);
+      border-radius: 14px;
+
+      display: flex;
+      align-items: center;
+      gap: 15px;
+
+      &:nth-child(3) {
+        grid-column: 1 / -1;
+      }
+
+      .passport__item__icon {
+        width: 52px;
+        height: 52px;
+
+        background: var(--color-gray-light);
+        border-radius: 12px;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .passport__item__text {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+
+        p {
+          &:first-child {
+            font-size: 13px;
+            opacity: 0.6;
+            font-weight: 300;
+          }
+
+          &:last-child {
+            font-weight: 600;
+          }
+        }
+      }
+
+      &:last-child {
+        align-items: start;
+      }
+    }
+  }
+}
+
+.passport__item__icon {
+  svg {
+    color: var(--color-blue-secondary);
+  }
+}
+
+.passport__item__text__container {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: repeat(3, 1fr);
+  height: 100%;
+  gap: 12px;
+
+  width: 100%;
+
+  .passport__item__text {
+    width: 100%;
+  }
+}
+
+.passport__item__text__container > :nth-child(1) {
+  grid-row: 1;
+  grid-column: 1;
+}
+
+.passport__item__text__container > :nth-child(2) {
+  grid-row: 1;
+  grid-column: 2;
+}
+
+.passport__item__text__container > :nth-child(3) {
+  grid-row: 1;
+  grid-column: 3;
+}
+
+.passport__item__text__container > :nth-child(4) {
+  grid-row: 3;
+  grid-column: 1 / span 3;
+}
+
+// @media (max-width: 768px) {
+//   ul {
+//     grid-template-columns: 1fr;
+//     li {
+//       &:nth-child(3) {
+//         grid-column: auto; // сброс
+//       }
+//     }
+//   }
+// }
