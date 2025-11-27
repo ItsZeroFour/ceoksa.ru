@@ -10,6 +10,10 @@
   h2 {
     font-weight: 600;
     font-family: "Inter", sans-serif;
+
+    @media (max-width: 480px) {
+      font-size: 19px;
+    }
   }
 
   ul {
@@ -31,11 +35,20 @@
 
       &:nth-child(3) {
         grid-column: 1 / -1;
+
+        @media (max-width: 780px) {
+          .passport__item__text__container {
+            display: flex;
+            flex-direction: column;
+          }
+        }
       }
 
       .passport__item__icon {
         width: 52px;
         height: 52px;
+
+        flex-shrink: 0;
 
         background: var(--color-gray-light);
         border-radius: 12px;
@@ -60,6 +73,10 @@
 
           &:last-child {
             font-weight: 600;
+
+            @media (max-width: 480px) {
+              font-size: 14px;
+            }
           }
         }
       }
@@ -67,7 +84,20 @@
       &:last-child {
         align-items: start;
       }
+
+      @media (max-width: 480px) {
+        padding: 14px;
+      }
     }
+
+    @media (max-width: 780px) {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  @media (max-width: 550px) {
+    padding: 18px;
   }
 }
 

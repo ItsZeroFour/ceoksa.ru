@@ -40,8 +40,10 @@ const Top = () => {
               <p>Фамилия Имя Отчество</p>
 
               <div className={style.top__main__name__main__data}>
-                <img src={gosuslugi} alt="госуслуги" />
-                <p>Данные загружены 12 ноября 2025</p>
+                <div className={style.top__main__name__main__data__text}>
+                  <img src={gosuslugi} alt="госуслуги" />
+                  <p>Данные загружены 12 ноября 2025</p>
+                </div>
                 <motion.button
                   onClick={handleRefresh}
                   disabled={isRefreshing}

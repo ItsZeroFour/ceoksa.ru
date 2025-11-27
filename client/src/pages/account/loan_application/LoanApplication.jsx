@@ -7,8 +7,9 @@ import RealAddress from "./real_address/RealAddress";
 import { motion, AnimatePresence } from "framer-motion";
 import Contacts from "./contacts/Contacts";
 import Credit from "./credit/Credit";
+import MobileLeftPanel from "../../../components/mobile_left_panel/MobileLeftPanel";
 
-const LoanApplication = () => {
+const LoanApplication = ({ setOpenMenu, openMenu }) => {
   const [isChecked, setIsChecked] = useState(false);
 
   return (
@@ -16,6 +17,7 @@ const LoanApplication = () => {
       <div className="container">
         <div className="loan_application__wrapper">
           <LeftPanel />
+          <MobileLeftPanel setOpenMenu={setOpenMenu} openMenu={openMenu} />
 
           <div className="loan_application__main">
             <Top />
