@@ -127,5 +127,14 @@
   p {
     margin-top: 2px;
     font-weight: 300;
+
+    @media (max-width: 480px) {
+      margin-top: -5px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    gap: 20px;
+    align-items: start;
   }
 }
