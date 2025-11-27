@@ -1,14 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import style from "./credit.module.scss";
 import { ReactComponent as Minus } from "../../../../assets/icons/minus.svg";
 import { ReactComponent as Plus } from "../../../../assets/icons/plus.svg";
-import gosuslugi from "../../../../assets/gosuslugi.png";
 import DropdownSelector from "../../../../components/dropdown_selector/DropdownSelector";
 import { useOutsideClick } from "../../../../hooks/useOutsideClick";
-import { useNumberFormatter } from "../../../../hooks/useNumberFormatter";
 import { useDropdown } from "../../../../hooks/useDropdown";
 import { useSalaryValidation } from "../../../../hooks/useSalaryValidation";
-import Notification from "../../../../components/notification/Notification";
 
 const TERMS = [
   { value: 3, title: "3 месяца" },
@@ -42,9 +39,7 @@ const Credit = () => {
   const { openDropdown, toggleDropdown, closeDropdown, setOpenDropdown } =
     useDropdown();
   useOutsideClick([termRef, targetRef], closeDropdown);
-  const { formatNumber } = useNumberFormatter();
   const {
-    salaryRaw,
     salaryError,
     displaySalary,
     handleSalaryChange,
@@ -79,134 +74,130 @@ const Credit = () => {
 
   return (
     <section className={style.credit} id="credit">
-      <div className="container">
-        <div className={style.credit__wrapper}>
-          <h2 className={style.credit__title}>
-            Укажите сумму, срок и цель вашего кредита
-          </h2>
+      <div className={style.credit__wrapper}>
+        <h2 className={style.credit__title}>
+          Укажите сумму, срок и цель вашего кредита
+        </h2>
 
-          <div className={style.credit__main}>
-            <form
-              className={`credit__main__form ${style.credit__main__form__special}`}
+        <div className={style.credit__main}>
+          <form
+            className={`credit__main__form ${style.credit__main__form__special}`}
+          >
+            <div
+              className={`credit__main__form__elem ${style.credit__main__form__elem__con}`}
             >
-              <div
-                className={`credit__main__form__elem ${style.credit__main__form__elem__con}`}
-              >
-                <div className={style.credit__main__form__elem__con__first}>
-                  <div
-                    className={`credit__main__form__item ${style.credit__main__form__item__total__con}`}
+              <div className={style.credit__main__form__elem__con__first}>
+                <div
+                  className={`credit__main__form__item ${style.credit__main__form__item__total__con}`}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setValue((prev) => Math.max(0, prev - 1000))}
                   >
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setValue((prev) => Math.max(0, prev - 1000))
-                      }
-                    >
-                      <Minus />
-                    </button>
+                    <Minus />
+                  </button>
 
-                    <input
-                      className="credit__main__form__item__total"
-                      value={value === 0 ? "0" : value.toLocaleString()}
-                      onChange={handleTotalChange}
-                      onFocus={handleTotalFocus}
-                      onBlur={handleTotalBlur}
-                    />
+                  <input
+                    className="credit__main__form__item__total"
+                    value={value === 0 ? "0" : value.toLocaleString()}
+                    onChange={handleTotalChange}
+                    onFocus={handleTotalFocus}
+                    onBlur={handleTotalBlur}
+                  />
 
-                    <button
-                      type="button"
-                      onClick={() => setValue((prev) => prev + 1000)}
-                    >
-                      <Plus />
-                    </button>
-                  </div>
-
-                  <div className={style.credit__main__form__item__data__con}>
-                    <DropdownSelector
-                      ref={termRef}
-                      label="На срок"
-                      selected={selectedTerm}
-                      options={TERMS}
-                      isOpen={openDropdown}
-                      onToggle={() => toggleDropdown("term")}
-                      onSelect={(term) => {
-                        setSelectedTerm(term);
-                        setOpenDropdown(null);
-                      }}
-                      dropdownType="term"
-                      ariaLabel="Выбрать срок кредита"
-                    />
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setValue((prev) => prev + 1000)}
+                  >
+                    <Plus />
+                  </button>
                 </div>
 
-                <div
-                  className={`credit__main__form__item__special__con ${style.credit__main__form__item__special}`}
-                >
+                <div className={style.credit__main__form__item__data__con}>
                   <DropdownSelector
-                    ref={targetRef}
-                    label="Цель кредита"
-                    selected={selectedTarget}
-                    options={TARGETS}
+                    ref={termRef}
+                    label="На срок"
+                    selected={selectedTerm}
+                    options={TERMS}
                     isOpen={openDropdown}
-                    onToggle={() => toggleDropdown("target")}
-                    onSelect={(target) => {
-                      setSelectedTarget(target);
+                    onToggle={() => toggleDropdown("term")}
+                    onSelect={(term) => {
+                      setSelectedTerm(term);
                       setOpenDropdown(null);
                     }}
-                    dropdownType="target"
-                    ariaLabel="Выбрать цель кредита"
+                    dropdownType="term"
+                    ariaLabel="Выбрать срок кредита"
                   />
                 </div>
               </div>
 
-              <div className="credit__main__form__other">
-                <div
-                  className={`credit__main__form__cash ${
-                    salaryError && "error"
-                  } ${style.credit__main__form__cash__special}`}
-                >
-                  <div
-                    className={`credit__main__form__item__value ${style.credit__main__form__item__value__special}`}
-                  >
-                    <p>Размер заработной платы</p>
-                    <div
-                      className={`credit__main__form__item__input__container ${style.credit__main__form__item__input__container__speacial}`}
-                    >
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        placeholder="Например, 100 000 ₽"
-                        value={displaySalary}
-                        onChange={handleSalaryChange}
-                        onFocus={handleSalaryFocus}
-                        onBlur={handleSalaryBlur}
-                        className={`${style.salaryInput} ${
-                          salaryError ? style.inputError : ""
-                        }`}
-                      />
-                    </div>
+              <div
+                className={`credit__main__form__item__special__con ${style.credit__main__form__item__special}`}
+              >
+                <DropdownSelector
+                  ref={targetRef}
+                  label="Цель кредита"
+                  selected={selectedTarget}
+                  options={TARGETS}
+                  isOpen={openDropdown}
+                  onToggle={() => toggleDropdown("target")}
+                  onSelect={(target) => {
+                    setSelectedTarget(target);
+                    setOpenDropdown(null);
+                  }}
+                  dropdownType="target"
+                  ariaLabel="Выбрать цель кредита"
+                />
+              </div>
+            </div>
 
-                    {salaryError && (
-                      <p
-                        id="salary-error"
-                        className="credit__main__form__cash__error"
-                      >
-                        {salaryError}
-                      </p>
-                    )}
+            <div className="credit__main__form__other">
+              <div
+                className={`credit__main__form__cash ${
+                  salaryError && "error"
+                } ${style.credit__main__form__cash__special}`}
+              >
+                <div
+                  className={`credit__main__form__item__value ${style.credit__main__form__item__value__special}`}
+                >
+                  <p>Размер заработной платы</p>
+                  <div
+                    className={`credit__main__form__item__input__container ${style.credit__main__form__item__input__container__speacial}`}
+                  >
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="Например, 100 000 ₽"
+                      value={displaySalary}
+                      onChange={handleSalaryChange}
+                      onFocus={handleSalaryFocus}
+                      onBlur={handleSalaryBlur}
+                      className={`${style.salaryInput} ${
+                        salaryError ? style.inputError : ""
+                      }`}
+                    />
                   </div>
+
+                  {salaryError && (
+                    <p
+                      id="salary-error"
+                      className="credit__main__form__cash__error"
+                    >
+                      {salaryError}
+                    </p>
+                  )}
                 </div>
               </div>
-            </form>
-          </div>
+            </div>
+          </form>
+        </div>
 
-          <div className={style.credit__bottom}>
-            <button>Направить в банки</button>
-            <p>
-              Нажимая на кнопку «Направить в банки», вы соглашаетесь
-              с условиями политики конфиденциальностии
-            </p>
-          </div>
+        <div className={style.credit__bottom}>
+          <button>Направить в банки</button>
+          <p>
+            Нажимая на кнопку «Направить в банки», вы соглашаетесь
+            с условиями политики конфиденциальностии
+          </p>
         </div>
       </div>
     </section>
