@@ -1,5 +1,9 @@
 .real_address {
   margin-top: 25px;
+
+  @media (max-width: 480px) {
+    margin-top: 15px;
+  }
 }
 
 .real_address__wrapper {

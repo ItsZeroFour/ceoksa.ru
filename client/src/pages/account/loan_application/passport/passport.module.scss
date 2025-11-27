@@ -1,5 +1,9 @@
 .passport {
   margin-top: 25px;
+
+  @media (max-width: 480px) {
+    margin-top: 15px;
+  }
 }
 
 .passport__wrapper {
