@@ -1,19 +1,27 @@
 import React from "react";
 import style from "./header.module.scss";
 import logo from "../../assets/logo.svg";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import business from "../../assets/icons/business.svg";
 import signin from "../../assets/icons/signin.svg";
 import { useNavigate } from "react-router-dom";
 
-const Header = () => {
+const Header = ({ setOpenMenu, openMenu }) => {
   const navigation = useNavigate();
+  const location = useLocation();
 
   return (
     <header className={style.header}>
       <div className="container">
         <div className={style.header__wrapper}>
           <div className={style.header__logo}>
+            {location.pathname !== "/" && (
+              <button
+                className={style.header__menu}
+                onClick={() => setOpenMenu(!openMenu)}
+              ></button>
+            )}
+
             <Link to="/">
               <img src={logo} alt="лого" />
             </Link>

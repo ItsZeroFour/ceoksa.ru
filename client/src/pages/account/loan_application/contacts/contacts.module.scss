@@ -10,6 +10,10 @@
   h2 {
     font-weight: 600;
     font-family: "Inter", sans-serif;
+
+    @media (max-width: 480px) {
+      font-size: 19px;
+    }
   }
 
   ul {
@@ -25,13 +29,27 @@
       width: 100%;
       background: var(--color-white);
       border-radius: 14px;
+
+      @media (max-width: 480px) {
+        padding: 14px;
+      }
     }
+
+    @media (max-width: 780px) {
+      flex-direction: column;
+    }
+  }
+
+  @media (max-width: 550px) {
+    padding: 18px;
   }
 }
 
 .contacts__item__icon {
   width: 52px;
   height: 52px;
+
+  flex-shrink: 0;
 
   background: var(--color-gray-light);
   border-radius: 12px;
@@ -60,6 +78,10 @@
 
     &:last-child {
       font-weight: 600;
+
+      @media (max-width: 480px) {
+        font-size: 14px;
+      }
     }
   }
 }
@@ -91,6 +113,12 @@
       font-family: "Inter", sans-serif;
       color: var(--color-black);
       opacity: 0.6;
+    }
+
+    @media (max-width: 480px) {
+      &::placeholder {
+        font-size: 13px;
+      }
     }
   }
 

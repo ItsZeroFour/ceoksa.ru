@@ -81,65 +81,62 @@ const Credit = () => {
     <section className={style.credit} id="credit">
       <div className="container">
         <div className={style.credit__wrapper}>
-          <h2 className={style.credit__title}>Подберём кредит</h2>
-          <p className={style.credit__desc}>
-            Сравните условия в разных банках и решите, где лучше взять кредит
-            онлайн в 2026 году. Заполните анкету, чтобы узнать, в каких банках
-            одобрят кредит
-          </p>
+          <h2 className={style.credit__title}>
+            Укажите сумму, срок и цель вашего кредита
+          </h2>
 
           <div className={style.credit__main}>
-            <h3 className={style.credit__main__title}>
-              Подберём банки, которые готовы выдать вам кредит
-            </h3>
-
             <form
               className={`credit__main__form ${style.credit__main__form__special}`}
             >
               <div
                 className={`credit__main__form__elem ${style.credit__main__form__elem__con}`}
               >
-                <div
-                  className={`credit__main__form__item ${style.credit__main__form__item__total__con}`}
-                >
-                  <button
-                    type="button"
-                    onClick={() => setValue((prev) => Math.max(0, prev - 1000))}
+                <div className={style.credit__main__form__elem__con__first}>
+                  <div
+                    className={`credit__main__form__item ${style.credit__main__form__item__total__con}`}
                   >
-                    <Minus />
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setValue((prev) => Math.max(0, prev - 1000))
+                      }
+                    >
+                      <Minus />
+                    </button>
 
-                  <input
-                    className="credit__main__form__item__total"
-                    value={value === 0 ? "0" : value.toLocaleString()}
-                    onChange={handleTotalChange}
-                    onFocus={handleTotalFocus}
-                    onBlur={handleTotalBlur}
-                  />
+                    <input
+                      className="credit__main__form__item__total"
+                      value={value === 0 ? "0" : value.toLocaleString()}
+                      onChange={handleTotalChange}
+                      onFocus={handleTotalFocus}
+                      onBlur={handleTotalBlur}
+                    />
 
-                  <button
-                    type="button"
-                    onClick={() => setValue((prev) => prev + 1000)}
-                  >
-                    <Plus />
-                  </button>
-                </div>
+                    <button
+                      type="button"
+                      onClick={() => setValue((prev) => prev + 1000)}
+                    >
+                      <Plus />
+                    </button>
+                  </div>
 
-                <div className={style.credit__main__form__item__data__con}>
-                  <DropdownSelector
-                    ref={termRef}
-                    label="На срок"
-                    selected={selectedTerm}
-                    options={TERMS}
-                    isOpen={openDropdown}
-                    onToggle={() => toggleDropdown("term")}
-                    onSelect={(term) => {
-                      setSelectedTerm(term);
-                      setOpenDropdown(null);
-                    }}
-                    dropdownType="term"
-                    ariaLabel="Выбрать срок кредита"
-                  />
+                  <div className={style.credit__main__form__item__data__con}>
+                    <DropdownSelector
+                      ref={termRef}
+                      label="На срок"
+                      selected={selectedTerm}
+                      options={TERMS}
+                      isOpen={openDropdown}
+                      onToggle={() => toggleDropdown("term")}
+                      onSelect={(term) => {
+                        setSelectedTerm(term);
+                        setOpenDropdown(null);
+                      }}
+                      dropdownType="term"
+                      ariaLabel="Выбрать срок кредита"
+                    />
+                  </div>
                 </div>
 
                 <div

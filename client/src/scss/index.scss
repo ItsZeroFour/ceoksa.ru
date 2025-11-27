@@ -116,6 +116,10 @@ button {
 .loan_application__wrapper {
   display: flex;
   gap: 30px;
+
+  @media (max-width: 1200px) {
+    gap: 0;
+  }
 }
 
 .loan_application__main {
@@ -173,18 +177,20 @@ button {
 
       padding-right: 16px;
 
-      @media (max-width: 480px) {
+      @media (max-width: 550px) {
         border-radius: 16px;
         padding: 20px 15px;
       }
     }
 
     &:last-child {
-      border-bottom-left-radius: 0 !important;
-      border-top-left-radius: 0 !important;
+      border-bottom-left-radius: 0;
+      border-top-left-radius: 0;
       border-bottom-right-radius: 16px;
       border-top-right-radius: 16px;
       padding-left: 16px;
+
+      padding: 15px;
 
       justify-content: space-between;
 
@@ -241,14 +247,14 @@ button {
 
         background: var(--color-gray-third);
 
-        @media (max-width: 480px) {
+        @media (max-width: 550px) {
           display: none;
         }
       }
 
-      @media (max-width: 480px) {
-        border-top-left-radius: 16px !important;
-        border-top-right-radius: 16px !important;
+      @media (max-width: 550px) {
+        border-bottom-left-radius: 16px;
+        border-top-left-radius: 16px;
       }
     }
 
@@ -257,7 +263,7 @@ button {
     }
   }
 
-  @media (max-width: 480px) {
+  @media (max-width: 550px) {
     flex-direction: column;
     gap: 10px;
   }
@@ -402,7 +408,7 @@ button {
 .credit__main__form__item__special__con {
   .credit__main__form__item {
     &:last-child {
-      border-radius: 16px !important;
+      border-radius: 16px;
     }
 
     &::before {
@@ -427,7 +433,7 @@ button {
       width: 100%;
     }
 
-    @media (max-width: 480px) {
+    @media (max-width: 550px) {
       width: 100%;
     }
   }

@@ -1,12 +1,15 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import LoanApplication from "./pages/account/loan_application/LoanApplication";
+import useDisableScroll from "./hooks/useDisableScroll";
 
 const Header = lazy(() => import("./components/header/Header"));
 const Main = lazy(() => import("./pages/main/Main"));
 const Footer = lazy(() => import("./components/footer/Footer"));
 
 function App() {
+  const [openMenu, setOpenMenu] = useState(false);
+
   const scrollToBlock = (id) => {
     const element = document.getElementById(id);
     if (element) {
@@ -14,11 +17,13 @@ function App() {
     }
   };
 
+  useDisableScroll(openMenu);
+
   return (
     <div className="App">
       <Suspense>
         <div className="wrapper">
-          <Header />
+          <Header setOpenMenu={setOpenMenu} openMenu={openMenu} />
 
           <main>
             <Routes>
@@ -28,7 +33,12 @@ function App() {
               />
               <Route
                 path="/account/loan_applications"
-                element={<LoanApplication />}
+                element={
+                  <LoanApplication
+                    setOpenMenu={setOpenMenu}
+                    openMenu={openMenu}
+                  />
+                }
               />
             </Routes>
           </main>

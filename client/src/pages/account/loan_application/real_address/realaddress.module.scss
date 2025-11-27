@@ -10,12 +10,22 @@
   h2 {
     font-weight: 600;
     font-family: "Inter", sans-serif;
+
+    @media (max-width: 480px) {
+      font-size: 19px;
+    }
+  }
+
+  @media (max-width: 550px) {
+    padding: 18px;
   }
 }
 
 .real_address__item__icon {
   width: 52px;
   height: 52px;
+
+  flex-shrink: 0;
 
   background: var(--color-gray-light);
   border-radius: 12px;
@@ -76,6 +86,19 @@
         font-weight: 300;
       }
     }
+
+    @media (max-width: 780px) {
+      flex-direction: column;
+      width: 50%;
+    }
+  }
+
+  @media (max-width: 780px) {
+    align-items: start;
+  }
+
+  @media (max-width: 480px) {
+    padding: 14px;
   }
 }
 
@@ -95,4 +118,10 @@
 
 .real_address__form__item input {
   width: 100%;
+
+  @media (max-width: 480px) {
+    &::placeholder {
+      font-size: 13px;
+    }
+  }
 }
