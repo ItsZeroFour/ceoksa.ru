@@ -438,3 +438,33 @@ button {
     }
   }
 }
+
+.credits__main__nav {
+  background: var(--color-gray-secondary);
+  padding: 2px;
+  width: 385px;
+  border-radius: 8px;
+  margin-top: 30px;
+
+  button {
+    width: 50%;
+    padding: 10px;
+    border-radius: 7px;
+    background: none;
+  }
+
+  button.active {
+    background: var(--color-white);
+    box-shadow: 0px 0px 5px rgba(0, 0, 32, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.039);
+  }
+}
+
+.credits__wrapper {
+  display: flex;
+  gap: 30px;
+}
+
+.credits__main {
+  width: 100%;
+}

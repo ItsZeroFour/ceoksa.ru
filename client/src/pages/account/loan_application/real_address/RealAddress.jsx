@@ -2,8 +2,20 @@ import React from "react";
 import style from "./realaddress.module.scss";
 import { ReactComponent as Location } from "../../../../assets/icons/account/location.svg";
 import { ReactComponent as Edit } from "../../../../assets/icons/account/edit.svg";
+import { useValidation } from "../../../../hooks/useValidation";
 
 const RealAddress = () => {
+  const { getFieldProps, hasError, errors } = useValidation(
+    { city: "", home: "" },
+    {
+      city: [
+        (v) => (!v ? "Поле обязательно" : ""),
+        (v) => (v.length < 3 ? "Минимум 3 символа" : ""),
+      ],
+      home: [(v) => (!v ? "Поле обязательно" : "")],
+    }
+  );
+
   return (
     <div className={style.real_address}>
       <div className={style.real_address__wrapper}>
@@ -15,24 +27,44 @@ const RealAddress = () => {
           </div>
 
           <form>
-            <div className={style.real_address__form__item}>
+            <div
+              className={
+                hasError("city")
+                  ? `${style.real_address__form__item} ${style.error}`
+                  : style.real_address__form__item
+              }
+            >
               <label htmlFor="city">Населённый пункт, улица, дом</label>
               <input
                 type="text"
                 id="city"
                 placeholder="Необходимо указать Населённый пункт, улицу, дом"
+                {...getFieldProps("city")}
               />
               <Edit />
+              {hasError("city") && (
+                <span className={style.error_text}>{errors.city}</span>
+              )}
             </div>
 
-            <div className={style.real_address__form__item}>
+            <div
+              className={
+                hasError("home")
+                  ? `${style.real_address__form__item} ${style.error}`
+                  : style.real_address__form__item
+              }
+            >
               <label htmlFor="home">Квартира</label>
               <input
                 type="text"
                 id="home"
                 placeholder="Необходимо указать номер"
+                {...getFieldProps("home")}
               />
               <Edit />
+              {hasError("home") && (
+                <span className={style.error_text}>{errors.home}</span>
+              )}
             </div>
           </form>
         </div>

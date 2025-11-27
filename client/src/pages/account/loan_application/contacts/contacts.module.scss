@@ -29,7 +29,7 @@
       display: flex;
       align-items: center;
       gap: 15px;
-      padding: 20px;
+      padding: 16px;
       width: 100%;
       background: var(--color-white);
       border-radius: 14px;
@@ -130,5 +130,37 @@
     font-size: 13px;
     opacity: 0.6;
     font-weight: 300;
+  }
+}
+
+.contacts__wrapper > ul > li {
+  // padding: 5px 10px;
+  border-radius: 14px;
+  border: 1px solid var(--color-white);
+}
+
+.contacts__wrapper > ul > li > .contacts__form__item {
+  border-radius: 14px;
+  padding: 5px 10px;
+  border: 1px solid var(--color-white);
+}
+
+.contacts__wrapper > ul > li > .contacts__form__item.error {
+  border: 1px solid var(--color-red);
+  position: relative;
+  border-radius: 14px;
+  padding: 5px 10px;
+
+  .error_text {
+    position: absolute;
+    top: 105%;
+    font-size: 12px;
+    color: var(--color-red);
+  }
+
+  &:last-child {
+    svg {
+      left: 93%;
+    }
   }
 }

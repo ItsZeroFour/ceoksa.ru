@@ -129,7 +129,7 @@ const MobileLeftPanel = ({ setOpenMenu, openMenu }) => {
                             className={isActive(item.path) ? style.active : ""}
                           >
                             <Link
-                              to={item.path}
+                              to={`/account${item.path}`}
                               onClick={() => setOpenMenu(false)}
                             >
                               {item.icon}
@@ -181,7 +181,7 @@ const MobileLeftPanel = ({ setOpenMenu, openMenu }) => {
                             className={isActive(item.path) ? style.active : ""}
                           >
                             <Link
-                              to={item.path}
+                              to={`/account${item.path}`}
                               onClick={() => setOpenMenu(false)}
                             >
                               {item.icon}

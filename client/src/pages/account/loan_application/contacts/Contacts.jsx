@@ -3,8 +3,21 @@ import style from "./contacts.module.scss";
 import { ReactComponent as Phone } from "../../../../assets/icons/account/phone.svg";
 import { ReactComponent as Mail } from "../../../../assets/icons/account/mail.svg";
 import { ReactComponent as Edit } from "../../../../assets/icons/account/edit.svg";
+import { useValidation } from "../../../../hooks/useValidation";
 
 const Contacts = () => {
+  const { getFieldProps, hasError, errors } = useValidation(
+    { mail: "" },
+    {
+      mail: [
+        (v) =>
+          v && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(v)
+            ? "Некорректный email"
+            : "",
+      ],
+    }
+  );
+
   return (
     <section className={style.contacts}>
       <div className={style.contacts__wrapper}>
@@ -27,14 +40,24 @@ const Contacts = () => {
               <Mail />
             </div>
 
-            <div className={style.contacts__form__item}>
+            <div
+              className={
+                hasError("mail")
+                  ? `${style.contacts__form__item} ${style.error}`
+                  : style.contacts__form__item
+              }
+            >
               <label htmlFor="mail">Электронная почта</label>
               <input
                 type="email"
                 id="mail"
                 placeholder="Необходимо указать электронную почту"
+                {...getFieldProps("mail")}
               />
               <Edit />
+              {hasError("mail") && (
+                <span className={style.error_text}>{errors.mail}</span>
+              )}
             </div>
           </li>
         </ul>

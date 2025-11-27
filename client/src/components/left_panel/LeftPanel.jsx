@@ -68,7 +68,7 @@ const LeftPanel = () => {
                     transition={{ duration: 0.3, delay: 0.1 + index * 0.05 }}
                     className={isActive(item.path) ? style.active : ""}
                   >
-                    <Link to={item.path}>
+                    <Link to={`/account${item.path}`}>
                       {item.icon}
                       <p>{item.text}</p>
                     </Link>
@@ -110,7 +110,7 @@ const LeftPanel = () => {
                     transition={{ duration: 0.3, delay: 0.1 + index * 0.05 }}
                     className={isActive(item.path) ? style.active : ""}
                   >
-                    <Link to={item.path}>
+                    <Link to={`/account${item.path}`}>
                       {item.icon}
                       <p>{item.text}</p>
                     </Link>
