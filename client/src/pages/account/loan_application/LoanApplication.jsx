@@ -9,7 +9,7 @@ import Contacts from "./contacts/Contacts";
 import Credit from "./credit/Credit";
 
 const LoanApplication = () => {
-  const [isChecked, setIsChecked] = useState(false);
+  const [isChecked, setIsChecked] = useState(true);
 
   return (
     <div className="loan_application">
