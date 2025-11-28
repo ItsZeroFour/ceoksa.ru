@@ -10,7 +10,7 @@ import Credit from "./credit/Credit";
 import MobileLeftPanel from "../../../components/mobile_left_panel/MobileLeftPanel";
 
 const LoanApplication = ({ setOpenMenu, openMenu }) => {
-  const [isChecked, setIsChecked] = useState(false);
+  const [isChecked, setIsChecked] = useState(true);
 
   return (
     <div className="loan_application">

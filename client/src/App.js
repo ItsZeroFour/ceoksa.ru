@@ -2,6 +2,7 @@ import { lazy, Suspense, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import LoanApplication from "./pages/account/loan_application/LoanApplication";
 import useDisableScroll from "./hooks/useDisableScroll";
+import Credits from "./pages/account/credits/Credits";
 
 const Header = lazy(() => import("./components/header/Header"));
 const Main = lazy(() => import("./pages/main/Main"));
@@ -38,6 +39,12 @@ function App() {
                     setOpenMenu={setOpenMenu}
                     openMenu={openMenu}
                   />
+                }
+              />
+              <Route
+                path="/account/credits"
+                element={
+                  <Credits setOpenMenu={setOpenMenu} openMenu={openMenu} />
                 }
               />
             </Routes>

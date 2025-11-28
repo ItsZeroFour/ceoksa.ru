@@ -1,5 +1,9 @@
 .real_address {
   margin-top: 25px;
+
+  @media (max-width: 480px) {
+    margin-top: 15px;
+  }
 }
 
 .real_address__wrapper {
@@ -122,6 +126,30 @@
   @media (max-width: 480px) {
     &::placeholder {
       font-size: 13px;
+    }
+  }
+}
+
+.real_address__form__item {
+  padding: 5px 10px;
+  border-radius: 14px;
+  border: 1px solid var(--color-white);
+}
+
+.real_address__form__item.error {
+  border: 1px solid var(--color-red);
+  position: relative;
+
+  .error_text {
+    position: absolute;
+    top: 105%;
+    font-size: 12px;
+    color: var(--color-red);
+  }
+
+  &:last-child {
+    svg {
+      left: 93%;
     }
   }
 }
