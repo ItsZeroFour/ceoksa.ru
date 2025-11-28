@@ -462,6 +462,14 @@ button {
     box-shadow: 0px 0px 5px rgba(0, 0, 32, 0.15);
     border: 1px solid rgba(0, 0, 0, 0.039);
   }
+
+  @media (max-width: 425px) {
+    width: 340px;
+  }
+
+  @media (max-width: 365px) {
+    width: 320px;
+  }
 }
 
 .credits__wrapper {
