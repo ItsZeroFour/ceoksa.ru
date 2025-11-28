@@ -13,6 +13,10 @@
   background: var(--color-gray-secondary);
   border-radius: 20px;
   padding: 35px;
+
+  @media (max-width: 480px) {
+    padding: 20px;
+  }
 }
 
 .active__top__filter {
@@ -42,6 +46,11 @@
         font-size: 15px;
       }
     }
+
+    @media (max-width: 760px) {
+      width: 360px;
+      right: 0%;
+    }
   }
 }
 
@@ -53,12 +62,30 @@
   background: var(--color-white);
   border-radius: 8px;
   padding: 10px 15px;
+
+  @media (max-width: 760px) {
+    width: 100%;
+  }
 }
 
 .active__top__filer__main__type {
   display: flex;
   align-items: center;
   gap: 10px;
+
+  @media (max-width: 760px) {
+    p {
+      display: none;
+    }
+  }
+}
+
+.active__filter__icon {
+  @media (max-width: 760px) {
+    svg {
+      display: none;
+    }
+  }
 }
 
 // List of items
@@ -110,6 +137,14 @@
       text-wrap: nowrap;
 
       background: var(--color-black);
+
+      @media (max-width: 860px) {
+        font-size: 14px;
+      }
+
+      @media (max-width: 480px) {
+        top: -27px;
+      }
     }
   }
 
@@ -134,12 +169,20 @@
           font-size: 14px;
           opacity: 0.6;
           font-weight: 300;
+
+          @media (max-width: 860px) {
+            font-size: 13px;
+          }
         }
 
         &:last-child {
           font-size: 20px;
           font-weight: 500;
           font-family: "Rubik", sans-serif;
+
+          @media (max-width: 860px) {
+            font-size: 16px;
+          }
         }
       }
     }
@@ -163,6 +206,10 @@
           font-size: 14px;
           font-weight: 300;
           opacity: 0.6;
+
+          @media (max-width: 860px) {
+            font-size: 13px;
+          }
         }
 
         &:last-child {
@@ -170,8 +217,16 @@
           font-size: 20px;
           font-family: "Rubik", sans-serif;
           margin-top: 5px;
+
+          @media (max-width: 860px) {
+            font-size: 16px;
+          }
         }
       }
+    }
+
+    @media (max-width: 860px) {
+      flex-direction: column;
     }
   }
 
@@ -201,6 +256,14 @@
         background: var(--color-blue);
         color: var(--color-white);
       }
+
+      @media (max-width: 860px) {
+        font-size: 14px;
+      }
     }
+  }
+
+  @media (max-width: 480px) {
+    padding: 15px;
   }
 }

@@ -53,6 +53,10 @@ img {
   min-height: 100dvh;
 }
 
+.header__container {
+  margin-bottom: 100px;
+}
+
 footer {
   margin-top: auto;
 }
@@ -463,6 +467,10 @@ button {
 .credits__wrapper {
   display: flex;
   gap: 30px;
+
+  @media (max-width: 1200px) {
+    gap: 0;
+  }
 }
 
 .credits__main {

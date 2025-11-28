@@ -7,10 +7,8 @@ import { ReactComponent as Info } from "../../../../assets/icons/info-2.svg";
 import tbank from "../../../../assets/icons/tbank.png";
 import vtb from "../../../../assets/icons/vtb.png";
 import sber from "../../../../assets/icons/sber.svg";
-import {
-  filterVariants,
-  itemVariants,
-} from "../../../../animations/account-active";
+import { filterVariants } from "../../../../animations/account-active";
+import { Badge } from "../../../../components/badge/Badge";
 
 const Active = () => {
   const [openFilter, setOpenFilter] = useState(false);
@@ -131,6 +129,7 @@ const Active = () => {
               </div>
 
               <motion.div
+                className={style.active__filter__icon}
                 animate={{ rotate: openFilter ? 180 : 0 }}
                 transition={{ duration: 0.25 }}
               >
@@ -230,13 +229,7 @@ const Active = () => {
               >
                 <div className={style.active__item__badges}>
                   {item.badges.map((badge, i) => (
-                    <div
-                      key={i}
-                      className={style.active__item__badge}
-                      style={badge.style}
-                    >
-                      <p>{badge.text}</p>
-                    </div>
+                    <Badge key={i} text={badge.text} style={badge.style} />
                   ))}
                 </div>
 

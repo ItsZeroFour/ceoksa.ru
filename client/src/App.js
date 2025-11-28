@@ -24,7 +24,9 @@ function App() {
     <div className="App">
       <Suspense>
         <div className="wrapper">
-          <Header setOpenMenu={setOpenMenu} openMenu={openMenu} />
+          <div className="header__container">
+            <Header setOpenMenu={setOpenMenu} openMenu={openMenu} />
+          </div>
 
           <main>
             <Routes>
