@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import LoanApplication from "./pages/account/loan_application/LoanApplication";
 import useDisableScroll from "./hooks/useDisableScroll";
 import Credits from "./pages/account/credits/Credits";
+import Rating from "./pages/account/rating/Rating";
 
 const Header = lazy(() => import("./components/header/Header"));
 const Main = lazy(() => import("./pages/main/Main"));
@@ -47,6 +48,12 @@ function App() {
                 path="/account/credits"
                 element={
                   <Credits setOpenMenu={setOpenMenu} openMenu={openMenu} />
+                }
+              />
+              <Route
+                path="/account/rating"
+                element={
+                  <Rating setOpenMenu={setOpenMenu} openMenu={openMenu} />
                 }
               />
             </Routes>

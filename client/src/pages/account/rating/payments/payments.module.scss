@@ -1,0 +1,155 @@
+.payments {
+  margin-top: 50px;
+
+  @media (max-width: 480px) {
+    margin-top: 40px;
+  }
+}
+
+.payments__top {
+  display: flex;
+  gap: 17px;
+  width: 100%;
+
+  @media (max-width: 920px) {
+    flex-direction: column;
+  }
+}
+
+.payments__top__item {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  background: var(--color-gray-secondary);
+  padding: 20px;
+  border-radius: 16px;
+  width: 100%;
+
+  h4 {
+    font-size: 18px;
+    font-weight: 500;
+    font-family: "Rubik", sans-serif;
+  }
+
+  .payments__top__item__status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    // margin-top: 20px;
+
+    & > p {
+      opacity: 0.6;
+    }
+
+    .payments__top__item__status__status {
+      padding: 5px 12px;
+      color: var(--color-white);
+      border-radius: 60px;
+    }
+  }
+
+  .payments__top__item__text {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .payments__top__item__text__pay {
+      padding: 5px 12px;
+      background: var(--color-white);
+      border-radius: 60px;
+
+      p {
+        font-size: 15px;
+        font-weight: 500;
+      }
+    }
+
+    @media (max-width: 520px) {
+      flex-direction: column;
+      justify-content: start;
+      align-items: start;
+      gap: 10px;
+    }
+  }
+
+  .payments__top__item__description {
+    margin-top: 15px;
+    opacity: 0.6;
+    font-weight: 300;
+
+    @media (max-width: 520px) {
+      margin-top: 0;
+    }
+  }
+}
+
+.payments__bottom {
+  padding: 20px;
+  background: var(--color-gray-secondary);
+  margin-top: 17px;
+  border-radius: 16px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  button {
+    padding: 14px 59px;
+    background: var(--color-white);
+    border-radius: 14px;
+    font-weight: 600;
+
+    border: 2px solid var(--color-white);
+
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      opacity: 0.8;
+      border: 2px solid var(--color-gray-third);
+    }
+
+    @media (max-width: 768px) {
+      width: 100%;
+    }
+
+    @media (max-width: 480px) {
+      padding: 14px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+    gap: 15px;
+  }
+}
+
+.payments__bottom__salary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  h4 {
+    font-weight: 500;
+    font-size: 18px;
+  }
+
+  .payments__bottom__salary__salary {
+    padding: 5px 12px;
+    background: var(--color-blue);
+    border-radius: 60px;
+    color: var(--color-white);
+  }
+}
+
+.payments__bottom__left {
+  & > p {
+    margin-top: 15px;
+    font-size: 14px;
+    font-weight: 300;
+    opacity: 0.6;
+  }
+}

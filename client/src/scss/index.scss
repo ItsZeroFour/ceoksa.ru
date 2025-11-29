@@ -472,7 +472,8 @@ button {
   }
 }
 
-.credits__wrapper {
+.credits__wrapper,
+.rating__wrapper {
   display: flex;
   gap: 30px;
 
@@ -481,6 +482,17 @@ button {
   }
 }
 
-.credits__main {
+.credits__main,
+.rating__main {
   width: 100%;
+}
+
+.circle-progress {
+  width: 200px;
+  height: 200px;
+
+  @media (max-width: 768px) {
+    width: 250px;
+    height: 250px;
+  }
 }

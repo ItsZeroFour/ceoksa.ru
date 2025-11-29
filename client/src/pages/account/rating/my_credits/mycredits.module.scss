@@ -1,0 +1,62 @@
+.my_credits__wrapper {
+  padding: 35px;
+  margin-top: 50px;
+  background: var(--color-gray-secondary);
+  border-radius: 20px;
+
+  h3 {
+    font-size: 26px;
+    font-weight: 500;
+  }
+
+  ul {
+    margin-top: 20px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    li {
+      padding: 20px;
+      border-radius: 16px;
+
+      background: var(--color-white);
+
+      display: flex;
+      gap: 20px;
+
+      .my_credits__item__info {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+
+        p {
+          &:first-child {
+            font-weight: 500;
+          }
+
+          &:last-child {
+            font-weight: 300;
+            font-size: 14px;
+            opacity: 0.6;
+          }
+        }
+      }
+
+      .my_credits__item__icon {
+        border-radius: 12px;
+        padding: 14px;
+        background: var(--color-gray-light);
+
+        svg {
+          color: var(--color-blue-secondary);
+        }
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 20px;
+    margin-top: 40px;
+  }
+}
