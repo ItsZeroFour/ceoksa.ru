@@ -1,9 +1,83 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import style from "./payments.module.scss";
 import ProgressBar from "../../../../components/progress_bar/ProgressBar";
+import { useSalaryValidation } from "../../../../hooks/useSalaryValidation";
+import Notification from "../../../../components/notification/Notification";
+
+const SalaryModal = ({ setOpenModal }) => {
+  const {
+    salaryError,
+    displaySalary,
+    handleSalaryChange,
+    handleSalaryFocus,
+    handleSalaryBlur,
+  } = useSalaryValidation();
+
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
+      setOpenModal(false);
+    }
+  };
+
+  return (
+    <motion.div
+      className={style.modal}
+      onClick={handleOverlayClick}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <motion.div
+        className={style.modal__wrapper}
+        initial={{ scale: 0.95, opacity: 0, y: "20px" }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.95, opacity: 0, y: "20px" }}
+        transition={{ type: "spring", damping: 20, stiffness: 300 }}
+      >
+        <button
+          className={style.modal__close}
+          onClick={() => setOpenModal(false)}
+        />
+
+        <h3>Ваш доход в месяц</h3>
+        <p>
+          Укажите ваш официальный доход. Это поможет точнее рассчитать ваш
+          рейтинг и кредитную нагрузку
+        </p>
+
+        <form>
+          <div
+            className={`${style.modal__input} ${
+              salaryError ? style.error : ""
+            }`}
+          >
+            <label htmlFor="salary">Размер заработной платы</label>
+            <input
+              id="salary"
+              type="text"
+              inputMode="numeric"
+              placeholder="Например, 100 000 ₽"
+              value={displaySalary}
+              onChange={handleSalaryChange}
+              onFocus={handleSalaryFocus}
+              onBlur={handleSalaryBlur}
+            />
+          </div>
+
+          <button>Сохранить</button>
+        </form>
+
+        <Notification text="Мы не передаём данные в другие организации — используем их только в нашем сервисе для точных расчётов" />
+      </motion.div>
+    </motion.div>
+  );
+};
 
 const Payments = () => {
+  const [openModal, setOpenModal] = useState(false);
+
   return (
     <motion.div
       className={style.payments}
@@ -11,6 +85,12 @@ const Payments = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
+      <AnimatePresence>
+        {openModal && (
+          <SalaryModal key="salary-modal" setOpenModal={setOpenModal} />
+        )}
+      </AnimatePresence>
+
       <div className={style.payments__wrapper}>
         <motion.div
           className={style.payments__top}
@@ -146,6 +226,7 @@ const Payments = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.4 }}
+            onClick={() => setOpenModal(true)}
           >
             Изменить данные о доходе
           </motion.button>

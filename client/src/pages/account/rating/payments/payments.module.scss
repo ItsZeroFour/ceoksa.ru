@@ -153,3 +153,138 @@
     opacity: 0.6;
   }
 }
+
+.modal {
+  position: fixed;
+  z-index: 999;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  left: 0;
+  top: 0;
+
+  background: rgba(0, 0, 0, 0.5);
+  width: 100dvw;
+  height: 100vh;
+}
+
+.modal__wrapper {
+  width: 720px;
+  background: var(--color-white);
+  border-radius: 16px;
+  padding: 35px;
+
+  position: relative;
+
+  h3 {
+    font-size: 26px;
+    font-weight: 500;
+
+    @media (max-width: 480px) {
+      font-size: 18px;
+    }
+  }
+
+  & > p {
+    font-weight: 300;
+    opacity: 0.6;
+    margin-top: 15px;
+
+    @media (max-width: 480px) {
+      font-size: 14px;
+    }
+  }
+
+  form {
+    margin-top: 20px;
+    display: flex;
+    width: 100%;
+    gap: 10px;
+
+    .modal__input {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+
+      padding: 10px 15px;
+      background: var(--color-gray-secondary);
+      border-radius: 16px;
+
+      label {
+        font-size: 13px;
+        font-weight: 300;
+        opacity: 0.6;
+      }
+
+      input {
+        font-size: 16px;
+        margin-top: 5px;
+        font-weight: 500;
+        font-family: "Inter", sans-serif;
+        background: none;
+
+        &::placeholder {
+          font-weight: 500;
+          font-family: "Inter", sans-serif;
+        }
+      }
+    }
+
+    button {
+      width: 100%;
+      border-radius: 16px;
+      padding: 20px;
+      background: var(--color-blue);
+      color: var(--color-white);
+    }
+
+    @media (max-width: 600px) {
+      flex-direction: column;
+    }
+  }
+
+  @media (max-width: 768px) {
+    width: 95%;
+  }
+}
+
+.modal__close {
+  position: absolute;
+
+  width: 22px;
+  height: 22px;
+
+  background: none;
+
+  right: 5%;
+  top: 5%;
+
+  &::before {
+    content: "";
+    position: absolute;
+
+    top: 0;
+    transform: rotate(45deg);
+
+    width: 2px;
+    height: 100%;
+
+    background: var(--color-dark-gray);
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+
+    top: 0;
+    transform: rotate(-45deg);
+
+    width: 2px;
+    height: 100%;
+
+    background: var(--color-dark-gray);
+  }
+}

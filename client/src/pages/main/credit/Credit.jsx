@@ -42,9 +42,7 @@ const Credit = () => {
   const { openDropdown, toggleDropdown, closeDropdown, setOpenDropdown } =
     useDropdown();
   useOutsideClick([termRef, targetRef], closeDropdown);
-  const { formatNumber } = useNumberFormatter();
   const {
-    salaryRaw,
     salaryError,
     displaySalary,
     handleSalaryChange,
