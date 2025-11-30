@@ -2,8 +2,16 @@ import React from "react";
 import style from "./rekvisits.module.scss";
 import { ReactComponent as Card } from "../../../../assets/icons/profile/card.svg";
 import { ReactComponent as Edit } from "../../../../assets/icons/account/edit.svg";
+import { useScreenWidth } from "../../../../hooks/useScreenWidth";
 
 const Rekvisits = () => {
+  const screenWidth = useScreenWidth();
+
+  const placeholder =
+    screenWidth < 780
+      ? "Укажите реквизиты"
+      : "Необходимо указать реквизиты для перевода";
+
   return (
     <div className={style.rekvisits}>
       <div className={style.rekvisits__wrapper}>
@@ -18,11 +26,7 @@ const Rekvisits = () => {
 
               <div className={style.rekvisits__form__item}>
                 <label htmlFor="address">Банк ВТБ (ПАО)</label>
-                <input
-                  type="text"
-                  id="address"
-                  placeholder="Необходимо указать реквизиты для перевода"
-                />
+                <input type="text" id="address" placeholder={placeholder} />
                 <Edit />
               </div>
             </div>

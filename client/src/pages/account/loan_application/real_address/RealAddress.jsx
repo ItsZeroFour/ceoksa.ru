@@ -3,6 +3,7 @@ import style from "./realaddress.module.scss";
 import { ReactComponent as Location } from "../../../../assets/icons/account/location.svg";
 import { ReactComponent as Edit } from "../../../../assets/icons/account/edit.svg";
 import { useValidation } from "../../../../hooks/useValidation";
+import { useScreenWidth } from "../../../../hooks/useScreenWidth";
 
 const RealAddress = () => {
   const { getFieldProps, hasError, errors } = useValidation(
@@ -15,6 +16,18 @@ const RealAddress = () => {
       home: [(v) => (!v ? "Поле обязательно" : "")],
     }
   );
+
+  const screenWidth = useScreenWidth();
+
+  const cityPlaceholder =
+    screenWidth < 780
+      ? "Нас. пункт, улица, дом"
+      : "Необходимо указать Населённый пункт, улицу, дом";
+
+  const homePlaceholder =
+    screenWidth < 780
+      ? "Номер квартиры"
+      : "Необходимо указать номер";
 
   return (
     <div className={style.real_address}>
@@ -38,7 +51,7 @@ const RealAddress = () => {
               <input
                 type="text"
                 id="city"
-                placeholder="Необходимо указать Населённый пункт, улицу, дом"
+                placeholder={cityPlaceholder}
                 {...getFieldProps("city")}
               />
               <Edit />
@@ -58,7 +71,7 @@ const RealAddress = () => {
               <input
                 type="text"
                 id="home"
-                placeholder="Необходимо указать номер"
+                placeholder={homePlaceholder}
                 {...getFieldProps("home")}
               />
               <Edit />

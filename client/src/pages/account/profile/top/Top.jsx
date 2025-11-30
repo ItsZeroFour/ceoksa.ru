@@ -10,6 +10,7 @@ import { ReactComponent as Calendar } from "../../../../assets/icons/profile/cal
 import { ReactComponent as Man } from "../../../../assets/icons/profile/man.svg";
 import { ReactComponent as Edit } from "../../../../assets/icons/account/edit.svg";
 import { useValidation } from "../../../../hooks/useValidation";
+import { useScreenWidth } from "../../../../hooks/useScreenWidth";
 
 const Top = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -33,6 +34,12 @@ const Top = () => {
       ],
     }
   );
+
+  const screenWidth = useScreenWidth();
+  const mailPlaceholder =
+    screenWidth < 780
+      ? "Укажите эл. почту"
+      : "Необходимо указать электронную почту";
 
   return (
     <div className={style.top}>
@@ -109,7 +116,7 @@ const Top = () => {
                 <input
                   type="email"
                   id="mail"
-                  placeholder="Необходимо указать электронную почту"
+                  placeholder={mailPlaceholder}
                   {...getFieldProps("mail")}
                 />
                 <Edit />

@@ -3,8 +3,16 @@ import style from "./addresses.module.scss";
 import gosuslugi from "../../../../assets/gosuslugi.png";
 import { ReactComponent as Location } from "../../../../assets/icons/profile/location.svg";
 import { ReactComponent as Edit } from "../../../../assets/icons/account/edit.svg";
+import { useScreenWidth } from "../../../../hooks/useScreenWidth";
 
 const Addresses = () => {
+  const screenWidth = useScreenWidth();
+
+  const addressPlaceholder =
+    screenWidth < 780
+      ? "Укажите адрес"
+      : "Необходимо указать фактический адрес";
+
   return (
     <div className={style.addresses}>
       <div className={style.addresses__wrapper}>
@@ -37,7 +45,7 @@ const Addresses = () => {
                 <input
                   type="text"
                   id="address"
-                  placeholder="Необходимо указать фактический адрес"
+                  placeholder={addressPlaceholder}
                 />
                 <Edit />
               </div>

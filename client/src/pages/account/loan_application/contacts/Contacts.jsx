@@ -4,6 +4,7 @@ import { ReactComponent as Phone } from "../../../../assets/icons/account/phone.
 import { ReactComponent as Mail } from "../../../../assets/icons/account/mail.svg";
 import { ReactComponent as Edit } from "../../../../assets/icons/account/edit.svg";
 import { useValidation } from "../../../../hooks/useValidation";
+import { useScreenWidth } from "../../../../hooks/useScreenWidth";
 
 const Contacts = () => {
   const { getFieldProps, hasError, errors } = useValidation(
@@ -17,6 +18,12 @@ const Contacts = () => {
       ],
     }
   );
+
+  const screenWidth = useScreenWidth();
+  const placeholder =
+    screenWidth < 780
+      ? "Укажите эл. почту"
+      : "Необходимо указать электронную почту";
 
   return (
     <section className={style.contacts}>
@@ -51,7 +58,7 @@ const Contacts = () => {
               <input
                 type="email"
                 id="mail"
-                placeholder="Необходимо указать электронную почту"
+                placeholder={placeholder}
                 {...getFieldProps("mail")}
               />
               <Edit />

@@ -1,5 +1,9 @@
 .addresses {
   margin-top: 25px;
+
+  @media (max-width: 480px) {
+    margin-top: 15px;
+  }
 }
 
 .addresses__wrapper {
@@ -10,6 +14,10 @@
   h2 {
     font-size: 26px;
     font-weight: 500;
+
+    @media (max-width: 480px) {
+      font-size: 18px;
+    }
   }
 
   ul {
@@ -39,6 +47,8 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
+
+        flex-shrink: 0;
 
         border-radius: 12px;
 
@@ -82,7 +92,20 @@
       &:last-child {
         align-items: start;
       }
+
+      @media (max-width: 480px) {
+        padding: 15px;
+      }
     }
+
+    @media (max-width: 980px) {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 20px;
   }
 }
 

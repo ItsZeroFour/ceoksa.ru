@@ -19,6 +19,10 @@
       color: var(--color-red);
     }
   }
+
+  @media (max-width: 480px) {
+    margin-top: 15px;
+  }
 }
 
 .accept__wrapper {
@@ -29,6 +33,10 @@
   h2 {
     font-size: 26px;
     font-weight: 500;
+
+    @media (max-width: 480px) {
+      font-size: 18px;
+    }
   }
 
   ul {
@@ -45,6 +53,7 @@
       a {
         display: flex;
         align-items: center;
+        height: 100px;
         gap: 15px;
         background: var(--color-white);
         padding: 20px;
@@ -72,8 +81,25 @@
         p {
           font-weight: 500;
           font-size: 14px;
+
+          @media (max-width: 480px) {
+            font-size: 12px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          padding: 12px;
         }
       }
     }
+
+    @media (max-width: 980px) {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 20px;
   }
 }
