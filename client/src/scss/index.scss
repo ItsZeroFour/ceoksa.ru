@@ -473,7 +473,8 @@ button {
 }
 
 .credits__wrapper,
-.rating__wrapper {
+.rating__wrapper,
+.profile__wrapper {
   display: flex;
   gap: 30px;
 
@@ -483,7 +484,8 @@ button {
 }
 
 .credits__main,
-.rating__main {
+.rating__main,
+.profile__main {
   width: 100%;
 }
 

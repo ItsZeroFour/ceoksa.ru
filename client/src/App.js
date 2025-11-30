@@ -4,6 +4,7 @@ import LoanApplication from "./pages/account/loan_application/LoanApplication";
 import useDisableScroll from "./hooks/useDisableScroll";
 import Credits from "./pages/account/credits/Credits";
 import Rating from "./pages/account/rating/Rating";
+import Profile from "./pages/account/profile/Profile";
 
 const Header = lazy(() => import("./components/header/Header"));
 const Main = lazy(() => import("./pages/main/Main"));
@@ -54,6 +55,12 @@ function App() {
                 path="/account/rating"
                 element={
                   <Rating setOpenMenu={setOpenMenu} openMenu={openMenu} />
+                }
+              />
+              <Route
+                path="/account/profile"
+                element={
+                  <Profile setOpenMenu={setOpenMenu} openMenu={openMenu} />
                 }
               />
             </Routes>

@@ -1,0 +1,82 @@
+.automobiles {
+  margin-top: 25px;
+}
+
+.automobiles__wrapper {
+  padding: 35px;
+  background: var(--color-gray-secondary);
+  border-radius: 20px;
+
+  h2 {
+    font-size: 26px;
+    font-weight: 500;
+  }
+
+  ul {
+    display: grid;
+    grid-template-columns: 2fr 2fr 2fr;
+    width: 100%;
+    gap: 15px;
+    margin-top: 20px;
+
+    li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+
+      width: 100%;
+      border-radius: 14px;
+      background: var(--color-white);
+      padding: 20px;
+
+      .automobiles__item__icon {
+        width: 52px;
+        height: 52px;
+        background: var(--color-gray-light);
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        border-radius: 12px;
+
+        svg {
+          color: var(--color-blue-secondary);
+        }
+      }
+
+      .automobiles__item__main {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .automobiles__item__text {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+
+        p {
+          &:first-child {
+            font-weight: 600;
+            font-size: 16px;
+            width: 80%;
+          }
+
+          &:last-child {
+            font-weight: 300;
+            font-size: 13px;
+            opacity: 0.6;
+          }
+        }
+      }
+
+      & > img {
+        width: 18px;
+        height: auto;
+      }
+    }
+  }
+}

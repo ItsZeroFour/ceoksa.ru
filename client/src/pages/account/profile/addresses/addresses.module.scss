@@ -1,0 +1,130 @@
+.addresses {
+  margin-top: 25px;
+}
+
+.addresses__wrapper {
+  background: var(--color-gray-secondary);
+  padding: 35px;
+  border-radius: 20px;
+
+  h2 {
+    font-size: 26px;
+    font-weight: 500;
+  }
+
+  ul {
+    display: grid;
+    grid-template-columns: 2fr 2fr;
+    width: 100%;
+    gap: 15px;
+    margin-top: 20px;
+
+    li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+
+      width: 100%;
+      border-radius: 14px;
+      background: var(--color-white);
+      padding: 20px;
+
+      .addresses__item__icon {
+        width: 52px;
+        height: 52px;
+        background: var(--color-gray-light);
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        border-radius: 12px;
+
+        svg {
+          color: var(--color-blue-secondary);
+        }
+      }
+
+      .addresses__item__main {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        width: 100%;
+      }
+
+      .addresses__item__text {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+
+        p {
+          &:first-child {
+            font-weight: 600;
+            font-size: 16px;
+            width: 80%;
+          }
+
+          &:last-child {
+            font-weight: 300;
+            font-size: 13px;
+            opacity: 0.6;
+          }
+        }
+      }
+
+      & > img {
+        width: 18px;
+        height: auto;
+      }
+
+      &:last-child {
+        align-items: start;
+      }
+    }
+  }
+}
+
+.addresses__form__item {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+
+  svg {
+    position: absolute;
+    top: 50%;
+    left: 95%;
+  }
+
+  input {
+    margin-top: 5px;
+    padding: 3px 0;
+    padding-right: 50px;
+    width: 100%;
+
+    font-weight: 500;
+    font-family: "Inter", sans-serif;
+    letter-spacing: 0%;
+
+    &::placeholder {
+      font-weight: 500;
+      font-family: "Inter", sans-serif;
+      color: var(--color-black);
+      opacity: 0.6;
+    }
+
+    @media (max-width: 480px) {
+      &::placeholder {
+        font-size: 13px;
+      }
+    }
+  }
+
+  label {
+    font-size: 13px;
+    opacity: 0.6;
+    font-weight: 300;
+  }
+}
