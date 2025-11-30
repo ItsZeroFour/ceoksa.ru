@@ -132,8 +132,8 @@ const Top = () => {
               </div>
 
               <div className={style.top__item__text}>
-                <p>Номер телефона</p>
-                <p>+7 987 654-32-10</p>
+                <p>Дата рождения</p>
+                <p>17 октября 1998</p>
               </div>
             </li>
 
@@ -143,8 +143,8 @@ const Top = () => {
               </div>
 
               <div className={style.top__item__text}>
-                <p>Номер телефона</p>
-                <p>+7 987 654-32-10</p>
+                <p>Пол</p>
+                <p>Женский</p>
               </div>
             </li>
           </ul>

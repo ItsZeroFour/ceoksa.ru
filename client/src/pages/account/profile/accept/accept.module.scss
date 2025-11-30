@@ -81,14 +81,11 @@
         p {
           font-weight: 500;
           font-size: 14px;
-
-          @media (max-width: 480px) {
-            font-size: 12px;
-          }
         }
 
         @media (max-width: 480px) {
           padding: 12px;
+          height: 100%;
         }
       }
     }
