@@ -25,9 +25,13 @@ const RealAddress = () => {
       : "Необходимо указать Населённый пункт, улицу, дом";
 
   const homePlaceholder =
-    screenWidth < 780
-      ? "Номер квартиры"
-      : "Необходимо указать номер";
+    screenWidth < 780 ? "Номер квартиры" : "Необходимо указать номер";
+
+  const handleNumbersOnly = (e) => {
+    e.target.value = e.target.value.replace(/\D/g, "");
+  };
+
+  const homeFieldProps = getFieldProps("home");
 
   return (
     <div className={style.real_address}>
@@ -69,10 +73,16 @@ const RealAddress = () => {
             >
               <label htmlFor="home">Квартира</label>
               <input
-                type="text"
+                type="number"
                 id="home"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 placeholder={homePlaceholder}
-                {...getFieldProps("home")}
+                {...homeFieldProps}
+                onInput={(e) => {
+                  e.target.value = e.target.value.replace(/\D/g, "");
+                  homeFieldProps.onInput?.(e);
+                }}
               />
               <Edit />
               {hasError("home") && (

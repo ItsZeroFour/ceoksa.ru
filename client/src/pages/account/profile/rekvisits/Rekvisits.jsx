@@ -12,6 +12,11 @@ const Rekvisits = () => {
       ? "Укажите реквизиты"
       : "Необходимо указать реквизиты для перевода";
 
+  const handleNumbersOnly = (e) => {
+    const target = e.target;
+    target.value = target.value.replace(/\D/g, "");
+  };
+
   return (
     <div className={style.rekvisits}>
       <div className={style.rekvisits__wrapper}>
@@ -25,8 +30,15 @@ const Rekvisits = () => {
               </div>
 
               <div className={style.rekvisits__form__item}>
-                <label htmlFor="address">Банк ВТБ (ПАО)</label>
-                <input type="text" id="address" placeholder={placeholder} />
+                <label htmlFor="bik">Банк ВТБ (ПАО)</label>
+                <input
+                  type="nymber"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  id="bik"
+                  onInput={handleNumbersOnly}
+                  placeholder={placeholder}
+                />
                 <Edit />
               </div>
             </div>
