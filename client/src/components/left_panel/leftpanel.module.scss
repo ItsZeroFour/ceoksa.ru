@@ -69,7 +69,7 @@
 }
 
 .mobile_left_panel__main {
-  display: none;
+  display: block;
 
   @media (max-width: 1200px) {
     display: block;

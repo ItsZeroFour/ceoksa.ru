@@ -11,7 +11,7 @@ const Credits = ({ setOpenMenu, openMenu }) => {
     <div className="credits">
       <div className="container">
         <div className="credits__wrapper">
-          <LeftPanel />
+          {/* <LeftPanel /> */}
           <MobileLeftPanel setOpenMenu={setOpenMenu} openMenu={openMenu} />
 
           <section className="credits__main">

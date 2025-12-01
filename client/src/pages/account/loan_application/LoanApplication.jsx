@@ -16,7 +16,7 @@ const LoanApplication = ({ setOpenMenu, openMenu }) => {
     <div className="loan_application">
       <div className="container">
         <div className="loan_application__wrapper">
-          <LeftPanel />
+          {/* <LeftPanel /> */}
           <MobileLeftPanel setOpenMenu={setOpenMenu} openMenu={openMenu} />
 
           <div className="loan_application__main">

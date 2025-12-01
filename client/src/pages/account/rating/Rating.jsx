@@ -10,7 +10,7 @@ const Rating = ({ setOpenMenu, openMenu }) => {
     <div className="rating">
       <div className="container">
         <div className="rating__wrapper">
-          <LeftPanel />
+          {/* <LeftPanel /> */}
           <MobileLeftPanel setOpenMenu={setOpenMenu} openMenu={openMenu} />
 
           <div className="rating__main">

@@ -75,7 +75,7 @@ footer {
 }
 
 .container {
-  max-width: 1460px;
+  max-width: 1120px;
   padding: 0 10px;
   margin: 0 auto;
 }
@@ -119,7 +119,7 @@ button {
 
 .loan_application__wrapper {
   display: flex;
-  gap: 30px;
+  // gap: 30px;
 
   @media (max-width: 1200px) {
     gap: 0;
@@ -168,6 +168,7 @@ button {
 
 .credit__main__form__elem {
   display: flex;
+  width: 100%;
 
   .credit__main__form__item {
     display: flex;
@@ -176,10 +177,15 @@ button {
     width: 100%;
 
     &:first-child {
+      justify-content: space-between;
       border-bottom-left-radius: 16px;
       border-top-left-radius: 16px;
 
       padding-right: 16px;
+
+      input {
+        width: 100%;
+      }
 
       @media (max-width: 550px) {
         border-radius: 16px;
@@ -244,7 +250,7 @@ button {
       &::before {
         content: "";
         position: absolute;
-        left: 0;
+        left: -5px;
 
         width: 1px;
         height: 100%;
@@ -262,9 +268,9 @@ button {
       }
     }
 
-    @media (max-width: 1450px) {
-      width: 100%;
-    }
+    // @media (max-width: 1450px) {
+    width: 100%;
+    // }
   }
 
   @media (max-width: 550px) {
@@ -275,11 +281,12 @@ button {
 
 .credit__main__form {
   display: flex;
+  flex-direction: column;
   gap: 12px;
   margin-top: 20px;
 
   @media (max-width: 1450px) {
-    flex-direction: column;
+    // flex-direction: column;
   }
 }
 
@@ -289,9 +296,9 @@ button {
 
   .credit__main__form__item,
   .credit__main__form__cash {
-    @media (max-width: 1450px) {
-      width: 100%;
-    }
+    // @media (max-width: 1450px) {
+    width: 100%;
+    // }
   }
 
   @media (max-width: 520px) {
@@ -311,16 +318,12 @@ button {
   background: none;
 
   font-weight: 600;
-
-  @media (max-width: 1450px) {
-    width: 100%;
-  }
 }
 
 .credit__main__form__target {
   display: flex;
   justify-content: space-between;
-  width: 250px;
+  // width: 250px;
   border-radius: 16px;
 
   position: relative;
@@ -332,7 +335,8 @@ button {
     flex-direction: column;
     background: var(--color-gray-secondary);
     box-shadow: 0px 4px 20px rgba(0, 0, 32, 0.15);
-    width: 225px;
+    // width: 225px;
+    width: 100%;
     height: 245px;
 
     overflow-y: auto;
@@ -422,16 +426,17 @@ button {
 }
 
 .credit__main__data {
+  width: 100%;
   @media (max-width: 768px) {
     width: 100%;
   }
 
   .credit__main__form__target {
-    width: 220px;
+    // width: 220px;
 
-    @media (max-width: 1450px) {
-      width: 45vw;
-    }
+    // @media (max-width: 1450px) {
+    // width: 45vw;
+    // }
 
     @media (max-width: 768px) {
       width: 100%;
@@ -476,7 +481,7 @@ button {
 .rating__wrapper,
 .profile__wrapper {
   display: flex;
-  gap: 30px;
+  // gap: 30px;
 
   @media (max-width: 1200px) {
     gap: 0;

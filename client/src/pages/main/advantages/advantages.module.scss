@@ -19,13 +19,14 @@
     justify-content: space-between;
     justify-content: center;
     align-items: center;
-    flex-wrap: wrap;
+    // flex-wrap: wrap;
+
     gap: 20px;
 
     li {
       display: flex;
       background: var(--color-gray-secondary);
-      width: 435px;
+      width: 355px;
       position: relative;
       overflow: hidden;
 

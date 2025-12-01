@@ -13,7 +13,7 @@ const Profile = ({ setOpenMenu, openMenu }) => {
     <div className="profile">
       <div className="container">
         <div className="profile__wrapper">
-          <LeftPanel />
+          {/* <LeftPanel /> */}
           <MobileLeftPanel setOpenMenu={setOpenMenu} openMenu={openMenu} />
 
           <div className="profile__main">
