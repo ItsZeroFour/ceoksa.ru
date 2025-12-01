@@ -19,14 +19,14 @@
     justify-content: space-between;
     justify-content: center;
     align-items: center;
-    // flex-wrap: wrap;
+    flex-wrap: wrap;
 
     gap: 20px;
 
     li {
       display: flex;
       background: var(--color-gray-secondary);
-      width: 355px;
+      width: 350px;
       position: relative;
       overflow: hidden;
 
@@ -51,7 +51,7 @@
         object-fit: contain;
         position: absolute;
 
-        left: 77%;
+        left: 70%;
         top: -10%;
 
         @media (max-width: 960px) {
@@ -70,8 +70,8 @@
         }
       }
 
-      @media (max-width: 1400px) {
-        width: 30vw;
+      @media (max-width: 1120px) {
+        width: 29vw;
       }
 
       &:hover {
