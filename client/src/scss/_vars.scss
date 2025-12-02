@@ -1,4 +1,5 @@
 :root {
+  --color-bg: #fff;
   --color-white: #fff;
   --color-black: #051225;
   --color-red: #e11d12;
@@ -9,8 +10,81 @@
   --color-gray-fourth: #e1dfda;
   --color-dark-gray: #666666;
   --color-blue: #22c0ff;
+
+  --color-head: #22c0ff;
   --color-blue-light: #02b4fb;
+  --color-text-button: #22c0ff;
+  --color-svg-color: #22c0ff;
+  --color-header-button-second: #02b4fb;
+  --color-block-bg: #fff;
+  --color-block-2-bg: #f6f7f8;
+  --color-block-3-bg: #02b4fb;
+  --color-credit-input: #051225;
+  --color-notification-bg: #ecf8ff;
+  --color-notification-border: #b6dfff;
+  --color-notification-icon: #02b4fb;
+  --color-card-bg: linear-gradient(
+    180deg,
+    rgba(161, 202, 255, 0.4) 80%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  --color-die: #051225;
+  --color-howget-notification-bg: linear-gradient(
+    40deg,
+    rgb(243, 243, 243) 50%,
+    rgba(237, 237, 237, 1) 100%
+  );
+  --color-howget-notification-bg-2: linear-gradient(
+    40deg,
+    rgb(243, 243, 243) 50%,
+    rgba(237, 237, 237, 1) 100%
+  );
+
+  --color-howget-notification-color: #051225;
 
   --color-blue-secondary: #ade5fb;
   --color-green: #4cbd20;
+
+  --color-white-opacity: rgba(255, 255, 255, 0.6);
+}
+
+[data-theme="dark"] {
+  --color-bg: #141414;
+  --color-white: #fff;
+  --color-black: #fff;
+  --color-red: #e11d12;
+  --color-gray: #d9d9d9;
+  --color-gray-light: #e3f4fa;
+  --color-gray-secondary: #242528;
+  --color-gray-third: rgba(194, 194, 194, 0.1);
+  --color-gray-fourth: #e1dfda;
+  --color-dark-gray: #666666;
+  --color-blue: #007fb1;
+
+  --color-head: #242528;
+  --color-blue-light: #02b4fb;
+  --color-text-button: #fff;
+  --color-svg-color: rgba(255, 255, 255, 0.6);
+  --color-header-button-second: #3e3f43;
+  --color-block-bg: #3e3f43;
+  --color-block-2-bg: #3e3f43;
+  --color-block-3-bg: #3e3f43;
+  --color-credit-input: #fff;
+  --color-notification-bg: #242528;
+  --color-notification-border: #777777;
+  --color-notification-icon: #fff;
+  --color-card-bg: linear-gradient(
+    180deg,
+    rgba(68, 68, 68, 0.4) 80%,
+    rgb(62, 63, 67, 0.7) 100%
+  );
+  --color-die: #051225;
+  --color-howget-notification-bg: rgba(37, 37, 37, 1);
+  --color-howget-notification-bg-2: rgba(37, 37, 37, 0.8);
+  --color-howget-notification-color: #fff;
+
+  --color-blue-secondary: #ade5fb;
+  --color-green: #4cbd20;
+
+  --color-white-opacity: rgba(255, 255, 255, 0.6);
 }

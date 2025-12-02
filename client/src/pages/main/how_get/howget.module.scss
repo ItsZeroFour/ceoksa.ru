@@ -40,7 +40,7 @@
 
     transition: all 0.2s ease;
 
-    background: var(--color-white);
+    background: var(--color-block-bg);
     box-shadow: 0px 4px 20px rgba(0, 0, 32, 0.15);
     padding: 20px;
     border-radius: 18px;
@@ -337,11 +337,9 @@
   padding: 15px;
 
   border-radius: 24px;
-  background: linear-gradient(
-    40deg,
-    rgb(243, 243, 243) 50%,
-    rgba(237, 237, 237, 1) 100%
-  );
+
+  background: var(--color-howget-notification-bg);
+  backdrop-filter: blur(8px);
 
   z-index: 2;
 
@@ -386,7 +384,7 @@
 
     p {
       font-size: 10px;
-      color: #000;
+      color: var(--color-howget-notification-color);
 
       @media (max-width: 1200px) {
         // font-size: 12px;
@@ -406,15 +404,12 @@
     border-radius: 25px;
 
     transform: translateZ(-1px);
+    z-index: -1;
 
     width: 90%;
     height: 100%;
 
-    background: linear-gradient(
-      40deg,
-      rgb(228, 228, 228) 50%,
-      rgb(212, 212, 212) 100%
-    );
+    background: var(--color-howget-notification-bg-2);
   }
 
   &::after {
@@ -425,15 +420,12 @@
     border-radius: 25px;
 
     transform: translateZ(-2px);
+    z-index: -1;
 
     width: 80%;
     height: 100%;
 
-    background: linear-gradient(
-      120deg,
-      rgb(243, 243, 243) 50%,
-      rgb(202, 202, 202) 100%
-    );
+    background: var(--color-howget-notification-bg-2);
   }
 
   @media (max-width: 960px) {

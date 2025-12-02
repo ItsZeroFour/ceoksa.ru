@@ -7,9 +7,11 @@
 }
 
 .best_offer__wrapper {
-  background: var(--color-blue);
+  background: var(--color-head);
   padding: 40px;
   border-radius: 20px;
+
+  overflow: hidden;
 
   display: flex;
   align-items: center;
@@ -145,7 +147,7 @@
 .best_offer__right,
 .best_offer__card {
   width: 100%;
-  background: var(--color-white);
+  background: var(--color-block-bg);
   padding: 25px;
   border-radius: 16px;
 
@@ -212,7 +214,7 @@
 .best_offer__right__top__die {
   padding: 5px 18px;
   color: var(--color-white);
-  background: var(--color-black);
+  background: var(--color-die);
 
   border-radius: 8px;
 
@@ -321,11 +323,7 @@
     height: 100%;
     border-radius: 16px;
 
-    background: linear-gradient(
-      180deg,
-      rgba(161, 202, 255, 0.4) 80%,
-      rgba(255, 255, 255, 1) 100%
-    );
+    background: var(--color-card-bg);
     left: 3%;
     top: 7%;
 
@@ -340,11 +338,7 @@
     height: 100%;
     border-radius: 16px;
 
-    background: linear-gradient(
-      180deg,
-      rgba(235, 235, 235, 0.4) 100%,
-      rgba(255, 255, 255, 1) 100%
-    );
+    background: var(--color-card-bg);
     -webkit-filter: blur(0.5px);
     filter: blur(0.5px);
     left: 6%;

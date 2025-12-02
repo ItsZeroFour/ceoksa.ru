@@ -24,12 +24,13 @@ body {
   font-weight: 400;
   font-display: swap;
 
-  background: var(--color-white);
+  background: var(--color-bg);
   color: var(--color-black);
 
   overflow-x: hidden !important;
 
   -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 html {
@@ -185,6 +186,11 @@ button {
 
       input {
         width: 100%;
+        color: var(--color-credit-input);
+      }
+
+      svg {
+        color: var(--color-credit-input);
       }
 
       @media (max-width: 550px) {

@@ -2,7 +2,7 @@ import React from "react";
 import style from "./header.module.scss";
 import logo from "../../assets/logo.svg";
 import { Link, useLocation } from "react-router-dom";
-import business from "../../assets/icons/business.svg";
+import { ReactComponent as Business } from "../../assets/icons/business.svg";
 import signin from "../../assets/icons/signin.svg";
 import { useNavigate } from "react-router-dom";
 
@@ -29,7 +29,7 @@ const Header = ({ setOpenMenu, openMenu }) => {
 
           <div className={style.header__buttons}>
             <button className={style.header__button_business}>
-              <img src={business} alt="Бизнесу" />
+              <Business />
               <p>Бизнесу</p>
             </button>
 
