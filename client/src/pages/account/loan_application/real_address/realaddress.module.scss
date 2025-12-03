@@ -47,7 +47,7 @@
 .real_address__main {
   display: flex;
   align-items: center;
-  background: var(--color-white);
+  background: var(--color-block-2-bg);
   padding: 20px;
   border-radius: 14px;
   margin-top: 15px;
@@ -71,6 +71,8 @@
         margin-top: 5px;
         padding: 3px 0;
         padding-right: 50px;
+
+        background: none;
 
         font-weight: 500;
         font-family: "Inter", sans-serif;
@@ -133,7 +135,7 @@
 .real_address__form__item {
   padding: 5px 10px;
   border-radius: 14px;
-  border: 1px solid var(--color-white);
+  border: 1px solid var(--color-border-address);
 }
 
 .real_address__form__item.error {
