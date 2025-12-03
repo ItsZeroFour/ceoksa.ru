@@ -57,7 +57,7 @@
 
     .payments__top__item__text__pay {
       padding: 5px 12px;
-      background: var(--color-white);
+      background: var(--color-block-bg);
       border-radius: 60px;
 
       p {
@@ -97,11 +97,12 @@
 
   button {
     padding: 14px 59px;
-    background: var(--color-white);
+    background: var(--color-payments-button-bg);
     border-radius: 14px;
     font-weight: 600;
 
-    border: 2px solid var(--color-white);
+    border: 2px solid var(--color-payments-button-border);
+    color: var(--color-black);
 
     transition: all 0.2s ease-in-out;
 
@@ -173,7 +174,7 @@
 
 .modal__wrapper {
   width: 720px;
-  background: var(--color-white);
+  background: var(--color-payments-modal-bg);
   border-radius: 16px;
   padding: 35px;
 
@@ -210,7 +211,7 @@
       width: 100%;
 
       padding: 10px 15px;
-      background: var(--color-gray-secondary);
+      background: var(--color-block-bg);
       border-radius: 16px;
 
       label {

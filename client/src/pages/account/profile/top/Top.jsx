@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import style from "./top.module.scss";
 import camera from "../../../../assets/icons/account/camera.svg";
 import gosuslugi from "../../../../assets/gosuslugi.png";
-import load from "../../../../assets/icons/account/load.svg";
+import { ReactComponent as Load } from "../../../../assets/icons/account/load.svg";
 import { motion } from "framer-motion";
 import { ReactComponent as Phone } from "../../../../assets/icons/profile/phone.svg";
 import { ReactComponent as Mail } from "../../../../assets/icons/profile/mail.svg";
@@ -72,16 +72,17 @@ const Top = () => {
                   whileTap={{ scale: 0.95 }}
                   className={isRefreshing ? style.refreshingButton : ""}
                 >
-                  <motion.img
-                    src={load}
-                    alt="Обновить данные"
+                  <motion.div
                     animate={isRefreshing ? { rotate: 360 } : { rotate: 0 }}
                     transition={{
                       duration: 1,
                       repeat: isRefreshing ? Infinity : 0,
                       ease: "linear",
                     }}
-                  />
+                  >
+                    <Load />
+                  </motion.div>
+
                   {isRefreshing ? "Обновление..." : "Обновить данные"}
                 </motion.button>
               </div>

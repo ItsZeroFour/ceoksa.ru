@@ -7,7 +7,6 @@ const ProgressBar = ({ percent = 0, color = "#4cbd20", height = "8px" }) => {
       className={style.progressBar}
       style={{
         height,
-        backgroundColor: "#D7DBDE",
         borderRadius: "100px",
         overflow: "hidden",
         position: "relative",

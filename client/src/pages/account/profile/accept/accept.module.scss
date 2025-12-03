@@ -14,6 +14,7 @@
     font-size: 14px;
 
     transition: all 0.2s ease;
+    color: var(--color-black);
 
     &:hover {
       color: var(--color-red);
@@ -55,7 +56,7 @@
         align-items: center;
         height: 100px;
         gap: 15px;
-        background: var(--color-white);
+        background: var(--color-block-bg);
         padding: 20px;
         border-radius: 14px;
 

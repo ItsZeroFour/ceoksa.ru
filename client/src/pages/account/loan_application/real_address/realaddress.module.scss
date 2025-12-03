@@ -47,7 +47,7 @@
 .real_address__main {
   display: flex;
   align-items: center;
-  background: var(--color-block-2-bg);
+  background: var(--color-block-bg);
   padding: 20px;
   border-radius: 14px;
   margin-top: 15px;
@@ -73,6 +73,7 @@
         padding-right: 50px;
 
         background: none;
+        color: var(--color-black);
 
         font-weight: 500;
         font-family: "Inter", sans-serif;

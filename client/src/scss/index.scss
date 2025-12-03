@@ -389,6 +389,7 @@ button {
     background: none;
     font-size: 17px;
     font-weight: 500;
+    color: var(--color-black);
 
     @media (max-width: 1024px) {
       font-size: 16px;
@@ -466,10 +467,12 @@ button {
     padding: 10px;
     border-radius: 7px;
     background: none;
+    color: var(--color-credits-nav);
   }
 
   button.active {
-    background: var(--color-white);
+    background: var(--color-block-bg);
+    color: var(--color-black);
     box-shadow: 0px 0px 5px rgba(0, 0, 32, 0.15);
     border: 1px solid rgba(0, 0, 0, 0.039);
   }

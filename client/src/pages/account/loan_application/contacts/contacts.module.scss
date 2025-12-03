@@ -31,7 +31,7 @@
       gap: 15px;
       padding: 16px;
       width: 100%;
-      background: var(--color-block-2-bg);
+      background: var(--color-block-bg);
       border-radius: 14px;
 
       @media (max-width: 480px) {
@@ -110,6 +110,7 @@
     padding-right: 50px;
     width: 100%;
     background: none;
+    color: var(--color-black);
 
     font-weight: 500;
     font-family: "Inter", sans-serif;

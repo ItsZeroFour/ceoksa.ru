@@ -50,15 +50,15 @@
     }
 
     li.active {
-      background: var(--color-white);
+      background: var(--color-block-bg);
       border-radius: 12px;
 
       p {
-        color: var(--color-blue);
+        color: var(--color-notification-icon);
       }
 
       svg {
-        color: var(--color-blue);
+        color: var(--color-notification-icon);
       }
     }
   }
