@@ -3,7 +3,7 @@ import style from "./top.module.scss";
 import Notification from "../../../../components/notification/Notification";
 import camera from "../../../../assets/icons/account/camera.svg";
 import gosuslugi from "../../../../assets/gosuslugi.png";
-import load from "../../../../assets/icons/account/load.svg";
+import { ReactComponent as Load } from "../../../../assets/icons/account/load.svg";
 import { motion } from "framer-motion";
 
 const Top = () => {
@@ -50,16 +50,17 @@ const Top = () => {
                   whileTap={{ scale: 0.95 }}
                   className={isRefreshing ? style.refreshingButton : ""}
                 >
-                  <motion.img
-                    src={load}
-                    alt="Обновить данные"
+                  <motion.div
                     animate={isRefreshing ? { rotate: 360 } : { rotate: 0 }}
                     transition={{
                       duration: 1,
                       repeat: isRefreshing ? Infinity : 0,
                       ease: "linear",
                     }}
-                  />
+                  >
+                    <Load />
+                  </motion.div>
+
                   {isRefreshing ? "Обновление..." : "Обновить данные"}
                 </motion.button>
               </div>

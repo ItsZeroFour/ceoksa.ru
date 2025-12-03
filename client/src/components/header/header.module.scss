@@ -49,7 +49,7 @@
     font-weight: 500;
 
     &.header__button_business {
-      background: var(--color-bg);
+      background: var(--color--button-bg);
       border: 1px solid var(--color-white-opacity);
       color: var(--color-text-button);
       transition: opacity 0.2s ease;

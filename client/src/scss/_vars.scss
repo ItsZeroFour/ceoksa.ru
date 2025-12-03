@@ -11,6 +11,8 @@
   --color-dark-gray: #666666;
   --color-blue: #22c0ff;
 
+  --color-icon: #e3f4fa;
+  --color--button-bg: #e3f4fa;
   --color-head: #22c0ff;
   --color-blue-light: #02b4fb;
   --color-text-button: #22c0ff;
@@ -39,13 +41,19 @@
     rgb(243, 243, 243) 50%,
     rgba(237, 237, 237, 1) 100%
   );
+  --color-name-text: #ade5fb;
+  --color-photo: #051225;
+  --color-photo-border: #fff;
+  --color-update: #22c0ff;
+  --color-border-address: rgba(0, 0, 0, 0);
+  --color-left-panel: #fff;
 
   --color-howget-notification-color: #051225;
 
   --color-blue-secondary: #ade5fb;
   --color-green: #4cbd20;
 
-  --color-white-opacity: rgba(255, 255, 255, 0.6);
+  --color-white-opacity: #e3f4fa;
 }
 
 [data-theme="dark"] {
@@ -54,13 +62,15 @@
   --color-black: #fff;
   --color-red: #e11d12;
   --color-gray: #d9d9d9;
-  --color-gray-light: #e3f4fa;
+  --color-gray-light: #242528;
   --color-gray-secondary: #242528;
   --color-gray-third: rgba(194, 194, 194, 0.1);
   --color-gray-fourth: #e1dfda;
   --color-dark-gray: #666666;
   --color-blue: #007fb1;
 
+  --color-icon: #fff;
+  --color--button-bg: #141414;
   --color-head: #242528;
   --color-blue-light: #02b4fb;
   --color-text-button: #fff;
@@ -82,8 +92,14 @@
   --color-howget-notification-bg: rgba(37, 37, 37, 1);
   --color-howget-notification-bg-2: rgba(37, 37, 37, 0.8);
   --color-howget-notification-color: #fff;
+  --color-name-text: #ffffff;
+  --color-photo: #051225;
+  --color-photo-border: #3e3f43;
+  --color-update: #fff;
+  --color-border-address: rgba(0, 0, 0, 0);
+  --color-left-panel: #141414;
 
-  --color-blue-secondary: #ade5fb;
+  --color-blue-secondary: #fff;
   --color-green: #4cbd20;
 
   --color-white-opacity: rgba(255, 255, 255, 0.6);

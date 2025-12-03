@@ -35,6 +35,8 @@
           display: flex;
           align-items: center;
           gap: 10px;
+
+          color: var(--color-black);
         }
       }
 
@@ -108,7 +110,7 @@
   width: 350px;
   max-width: 85vw;
   height: 100dvh;
-  background: var(--color-white);
+  background: var(--color-left-panel);
   padding: 15px;
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
   overflow: hidden;
