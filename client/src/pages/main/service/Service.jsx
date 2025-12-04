@@ -1,9 +1,11 @@
 import React from "react";
 import style from "./service.module.scss";
 import servicePhoneImg from "../../../assets/images/main/service_phone.webp";
+import servicePhoneImgDark from "../../../assets/images/main/service_phone-dark.webp";
 import serviceItemImg1 from "../../../assets/images/main/service-1.webp";
 import serviceItemImg2 from "../../../assets/images/main/service-2.webp";
 import serviceItemImg3 from "../../../assets/images/main/service-3.webp";
+import { useTheme } from "../../../hooks/useTheme";
 
 const Service = () => {
   const serviceItems = [
@@ -28,6 +30,8 @@ const Service = () => {
       alt: "Быстро",
     },
   ];
+
+  const { theme } = useTheme();
 
   return (
     <section className={style.service}>
@@ -54,7 +58,10 @@ const Service = () => {
             </div>
 
             <div className={style.service__image}>
-              <img src={servicePhoneImg} alt="Сервис" />
+              <img
+                src={theme === "light" ? servicePhoneImg : servicePhoneImgDark}
+                alt="Сервис"
+              />
             </div>
           </div>
         </div>

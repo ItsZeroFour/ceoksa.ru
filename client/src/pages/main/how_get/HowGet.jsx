@@ -3,10 +3,16 @@ import style from "./howget.module.scss";
 import howGetImg1 from "../../../assets/images/main/how_get-1.webp";
 import howGetImg2 from "../../../assets/images/main/how_get-2.webp";
 import howGetImg3 from "../../../assets/images/main/how_get-3.webp";
+import howGetImg1Dark from "../../../assets/images/main/how_get-1-dark.webp";
+import howGetImg2Dark from "../../../assets/images/main/how_get-2-dark.webp";
+import howGetImg3Dark from "../../../assets/images/main/how_get-3-dark.webp";
 import { Link } from "react-router-dom";
 import notification from "../../../assets/icons/notification.png";
+import { useTheme } from "../../../hooks/useTheme";
 
 const HowGet = ({ scrollToBlock }) => {
+  const { theme } = useTheme();
+
   return (
     <section className={style.howget}>
       <div className="container">
@@ -25,7 +31,7 @@ const HowGet = ({ scrollToBlock }) => {
               <div className={style.howget__item__img__container}>
                 <img
                   className={style.howget__item__img}
-                  src={howGetImg1}
+                  src={theme === "light" ? howGetImg1 : howGetImg1Dark}
                   alt="Заполните заявку"
                 />
               </div>
@@ -46,7 +52,7 @@ const HowGet = ({ scrollToBlock }) => {
               <div className={style.howget__item__img__container}>
                 <img
                   className={style.howget__item__img}
-                  src={howGetImg2}
+                  src={theme === "light" ? howGetImg2 : howGetImg2Dark}
                   alt="Заполните заявку"
                 />
               </div>
@@ -83,7 +89,7 @@ const HowGet = ({ scrollToBlock }) => {
               <div className={style.howget__item__img__container}>
                 <img
                   className={style.howget__item__img}
-                  src={howGetImg3}
+                  src={theme === "light" ? howGetImg3 : howGetImg3Dark}
                   alt="Заполните заявку"
                 />
               </div>
