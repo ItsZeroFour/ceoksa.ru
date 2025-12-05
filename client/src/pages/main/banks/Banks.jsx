@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import style from "./banks.module.scss";
-import sber from "../../../assets/images/main/banks/sber.png";
+import sber from "../../../assets/images/main/banks/sber.webp";
 import vtb from "../../../assets/images/main/banks/vtb.webp";
 import tbank from "../../../assets/images/main/banks/tbank.webp";
 import alfa from "../../../assets/images/main/banks/alfa.webp";

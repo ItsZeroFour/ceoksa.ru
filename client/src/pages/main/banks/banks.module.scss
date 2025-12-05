@@ -43,6 +43,10 @@
       background: var(--color-block-bg);
       box-shadow: 0px 4px 20px rgba(0, 0, 32, 0.15);
 
+      img {
+        width: 80%;
+      }
+
       @media (max-width: 1024px) {
         padding: 20px;
 
