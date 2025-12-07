@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { SWIPE_CONFIG, easeOutQuint } from "../config/swipeConfig";
 
-export const useCardStack = (initialCards) => {
-  const [stack, setStack] = useState(initialCards);
+export const useCardStack = (cards) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
   const [isAutoSwiping, setIsAutoSwiping] = useState(false);
 
@@ -17,40 +17,72 @@ export const useCardStack = (initialCards) => {
   const autoSwipeTimeoutRef = useRef(null);
   const isSwipingRef = useRef(false);
   const cardWidthRef = useRef(0);
+  const isDraggingRef = useRef(false);
 
-  const current = useMemo(() => stack[0], [stack]);
-  const next = useMemo(
-    () => stack[1] || initialCards[0],
-    [stack, initialCards]
-  );
+  const validCards = useMemo(() => {
+    return Array.isArray(cards) && cards.length > 0 ? cards : [];
+  }, [cards]);
+
+  const current = useMemo(() => {
+    if (validCards.length === 0) return null;
+    return validCards[currentIndex % validCards.length];
+  }, [validCards, currentIndex]);
+
+  const next = useMemo(() => {
+    if (validCards.length <= 1) return null;
+    return validCards[(currentIndex + 1) % validCards.length];
+  }, [validCards, currentIndex]);
 
   const updateCardWidth = useCallback(() => {
     if (currentCardRef.current) {
-      cardWidthRef.current = currentCardRef.current.offsetWidth;
+      const rect = currentCardRef.current.getBoundingClientRect();
+      cardWidthRef.current = rect.width || 300;
     }
   }, []);
 
   useEffect(() => {
     updateCardWidth();
-    window.addEventListener("resize", updateCardWidth);
+    const resizeTimer = setTimeout(updateCardWidth, 100);
 
+    window.addEventListener("resize", updateCardWidth);
     return () => {
       window.removeEventListener("resize", updateCardWidth);
+      clearTimeout(resizeTimer);
       cancelAnimationFrame(animationFrameRef.current);
       clearTimeout(autoSwipeTimeoutRef.current);
     };
   }, [updateCardWidth]);
 
+  const resetCardPosition = useCallback(() => {
+    if (currentCardRef.current) {
+      currentCardRef.current.style.transform = "translateX(0) rotate(0)";
+      currentCardRef.current.style.opacity = "1";
+      currentCardRef.current.style.transition = `transform ${SWIPE_CONFIG.ANIMATION_DURATION}ms cubic-bezier(0.23, 1, 0.32, 1)`;
+    }
+
+    if (nextCardRef.current && next) {
+      nextCardRef.current.style.transform = `scale(${SWIPE_CONFIG.NEXT_SCALE_MIN})`;
+      nextCardRef.current.style.opacity = "0.7";
+      nextCardRef.current.style.transition = `transform ${
+        SWIPE_CONFIG.ANIMATION_DURATION / 2
+      }ms ease, opacity ${SWIPE_CONFIG.ANIMATION_DURATION / 2}ms ease`;
+    }
+  }, [next]);
+
   const triggerSwipe = useCallback(
     (isAuto = false) => {
-      if (!currentCardRef.current || cardWidthRef.current === 0) return;
+      if (
+        validCards.length <= 1 ||
+        !currentCardRef.current ||
+        cardWidthRef.current === 0
+      )
+        return;
 
       setIsAutoSwiping(isAuto);
       isSwipingRef.current = true;
+      isDraggingRef.current = false;
 
-      const startX = parseFloat(
-        currentCardRef.current.style.transform.match(/-?[\d.]+/)?.[0] || "0"
-      );
+      const startX = 0;
       const endX =
         cardWidthRef.current * SWIPE_CONFIG.SWIPE_END_POSITION_MULTIPLIER;
       const duration = SWIPE_CONFIG.ANIMATION_DURATION;
@@ -73,7 +105,7 @@ export const useCardStack = (initialCards) => {
           currentCardRef.current.style.transition = "none";
         }
 
-        if (nextCardRef.current) {
+        if (nextCardRef.current && next) {
           const scaleProgress = Math.min(progress * 1.5, 1);
           const scale =
             SWIPE_CONFIG.NEXT_SCALE_MIN +
@@ -89,38 +121,14 @@ export const useCardStack = (initialCards) => {
         if (progress < 1) {
           animationFrameRef.current = requestAnimationFrame(animate);
         } else {
-          setStack((prev) => {
-            const [, ...rest] = prev;
-            return rest.length ? rest : [...initialCards];
-          });
+          setCurrentIndex((prev) => prev + 1);
 
           setTimeout(() => {
-            if (currentCardRef.current) {
-              currentCardRef.current.style.transform =
-                "translateX(0) rotate(0)";
-              currentCardRef.current.style.opacity = "1";
-              currentCardRef.current.style.transition = "none";
-            }
-
-            if (nextCardRef.current) {
-              nextCardRef.current.style.transform = `scale(${SWIPE_CONFIG.NEXT_SCALE_MIN})`;
-              nextCardRef.current.style.opacity = "0.7";
-              nextCardRef.current.style.transition = "none";
-            }
-
-            requestAnimationFrame(() => {
-              if (currentCardRef.current) {
-                currentCardRef.current.style.transition = `transform ${SWIPE_CONFIG.ANIMATION_DURATION}ms cubic-bezier(0.23, 1, 0.32, 1)`;
-              }
-              if (nextCardRef.current) {
-                nextCardRef.current.style.transition = `transform ${
-                  SWIPE_CONFIG.ANIMATION_DURATION / 2
-                }ms ease`;
-              }
-            });
+            resetCardPosition();
 
             isSwipingRef.current = false;
             setIsAutoSwiping(false);
+            setIsSwiping(false);
             resetAutoSwipe();
           }, 0);
         }
@@ -128,50 +136,54 @@ export const useCardStack = (initialCards) => {
 
       animationFrameRef.current = requestAnimationFrame(animate);
     },
-    [initialCards]
+    [validCards, next, resetCardPosition]
   );
 
   const resetAutoSwipe = useCallback(() => {
     clearTimeout(autoSwipeTimeoutRef.current);
-    autoSwipeTimeoutRef.current = setTimeout(() => {
-      if (!isSwipingRef.current) {
-        triggerSwipe(true);
-      }
-    }, SWIPE_CONFIG.AUTO_SWIPE_DELAY);
-  }, [triggerSwipe]);
+    if (
+      !isSwipingRef.current &&
+      !isDraggingRef.current &&
+      validCards.length > 1
+    ) {
+      autoSwipeTimeoutRef.current = setTimeout(() => {
+        if (!isSwipingRef.current && !isDraggingRef.current) {
+          triggerSwipe(true);
+        }
+      }, SWIPE_CONFIG.AUTO_SWIPE_DELAY);
+    }
+  }, [triggerSwipe, validCards]);
 
   useEffect(() => {
     resetAutoSwipe();
-  }, [stack, resetAutoSwipe]);
+    return () => clearTimeout(autoSwipeTimeoutRef.current);
+  }, [currentIndex, resetAutoSwipe, validCards]);
 
-  const updateCardPosition = useCallback((x, isInstant = false) => {
-    if (
-      !currentCardRef.current ||
-      !nextCardRef.current ||
-      cardWidthRef.current === 0
-    )
-      return;
+  const updateCardPosition = useCallback(
+    (x, isInstant = false) => {
+      if (!currentCardRef.current || cardWidthRef.current === 0) return;
 
-    const progress = Math.min(Math.max(x / cardWidthRef.current, 0), 1);
-    const rotation = (x / cardWidthRef.current) * SWIPE_CONFIG.MAX_ROTATION;
+      const progress = Math.min(Math.max(x / cardWidthRef.current, 0), 1);
+      const rotation = (x / cardWidthRef.current) * SWIPE_CONFIG.MAX_ROTATION;
 
-    currentCardRef.current.style.transform = `translate3d(${x}px,0,0) rotate(${rotation}deg)`;
-    currentCardRef.current.style.transition = isInstant
-      ? "none"
-      : `transform ${SWIPE_CONFIG.ANIMATION_DURATION}ms cubic-bezier(0.23, 1, 0.32, 1)`;
+      currentCardRef.current.style.transform = `translateX(${x}px) rotate(${rotation}deg)`;
+      currentCardRef.current.style.transition = isInstant ? "none" : "";
 
-    const scale =
-      SWIPE_CONFIG.NEXT_SCALE_MIN +
-      (SWIPE_CONFIG.NEXT_SCALE_MAX - SWIPE_CONFIG.NEXT_SCALE_MIN) * progress;
-    nextCardRef.current.style.transform = `scale(${scale})`;
-    nextCardRef.current.style.transition = isInstant
-      ? "none"
-      : `transform ${SWIPE_CONFIG.ANIMATION_DURATION / 2}ms ease`;
-  }, []);
+      if (nextCardRef.current && next) {
+        const scale =
+          SWIPE_CONFIG.NEXT_SCALE_MIN +
+          (SWIPE_CONFIG.NEXT_SCALE_MAX - SWIPE_CONFIG.NEXT_SCALE_MIN) *
+            progress;
+        nextCardRef.current.style.transform = `scale(${scale})`;
+        nextCardRef.current.style.transition = isInstant ? "none" : "";
+      }
+    },
+    [next]
+  );
 
   const handleStart = useCallback(
     (clientX) => {
-      if (isAutoSwiping) return;
+      if (validCards.length <= 1) return;
 
       cancelAnimationFrame(animationFrameRef.current);
       clearTimeout(autoSwipeTimeoutRef.current);
@@ -180,28 +192,32 @@ export const useCardStack = (initialCards) => {
       lastSwipeX.current = clientX;
       swipeStartTime.current = Date.now();
       isSwipingRef.current = true;
+      isDraggingRef.current = true;
       setIsSwiping(true);
 
       if (currentCardRef.current) {
         currentCardRef.current.style.transition = "none";
       }
-      if (nextCardRef.current) {
+      if (nextCardRef.current && next) {
         nextCardRef.current.style.transition = "none";
       }
     },
-    [isAutoSwiping]
+    [validCards, next]
   );
 
   const handleMove = useCallback(
     (clientX) => {
-      if (!isSwipingRef.current || cardWidthRef.current === 0) return;
+      if (
+        !isSwipingRef.current ||
+        !isDraggingRef.current ||
+        cardWidthRef.current === 0
+      )
+        return;
 
       const deltaX = clientX - swipeStartX.current;
-      const clampedX = Math.min(
-        Math.max(deltaX, 0),
-        cardWidthRef.current * 0.8
-      );
+      if (deltaX < 0) return;
 
+      const clampedX = Math.min(deltaX, cardWidthRef.current * 0.8);
       updateCardPosition(clampedX, true);
       lastSwipeX.current = clientX;
     },
@@ -209,8 +225,15 @@ export const useCardStack = (initialCards) => {
   );
 
   const handleEnd = useCallback(() => {
-    if (!isSwipingRef.current || cardWidthRef.current === 0) {
+    if (
+      !isSwipingRef.current ||
+      !isDraggingRef.current ||
+      cardWidthRef.current === 0
+    ) {
+      isDraggingRef.current = false;
       setIsSwiping(false);
+      resetCardPosition();
+      resetAutoSwipe();
       return;
     }
 
@@ -223,46 +246,40 @@ export const useCardStack = (initialCards) => {
       velocity > SWIPE_CONFIG.THRESHOLD_VELOCITY ||
       distanceProgress > SWIPE_CONFIG.THRESHOLD_DISTANCE;
 
-    if (shouldSwipe) {
+    isDraggingRef.current = false;
+
+    if (shouldSwipe && validCards.length > 1) {
       triggerSwipe();
     } else {
-      if (currentCardRef.current) {
-        currentCardRef.current.style.transition = `transform ${SWIPE_CONFIG.ANIMATION_DURATION}ms cubic-bezier(0.23, 1, 0.32, 1)`;
-        currentCardRef.current.style.transform = "translateX(0) rotate(0)";
-      }
-
-      if (nextCardRef.current) {
-        nextCardRef.current.style.transition = `transform ${
-          SWIPE_CONFIG.ANIMATION_DURATION / 2
-        }ms ease`;
-        nextCardRef.current.style.transform = `scale(${SWIPE_CONFIG.NEXT_SCALE_MIN})`;
-      }
-
+      resetCardPosition();
       setTimeout(() => {
         isSwipingRef.current = false;
         setIsSwiping(false);
         resetAutoSwipe();
       }, SWIPE_CONFIG.ANIMATION_DURATION);
     }
-  }, [resetAutoSwipe, triggerSwipe]);
+  }, [resetAutoSwipe, triggerSwipe, validCards, resetCardPosition]);
 
   const handleTouchStart = useCallback(
     (e) => {
-      handleStart(e.touches[0].clientX);
+      if (e.touches?.[0]) {
+        handleStart(e.touches[0].clientX);
+      }
     },
     [handleStart]
   );
 
   const handleTouchMove = useCallback(
     (e) => {
-      if (!isSwipingRef.current) return;
+      if (!isSwipingRef.current || !e.touches?.[0]) return;
       handleMove(e.touches[0].clientX);
+      if (e.cancelable) e.preventDefault();
     },
     [handleMove]
   );
 
   const handleTouchEnd = useCallback(() => {
-    if (isSwipingRef.current) handleEnd();
+    if (isSwipingRef.current && isDraggingRef.current) handleEnd();
   }, [handleEnd]);
 
   const handleMouseDown = useCallback(
@@ -276,8 +293,9 @@ export const useCardStack = (initialCards) => {
 
   const handleMouseMove = useCallback(
     (e) => {
-      if (!isSwipingRef.current) return;
-      handleMove(e.clientX);
+      if (isSwipingRef.current && isDraggingRef.current) {
+        handleMove(e.clientX);
+      }
     },
     [handleMove]
   );
@@ -285,22 +303,28 @@ export const useCardStack = (initialCards) => {
   const handleMouseUp = useCallback(() => {
     document.removeEventListener("mousemove", handleMouseMove);
     document.removeEventListener("mouseup", handleMouseUp);
-    if (isSwipingRef.current) handleEnd();
+    if (isSwipingRef.current && isDraggingRef.current) handleEnd();
   }, [handleEnd, handleMouseMove]);
 
   useEffect(() => {
-    const card = currentCardRef.current;
-    if (!card) return;
+    if (currentCardRef.current) {
+      const preventSelect = (e) => {
+        if (isSwipingRef.current || isDraggingRef.current) e.preventDefault();
+      };
 
-    const preventSelect = (e) => {
-      if (isSwipingRef.current) e.preventDefault();
-    };
-
-    card.addEventListener("selectstart", preventSelect);
-    return () => {
-      card.removeEventListener("selectstart", preventSelect);
-    };
+      currentCardRef.current.addEventListener("selectstart", preventSelect);
+      return () => {
+        currentCardRef.current.removeEventListener(
+          "selectstart",
+          preventSelect
+        );
+      };
+    }
   }, []);
+
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [validCards]);
 
   return useMemo(
     () => ({
@@ -315,8 +339,6 @@ export const useCardStack = (initialCards) => {
       handleTouchStart,
       handleTouchMove,
       handleTouchEnd,
-      triggerSwipe,
-      resetAutoSwipe,
     }),
     [
       current,
@@ -327,8 +349,6 @@ export const useCardStack = (initialCards) => {
       handleTouchStart,
       handleTouchMove,
       handleTouchEnd,
-      triggerSwipe,
-      resetAutoSwipe,
     ]
   );
 };
