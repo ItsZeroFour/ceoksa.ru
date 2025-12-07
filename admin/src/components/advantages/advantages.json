@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_advantages_advantages",
+  "info": {
+    "displayName": "advantages",
+    "icon": "thumbUp"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    }
+  },
+  "config": {}
+}

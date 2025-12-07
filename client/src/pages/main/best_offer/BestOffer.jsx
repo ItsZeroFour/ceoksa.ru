@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import style from "./bestoffer.module.scss";
 import { Link } from "react-router-dom";
 import tbank from "../../../assets/icons/tbank.png";
@@ -6,41 +6,30 @@ import vtb from "../../../assets/icons/vtb.png";
 import sber from "../../../assets/icons/sber.svg";
 import { useCardStack } from "../../../hooks/useCardStack";
 import { SWIPE_CONFIG } from "../../../config/swipeConfig";
-
-const initialCards = [
-  {
-    id: 1,
-    subtitle: "На любые цели",
-    bank: "Т-Банк",
-    offer: "Новое предложение",
-    cost: "22,9-24,95%",
-    monthly: "от 373 ₽",
-    sum: "до 2 млн ₽",
-    img: tbank,
-  },
-  {
-    id: 2,
-    subtitle: "Крупные покупки",
-    bank: "Сбер банк",
-    offer: "Специально для вас",
-    cost: "17,3-19,4%",
-    monthly: "от 510 ₽",
-    sum: "до 3 млн ₽",
-    img: sber,
-  },
-  {
-    id: 3,
-    subtitle: "На любые цели",
-    bank: "ВТБ",
-    offer: "Выбор клиентов",
-    cost: "19,2-21,5%",
-    monthly: "от 420 ₽",
-    sum: "до 1.5 млн ₽",
-    img: vtb,
-  },
-];
+import { useDispatch, useSelector } from "react-redux";
+import { fetchBestoffer } from "../../../redux/slices/strapi/bestofferSlice";
+import BestOfferSceleton from "../../../components/sceletons/BestOfferSceleton";
 
 const BestOffer = ({ scrollToBlock }) => {
+  const dispatch = useDispatch();
+
+  const { data, status, error } = useSelector((state) => state.bestoffer);
+
+  useEffect(() => {
+    dispatch(fetchBestoffer("luchshie-predlozheniya?populate=cards.logo"));
+  }, [dispatch]);
+
+  const isDataReady =
+    status === "succeeded" &&
+    data?.cards &&
+    Array.isArray(data.cards) &&
+    data.cards.length > 0 &&
+    data?.title &&
+    data?.description &&
+    data?.button_text;
+
+  const cards = isDataReady && data.cards;
+
   const {
     current,
     next,
@@ -52,70 +41,78 @@ const BestOffer = ({ scrollToBlock }) => {
     handleTouchStart,
     handleTouchMove,
     handleTouchEnd,
-  } = useCardStack(initialCards);
+  } = useCardStack(cards);
 
   return (
     <section className={style.best_offer}>
       <div className="container">
-        <div className={style.best_offer__wrapper}>
-          <div className={style.best_offer__left}>
-            <h2>
-              Лучшие предложения <br /> на сегодня
-            </h2>
-            <p>
-              Лучшие предложения от ведущих банков с минимальными ставками и
-              прозрачными условиями
-            </p>
-            <Link to="#" onClick={() => scrollToBlock("credit")}>
-              Оставить заявку
-            </Link>
-          </div>
+        {!isDataReady && current === undefined && next === undefined ? (
+          <BestOfferSceleton />
+        ) : (
+          <div className={style.best_offer__wrapper}>
+            <div className={style.best_offer__left}>
+              <h2>
+                {data.title !== undefined &&
+                  data.title.split("\\n").map((line, i, arr) => (
+                    <React.Fragment key={i}>
+                      {line.trim()}
+                      {i < arr.length - 1 && <br />}
+                    </React.Fragment>
+                  ))}
+              </h2>
+              <p>{data.description}</p>
+              <Link to="#" onClick={() => scrollToBlock("credit")}>
+                {data.button_text}
+              </Link>
+            </div>
 
-          <div className={style.best_offer__right__container}>
-            <div
-              ref={containerRef}
-              className={style.stack}
-              onMouseDown={handleMouseDown}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-              onTouchCancel={handleTouchEnd}
-              style={{ touchAction: "pan-y" }}
-            >
+            <div className={style.best_offer__right__container}>
               <div
-                ref={nextCardRef}
-                className={`${style.best_offer__right} ${style.best_offer__right__next}`}
-                style={{
-                  transform: `scale(${SWIPE_CONFIG.NEXT_SCALE_MIN})`,
-                  opacity: "0.7",
-                  zIndex: 1,
-                  transition: `transform ${
-                    SWIPE_CONFIG.ANIMATION_DURATION / 2
-                  }ms ease, opacity ${
-                    SWIPE_CONFIG.ANIMATION_DURATION / 2
-                  }ms ease`,
-                }}
+                ref={containerRef}
+                className={style.stack}
+                onMouseDown={handleMouseDown}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                onTouchCancel={handleTouchEnd}
+                style={{ touchAction: "pan-y" }}
               >
-                <CardContent data={next} />
-              </div>
+                {console.log(current)}
+                <div
+                  ref={nextCardRef}
+                  className={`${style.best_offer__right} ${style.best_offer__right__next}`}
+                  style={{
+                    transform: `scale(${SWIPE_CONFIG.NEXT_SCALE_MIN})`,
+                    opacity: "0.7",
+                    zIndex: 1,
+                    transition: `transform ${
+                      SWIPE_CONFIG.ANIMATION_DURATION / 2
+                    }ms ease, opacity ${
+                      SWIPE_CONFIG.ANIMATION_DURATION / 2
+                    }ms ease`,
+                  }}
+                >
+                  <CardContent data={next} />
+                </div>
 
-              <div
-                key={current.id}
-                ref={currentCardRef}
-                className={style.best_offer__right}
-                style={{
-                  transform: "translateX(0) rotate(0)",
-                  opacity: "1",
-                  zIndex: 2,
-                  cursor: isSwiping ? "grabbing" : "grab",
-                  transition: `transform ${SWIPE_CONFIG.ANIMATION_DURATION}ms cubic-bezier(0.23, 1, 0.32, 1)`,
-                }}
-              >
-                <CardContent data={current} />
+                <div
+                  key={current.id}
+                  ref={currentCardRef}
+                  className={style.best_offer__right}
+                  style={{
+                    transform: "translateX(0) rotate(0)",
+                    opacity: "1",
+                    zIndex: 2,
+                    cursor: isSwiping ? "grabbing" : "grab",
+                    transition: `transform ${SWIPE_CONFIG.ANIMATION_DURATION}ms cubic-bezier(0.23, 1, 0.32, 1)`,
+                  }}
+                >
+                  <CardContent data={current} />
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );
@@ -125,27 +122,30 @@ const CardContent = ({ data }) => (
   <>
     <div className={style.best_offer__right__top}>
       <div className={style.best_offer__right__top__bank}>
-        <img src={data.img} alt={data.bank} />
+        <img
+          src={`${process.env.REACT_APP_ADMIN_IMAGES}${data.logo.url}`}
+          alt={data.bank_name}
+        />
         <div className={style.best_offer__right__top__title}>
-          <p>{data.subtitle}</p>
-          <h3>{data.bank}</h3>
+          <p>{data.for}</p>
+          <h3>{data.bank_name}</h3>
         </div>
       </div>
       <div className={style.best_offer__right__top__die}>
-        <p>{data.offer}</p>
+        <p>{data.die}</p>
       </div>
     </div>
 
     <div className={style.best_offer__right__main}>
       <div className={style.best_offer__right__main__credit_item}>
         <p>Полная стоимость кредита</p>
-        <p>{data.cost}</p>
+        <p>{data.full_price}</p>
       </div>
 
       <div className={style.best_offer__right__main__other}>
         <div className={style.best_offer__right__main__credit_item}>
           <p>Платёж в месяц</p>
-          <p>{data.monthly}</p>
+          <p>{data.month_pay}</p>
         </div>
         <div className={style.best_offer__right__main__credit_item}>
           <p>Сумма кредита</p>

@@ -1,63 +1,52 @@
-import React from "react";
+import React, { useEffect } from "react";
 import style from "./head.module.scss";
-import img from "../../../assets/images/main/head.webp";
+// import img from "../../../assets/images/main/head.webp";
 import { Link } from "react-router-dom";
-import {
-  motion,
-  useMotionValue,
-  useTransform,
-  useAnimationFrame,
-} from "framer-motion";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchHead } from "../../../redux/slices/strapi/headSlice";
+import HeadSceleton from "../../../components/sceletons/HeadSceleton";
 
 const Head = ({ scrollToBlock }) => {
-  const angle = useMotionValue(0);
+  const dispatch = useDispatch();
 
-  useAnimationFrame((t) => {
-    const newAngle = (t / 8000) * Math.PI * 2;
-    angle.set(newAngle);
-  });
+  const { data, status, error } = useSelector((state) => state.head);
 
-  const radius = 100;
-
-  const x = useTransform(angle, (a) => Math.cos(a) * radius);
-  const y = useTransform(angle, (a) => Math.sin(a) * radius);
+  useEffect(() => {
+    dispatch(fetchHead("shapka?populate=*"));
+  }, [dispatch]);
 
   return (
     <section className={style.head}>
       <div className="container">
-        <div className={style.head__wrapper}>
-          <div className={style.head__text}>
-            <h1>Кредитная биржа ОКСА. Экономия на кредите до 30%</h1>
-            <p>Подберём кредит в любом банке на лучших условиях</p>
+        {status === "loading" || status === "failed" ? (
+          <HeadSceleton />
+        ) : (
+          <div className={style.head__wrapper}>
+            <div className={style.head__text}>
+              <h1>{data.title}</h1>
+              <p>{data.description}</p>
 
-            <Link to="#" onClick={() => scrollToBlock("credit")}>
+              <Link to="#" onClick={() => scrollToBlock("credit")}>
+                {data.button_text}
+              </Link>
+            </div>
+
+            <div className={style.head__img}>
+              <img
+                src={`${process.env.REACT_APP_ADMIN_IMAGES}${data.image?.url}`}
+                alt="main"
+              />
+            </div>
+
+            <Link
+              className={style.head__link__mobile}
+              to="#"
+              onClick={() => scrollToBlock("credit")}
+            >
               Оставить заявку
             </Link>
           </div>
-
-          <div className={style.head__img}>
-            <motion.img
-              src={img}
-              alt="main"
-              // animate={{
-              //   x: [-20, 20, -20],
-              // }}
-              // transition={{
-              //   duration: 10,
-              //   repeat: Infinity,
-              //   ease: "easeInOut",
-              // }}
-            />
-          </div>
-
-          <Link
-            className={style.head__link__mobile}
-            to="#"
-            onClick={() => scrollToBlock("credit")}
-          >
-            Оставить заявку
-          </Link>
-        </div>
+        )}
       </div>
     </section>
   );
