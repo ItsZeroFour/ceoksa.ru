@@ -430,6 +430,138 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiBankiPartneryBankiPartnery extends Struct.SingleTypeSchema {
+  collectionName: 'banki_partneries';
+  info: {
+    displayName: '\u0411\u0430\u043D\u043A\u0438-\u043F\u0430\u0440\u0442\u043D\u0435\u0440\u044B';
+    pluralName: 'banki-partneries';
+    singularName: 'banki-partnery';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    banks: Schema.Attribute.DynamicZone<['banks.bank']> &
+      Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::banki-partnery.banki-partnery'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiBezopasnostBezopasnost extends Struct.SingleTypeSchema {
+  collectionName: 'bezopasnosts';
+  info: {
+    displayName: '\u0411\u0435\u0437\u043E\u043F\u0430\u0441\u043D\u043E\u0441\u0442\u044C';
+    pluralName: 'bezopasnosts';
+    singularName: 'bezopasnost';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    list_item_1_text_1: Schema.Attribute.Text & Schema.Attribute.Required;
+    list_item_1_text_2: Schema.Attribute.Text & Schema.Attribute.Required;
+    list_item_1_text_3: Schema.Attribute.Text & Schema.Attribute.Required;
+    list_item_1_title: Schema.Attribute.String & Schema.Attribute.Required;
+    list_item_2_text_1: Schema.Attribute.Text & Schema.Attribute.Required;
+    list_item_2_text_2: Schema.Attribute.Text & Schema.Attribute.Required;
+    list_item_2_text_3: Schema.Attribute.Text & Schema.Attribute.Required;
+    list_item_2_title: Schema.Attribute.String & Schema.Attribute.Required;
+    list_item_3_number_phone: Schema.Attribute.String &
+      Schema.Attribute.Required;
+    list_item_3_number_work: Schema.Attribute.String &
+      Schema.Attribute.Required;
+    list_item_3_text: Schema.Attribute.Text & Schema.Attribute.Required;
+    list_item_3_title: Schema.Attribute.String & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::bezopasnost.bezopasnost'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiFuterFuter extends Struct.SingleTypeSchema {
+  collectionName: 'futers';
+  info: {
+    displayName: '\u0424\u0443\u0442\u0435\u0440';
+    pluralName: 'futers';
+    singularName: 'futer';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::futer.futer'> &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    text: Schema.Attribute.Text;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiKakPoluchitKreditKakPoluchitKredit
+  extends Struct.SingleTypeSchema {
+  collectionName: 'kak_poluchit_kredits';
+  info: {
+    displayName: '\u041A\u0430\u043A \u043F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u043A\u0440\u0435\u0434\u0438\u0442';
+    pluralName: 'kak-poluchit-kredits';
+    singularName: 'kak-poluchit-kredit';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    card_text_1: Schema.Attribute.Text & Schema.Attribute.Required;
+    card_text_2: Schema.Attribute.Text & Schema.Attribute.Required;
+    card_text_3: Schema.Attribute.Text & Schema.Attribute.Required;
+    card_title_1: Schema.Attribute.String & Schema.Attribute.Required;
+    card_title_2: Schema.Attribute.String & Schema.Attribute.Required;
+    card_title_3: Schema.Attribute.String & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::kak-poluchit-kredit.kak-poluchit-kredit'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiKreditKredit extends Struct.SingleTypeSchema {
   collectionName: 'kredits';
   info: {
@@ -517,6 +649,38 @@ export interface ApiPreimushhestvaPreimushhestva
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiServichServich extends Struct.SingleTypeSchema {
+  collectionName: 'serviches';
+  info: {
+    displayName: '\u0421\u0435\u0440\u0432\u0438\u0441';
+    pluralName: 'serviches';
+    singularName: 'servich';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text & Schema.Attribute.Required;
+    description_2: Schema.Attribute.Text & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::servich.servich'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    service: Schema.Attribute.DynamicZone<['service.nash-servis']> &
+      Schema.Attribute.Required;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1065,9 +1229,14 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::banki-partnery.banki-partnery': ApiBankiPartneryBankiPartnery;
+      'api::bezopasnost.bezopasnost': ApiBezopasnostBezopasnost;
+      'api::futer.futer': ApiFuterFuter;
+      'api::kak-poluchit-kredit.kak-poluchit-kredit': ApiKakPoluchitKreditKakPoluchitKredit;
       'api::kredit.kredit': ApiKreditKredit;
       'api::luchshie-predlozheniya.luchshie-predlozheniya': ApiLuchshiePredlozheniyaLuchshiePredlozheniya;
       'api::preimushhestva.preimushhestva': ApiPreimushhestvaPreimushhestva;
+      'api::servich.servich': ApiServichServich;
       'api::shapka.shapka': ApiShapkaShapka;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

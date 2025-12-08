@@ -3,6 +3,11 @@ import headReducer from "./slices/strapi/headSlice";
 import creditReducer from "./slices/strapi/creditSlice";
 import advantagesReducer from "./slices/strapi/advantagesSlice";
 import bestofferReducer from "./slices/strapi/bestofferSlice";
+import serviceReducer from "./slices/strapi/serviceSlice";
+import howgetReducer from "./slices/strapi/howgetSlice";
+import banksReducer from "./slices/strapi/banksSlice";
+import sequrityReducer from "./slices/strapi/sequritySlice";
+import footerSlice from "./slices/strapi/footerSlice";
 
 export const store = configureStore({
   reducer: {
@@ -10,5 +15,10 @@ export const store = configureStore({
     credit: creditReducer,
     advantages: advantagesReducer,
     bestoffer: bestofferReducer,
+    service: serviceReducer,
+    howget: howgetReducer,
+    banks: banksReducer,
+    sequrity: sequrityReducer,
+    footer: footerSlice,
   },
 });

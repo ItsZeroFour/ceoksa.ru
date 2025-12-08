@@ -1,0 +1,18 @@
+{
+    "kind": "singleType",
+    "collectionName": "futers",
+    "info": {
+        "singularName": "futer",
+        "pluralName": "futers",
+        "displayName": "Футер"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "text": {
+            "type": "text"
+        }
+    }
+}
