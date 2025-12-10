@@ -1,6 +1,7 @@
-# Точность на тестовых данных для разных глубин
-depths = ['shallow', 'medium', 'deep']
-test_accuracies = [0.9444, 0.9630, 0.9259]  # Примерные результаты
-
-# Количество параметров
-param_counts = [3643, 12771, 37451]  # Примерные значения
+model = tf.keras.Sequential([
+    tf.keras.layers.LSTM(256, input_shape=(5, 12), return_sequences=False),
+    tf.keras.layers.RepeatVector(3),
+    tf.keras.layers.LSTM(256, return_sequences=True),
+    tf.keras.layers.Dropout(0.3),
+    tf.keras.layers.TimeDistributed(tf.keras.layers.Dense(12, activation='softmax'))
+])
