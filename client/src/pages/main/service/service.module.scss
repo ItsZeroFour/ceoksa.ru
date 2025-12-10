@@ -41,7 +41,7 @@
 
   @media (max-width: 490px) {
     padding: 20px;
-    padding-bottom: 350px;
+    padding-bottom: 100px;
   }
 }
 
@@ -145,16 +145,17 @@
   }
 
   @media (max-width: 490px) {
-    top: 55%;
+    // top: 55%;
+    display: none;
   }
 
-  @media (max-width: 425px) {
-    top: 58%;
-  }
+  // @media (max-width: 425px) {
+  //   top: 58%;
+  // }
 
-  @media (max-width: 360px) {
-    // top: 60%;
-  }
+  // @media (max-width: 360px) {
+  //   // top: 60%;
+  // }
 }
 
 .service__list {
@@ -318,5 +319,10 @@
         width: 80%;
       }
     }
+  }
+
+  @media (max-width: 490px) {
+    top: 82%;
+    width: 92.5%;
   }
 }
