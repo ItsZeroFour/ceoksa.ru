@@ -128,7 +128,20 @@
 
   a {
     img {
-      width: 80%;
+      width: 166px;
+
+      @media (max-width: 768px) {
+        width: 146px;
+        height: auto;
+      }
+  
+      @media (max-width: 480px) {
+        width: 127px;
+      }
+  
+      @media (max-width: 360px) {
+        width: 117px;
+      }
     }
   }
 
