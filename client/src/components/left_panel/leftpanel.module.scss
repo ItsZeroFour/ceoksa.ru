@@ -128,19 +128,19 @@
 
   a {
     img {
-      width: 166px;
+      width: 196px;
 
       @media (max-width: 768px) {
-        width: 146px;
+        width: 176px;
         height: auto;
       }
-  
+
       @media (max-width: 480px) {
-        width: 127px;
+        width: 157px;
       }
-  
+
       @media (max-width: 360px) {
-        width: 117px;
+        width: 137px;
       }
     }
   }
