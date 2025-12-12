@@ -119,6 +119,8 @@ const Credit = () => {
 
                     <input
                       className="credit__main__form__item__total"
+                      type="number"
+                      inputMode="numeric"
                       value={value === 0 ? "0" : value.toLocaleString()}
                       onChange={handleTotalChange}
                       onFocus={handleTotalFocus}
