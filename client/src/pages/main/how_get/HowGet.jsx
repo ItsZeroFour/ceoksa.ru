@@ -52,9 +52,9 @@ const HowGet = ({ scrollToBlock }) => {
                   />
                 </div>
 
-                <Link to="#" onClick={() => scrollToBlock("credit")}>
+                {/* <Link to="#" onClick={() => scrollToBlock("credit")}>
                   Оставить заявку
-                </Link>
+                </Link> */}
               </li>
 
               <li className={style.howget__item}>

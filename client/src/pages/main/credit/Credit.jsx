@@ -27,7 +27,7 @@ const TERMS = [
 const TARGETS = [
   { value: "cash", title: "Кредит наличными" },
   { value: "mortgage", title: "Ипотека" },
-  { value: "car", title: "Автокредит" },
+  { value: "car", title: "Покупка авто" },
   { value: "education", title: "Образование" },
   { value: "renovation", title: "Ремонт" },
   { value: "travel", title: "Путешествия" },
@@ -62,16 +62,20 @@ const Credit = () => {
   } = useSalaryValidation();
 
   const handleTotalChange = (event) => {
-    let inputValue = event.target.value;
-    inputValue = inputValue.replace(/\D/g, "");
+    let inputValue = event.target.value.replace(/\D/g, "");
 
     if (inputValue === "") {
       setValue(0);
       return;
     }
 
-    const numValue = Number(inputValue);
-    setValue(numValue < 0 ? 0 : numValue);
+    let numValue = Number(inputValue);
+
+    if (numValue > 10_000_000) {
+      numValue = 10_000_000;
+    }
+
+    setValue(numValue);
   };
 
   const handleTotalFocus = (event) => {
@@ -105,7 +109,9 @@ const Credit = () => {
                     <button
                       type="button"
                       onClick={() =>
-                        setValue((prev) => Math.max(0, prev - 1000))
+                        setValue((prev) =>
+                          Math.min(10_000_000, Math.max(0, prev - 1000))
+                        )
                       }
                     >
                       <Minus />
@@ -117,11 +123,14 @@ const Credit = () => {
                       onChange={handleTotalChange}
                       onFocus={handleTotalFocus}
                       onBlur={handleTotalBlur}
+                      max="10000000"
                     />
 
                     <button
                       type="button"
-                      onClick={() => setValue((prev) => prev + 1000)}
+                      onClick={() =>
+                        setValue((prev) => Math.min(10_000_000, prev + 1000))
+                      }
                     >
                       <Plus />
                     </button>
@@ -170,7 +179,7 @@ const Credit = () => {
                       <p>Размер заработной платы</p>
                       <div className="credit__main__form__item__input__container">
                         <input
-                          type="text"
+                          type="number"
                           inputMode="numeric"
                           placeholder="Например, 100 000 ₽"
                           value={displaySalary}
