@@ -26,7 +26,7 @@
     li {
       display: flex;
       background: var(--color-block-2-bg);
-      width: 320px;
+      width: 325px;
       position: relative;
       overflow: hidden;
 
@@ -70,7 +70,7 @@
         }
       }
 
-      @media (max-width: 1120px) {
+      @media (max-width: 1024px) {
         width: 26vw;
       }
 
