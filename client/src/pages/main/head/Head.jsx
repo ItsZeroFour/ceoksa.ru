@@ -43,7 +43,7 @@ const Head = ({ scrollToBlock }) => {
               to="#"
               onClick={() => scrollToBlock("credit")}
             >
-              Оставить заявку
+              {data.button_text}
             </Link>
           </div>
         )}
