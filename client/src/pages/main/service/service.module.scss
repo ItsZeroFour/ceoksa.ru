@@ -228,7 +228,8 @@
       }
 
       @media (max-width: 1024px) {
-        top: 25%;
+        top: 0%;
+        left: 70%;
       }
 
       @media (max-width: 960px) {
@@ -251,15 +252,20 @@
     }
 
     @media (max-width: 1024px) {
-      width: 300px;
+      width: 265px;
     }
 
     @media (max-width: 980px) {
       width: 260px;
     }
 
+    @media (max-width: 920px) {
+      width: 250px;
+    }
+    
+
     @media (max-width: 860px) {
-      width: 210px;
+      width: 240px;
 
       height: 200px;
     }
@@ -271,6 +277,10 @@
 
   @media (max-width: 768px) {
     gap: 10px;
+  }
+
+  @media (max-width: 920px) {
+    top: 85%;
   }
 
   @media (max-width: 710px) {
