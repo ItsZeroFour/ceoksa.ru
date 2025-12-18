@@ -54,27 +54,27 @@ const Service = () => {
                 />
               </div>
             </div>
+
+            {isDataReady && (
+              <ul className={style.service__list}>
+                {data.service.map((item, index) => (
+                  <li key={index} className={style.service__item}>
+                    <div className={style.service__item__text}>
+                      <h3>{item.title}</h3>
+                      <p>{item.description}</p>
+                    </div>
+                    <img
+                      src={`${process.env.REACT_APP_ADMIN_IMAGES}${item.image.url}`}
+                      loading="lazy"
+                      alt={item.title}
+                    />
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         )}
       </div>
-
-      {isDataReady && (
-        <ul className={style.service__list}>
-          {data.service.map((item, index) => (
-            <li key={index} className={style.service__item}>
-              <div className={style.service__item__text}>
-                <h3>{item.title}</h3>
-                <p>{item.description}</p>
-              </div>
-              <img
-                src={`${process.env.REACT_APP_ADMIN_IMAGES}${item.image.url}`}
-                loading="lazy"
-                alt={item.title}
-              />
-            </li>
-          ))}
-        </ul>
-      )}
     </section>
   );
 };
