@@ -115,12 +115,10 @@
     display: flex;
     white-space: nowrap;
     width: max-content;
-    // Критические флаги производительности
     will-change: transform;
     transform-style: preserve-3d;
     backface-visibility: hidden;
 
-    // Бесконечная анимация с точным расчётом
     animation: marqueeScroll linear infinite;
 
     @keyframes marqueeScroll {
@@ -134,10 +132,11 @@
   }
 
   &__item {
-    flex: 0 0 auto;
-    // Фикс субпиксельных сдвигов
     contain: layout paint;
-    // Отключение теней во время анимации
+
+    width: auto;
+    flex: 0 0 auto;
+
     @media (prefers-reduced-motion: no-preference) {
       box-shadow: none !important;
       transition: none !important;

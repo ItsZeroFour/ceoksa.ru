@@ -111,10 +111,6 @@
 
     transition: transform 0.2s ease;
 
-    &:hover {
-      transform: scale(1.05);
-    }
-
     @media (max-width: 1024px) {
       font-size: 14px;
     }
