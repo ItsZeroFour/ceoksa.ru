@@ -11,6 +11,8 @@ import { ReactComponent as Angle } from "../../assets/icons/left_panel/angle.svg
 import { ReactComponent as SignOut } from "../../assets/icons/left_panel/signout.svg";
 import { Link, useLocation } from "react-router-dom";
 import logo from "../../assets/logo.svg";
+import logoDark from "../../assets/logo-dark.svg";
+import { useTheme } from "../../hooks/useTheme";
 
 const personalItems = [
   { icon: <List />, text: "Заявка на кредит", path: "/loan_applications" },
@@ -31,9 +33,10 @@ const MobileLeftPanel = ({ setOpenMenu, openMenu }) => {
 
   const isActive = (path) => location.pathname === `/account${path}`;
 
+  const { theme } = useTheme();
+
   return (
     <div className={style.mobile_left_panel__main}>
-      {/* Затемнение фона */}
       <AnimatePresence>
         {openMenu && (
           <motion.div
@@ -82,7 +85,7 @@ const MobileLeftPanel = ({ setOpenMenu, openMenu }) => {
                 />
 
                 <Link to="/" onClick={() => setOpenMenu(false)}>
-                  <img src={logo} alt="лого" />
+                  <img src={theme === "light" ? logo : logoDark} alt="лого" />
                 </Link>
               </div>
 
