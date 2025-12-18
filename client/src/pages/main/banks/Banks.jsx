@@ -53,8 +53,6 @@ const Banks = () => {
     }
   }, [isDataReady]);
 
-  console.log(data);
-
   return (
     <section className={style.banks}>
       <div className="container">
@@ -68,15 +66,10 @@ const Banks = () => {
                 className={style.marquee__content}
                 style={{
                   animationDuration: `${duration}s`,
-                  transform: `translate3d(0, 0, 0)`,
                 }}
               >
-                {[...data.banks, ...data.banks].map((bank, logoIndex) => (
-                  <li
-                    key={`${logoIndex}`}
-                    className={style.marquee__item}
-                    style={{ willChange: "transform" }}
-                  >
+                {[...data.banks, ...data.banks].map((bank, i) => (
+                  <li key={i} className={style.marquee__item}>
                     <img
                       src={`${process.env.REACT_APP_ADMIN_IMAGES}${bank.logo.url}`}
                       alt=""
