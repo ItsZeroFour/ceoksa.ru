@@ -34,7 +34,7 @@ const Banks = () => {
 
     tweenRef.current = gsap.to(track, {
       x: `-=${totalWidth}`,
-      duration: totalWidth / SPEED,
+      duration: totalWidth / (window.innerWidth <= 768 ? 40 : 30),
       ease: "none",
       repeat: -1,
       modifiers: {
