@@ -243,10 +243,6 @@
       }
     }
 
-    &:hover {
-      transform: scale(1.02);
-    }
-
     @media (max-width: 1120px) {
       height: auto;
     }
@@ -286,19 +282,22 @@
     padding: 25px;
   }
 
+  @media (max-width: 480px) {
+    padding: 20px;
+  }
+
   @media (max-width: 710px) {
     overflow-x: auto;
     overflow-y: hidden;
     white-space: nowrap;
     flex-wrap: nowrap;
-    justify-content: flex-start !important;
-    width: 100% !important;
+    justify-content: flex-start;
+    width: calc(100vw - 30px);
     margin-left: auto;
     margin-right: auto;
     height: auto;
-    // padding: 0 25px;
-    // margin-top: 30px;
-    margin-top: 0;
+    padding: 0 20px;
+    padding-bottom: 20px;
 
     &::-webkit-scrollbar {
       display: none;
