@@ -37,14 +37,14 @@
 .checkmark svg {
   width: 10px;
   height: 10px;
-  color: var(--color-white);
+  color: var(--color-bg);
 }
 
 .checkbox_container:hover input ~ .checkmark {
-  border-color: var(--color-blue);
+  border-color: var(--color-text-button);
 }
 
 .checkbox_container input:checked ~ .checkmark {
-  background-color: var(--color-blue);
-  border-color: var(--color-blue);
+  background-color: var(--color-text-button);
+  border-color: var(--color-text-button);
 }
