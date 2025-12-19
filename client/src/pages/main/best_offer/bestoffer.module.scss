@@ -51,7 +51,7 @@
     }
 
     @media (max-width: 380px) {
-      top: 70%;
+      top: 65%;
     }
   }
 
@@ -60,6 +60,10 @@
     padding: 20px;
     padding-bottom: 150px;
     gap: 20px;
+  }
+
+  @media (max-width: 480px) {
+    padding-bottom: 130px;
   }
 }
 
@@ -125,8 +129,12 @@
       top: 72%;
     }
 
-    @media (max-width: 425px) {
+    @media (max-width: 480px) {
       top: 77%;
+    }
+
+    @media (max-width: 425px) {
+      top: 80%;
     }
   }
 
