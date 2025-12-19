@@ -39,6 +39,10 @@
       padding: 25px;
       border-radius: 16px;
 
+      &:hover {
+        transform: scale(0.98);
+      }
+
       p {
         font-size: 24px;
         font-weight: 600;
@@ -98,7 +102,7 @@
 
       @media (max-width: 480px) {
         // &:last-child {
-          width: 100%;
+        width: 100%;
         // }
       }
 
