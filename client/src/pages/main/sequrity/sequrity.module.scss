@@ -244,13 +244,13 @@
       gap: 10px;
     }
 
-    @media (max-width: 920px) {
+    @media (max-width: 768px) {
       overflow-x: auto;
       overflow-y: hidden;
       white-space: nowrap;
       flex-wrap: nowrap;
       justify-content: flex-start;
-      width: calc(100vw - 30px);
+      width: 90vw;
       margin-left: auto;
       margin-right: auto;
       height: auto;
@@ -274,9 +274,13 @@
         float: none;
       }
     }
+
+    @media (max-width: 710px) {
+      width: calc(100vw - 30px);
+    }
   }
 
-  @media (max-width: 920px) {
+  @media (max-width: 768px) {
     padding: 0 15px;
 
     // left: 10px;

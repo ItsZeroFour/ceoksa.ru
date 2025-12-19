@@ -286,13 +286,13 @@
     padding: 20px;
   }
 
-  @media (max-width: 710px) {
+  @media (max-width: 920px) {
     overflow-x: auto;
     overflow-y: hidden;
     white-space: nowrap;
     flex-wrap: nowrap;
     justify-content: flex-start;
-    width: calc(100vw - 30px);
+    width: 97vw;
     margin-left: auto;
     margin-right: auto;
     height: auto;
@@ -332,6 +332,18 @@
         width: 80%;
       }
     }
+  }
+
+  @media (max-width: 768px) {
+    width: calc(87vw);
+  }
+
+  @media (max-width: 767px) {
+    width: calc(100%);
+  }
+
+  @media (max-width: 710px) {
+    width: calc(100vw - 30px);
   }
 
   @media (max-width: 490px) {
