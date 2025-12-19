@@ -134,8 +134,10 @@
 
       transition: all 0.2s ease;
 
-      &:hover {
-        transform: scale(1.02);
+      @media (hover: hover) and (pointer: fine) {
+        &:hover {
+          transform: scale(1.01);
+        }
       }
 
       p {
@@ -252,7 +254,7 @@
 
     @media (max-width: 768px) {
       overflow-x: auto;
-      overflow-y: hidden;
+      overflow-y: auto;
       white-space: nowrap;
       flex-wrap: nowrap;
       justify-content: flex-start;
