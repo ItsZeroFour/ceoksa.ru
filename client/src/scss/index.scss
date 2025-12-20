@@ -110,6 +110,14 @@ a {
   color: inherit;
   font-family: inherit;
   line-height: 140%;
+  user-select: none;
+}
+
+label,
+button,
+input,
+li {
+  user-select: none;
 }
 
 h1,
