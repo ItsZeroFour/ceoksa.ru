@@ -120,7 +120,7 @@ const Credit = () => {
                     <input
                       className="credit__main__form__item__total"
                       inputMode="numeric"
-                      value={value === 0 ? "0" : value.toLocaleString()}
+                      value={value === 0 ? "" : value}
                       onChange={handleTotalChange}
                       onFocus={handleTotalFocus}
                       onBlur={handleTotalBlur}
@@ -180,7 +180,7 @@ const Credit = () => {
                       <p>Размер заработной платы</p>
                       <div className="credit__main__form__item__input__container">
                         <input
-                          type="number"
+                          type="text"
                           inputMode="numeric"
                           placeholder="Например, 100 000 ₽"
                           value={displaySalary}
