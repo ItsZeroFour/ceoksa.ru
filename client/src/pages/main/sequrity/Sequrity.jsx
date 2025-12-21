@@ -135,13 +135,15 @@ const Sequrity = ({ scrollToBlock }) => {
               </div>
             </div>
 
-            <Link
-              className={style.sequrity__link}
-              to="#"
-              onClick={() => scrollToBlock("credit")}
-            >
-              {data.button_text}
-            </Link>
+            <div className={style.sequrity__link__container}>
+              <Link
+                className={style.sequrity__link}
+                to="#"
+                onClick={() => scrollToBlock("credit")}
+              >
+                {data.button_text}
+              </Link>
+            </div>
           </div>
         )}
       </div>
