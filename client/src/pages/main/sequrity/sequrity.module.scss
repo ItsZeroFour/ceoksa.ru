@@ -299,3 +299,25 @@
     // // transform: translateY(-50%);
   }
 }
+
+.sequrity__link {
+  display: block;
+  margin-top: 40px;
+  background: var(--color-red);
+  border-radius: 16px;
+  color: var(--color-white);
+  font-weight: 600;
+  padding: 21px 60px;
+  text-align: center;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: scale(0.98);
+  }
+
+  @media (max-width: 768px) {
+    padding: 15px 40px;
+    font-size: 14px;
+    margin-top: 60px;
+  }
+}

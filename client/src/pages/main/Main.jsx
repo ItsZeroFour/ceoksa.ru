@@ -18,7 +18,7 @@ const Main = ({ scrollToBlock }) => {
       <Service />
       <HowGet scrollToBlock={scrollToBlock} />
       <Banks />
-      <Sequrity />
+      <Sequrity scrollToBlock={scrollToBlock} />
     </div>
   );
 };

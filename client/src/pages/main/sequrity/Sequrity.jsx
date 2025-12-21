@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchSequrity } from "../../../redux/slices/strapi/sequritySlice";
 import SequritySceleton from "../../../components/sceletons/SequritySelector";
 
-const Sequrity = () => {
+const Sequrity = ({ scrollToBlock }) => {
   const dispatch = useDispatch();
 
   const { data, status, error } = useSelector((state) => state.sequrity);
@@ -134,6 +134,14 @@ const Sequrity = () => {
                 </ul>
               </div>
             </div>
+
+            <Link
+              className={style.sequrity__link}
+              to="#"
+              onClick={() => scrollToBlock("credit")}
+            >
+              {data.button_text}
+            </Link>
           </div>
         )}
       </div>
