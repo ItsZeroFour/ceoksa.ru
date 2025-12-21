@@ -329,4 +329,8 @@
     padding: 15px 40px;
     font-size: 14px;
   }
+
+  @media (max-width: 480px) {
+    width: 90%;
+  }
 }
