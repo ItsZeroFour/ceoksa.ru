@@ -1,5 +1,5 @@
 .service {
-  margin-top: 100px;
+  margin-top: 64px;
   position: relative;
 
   display: flex;
@@ -9,7 +9,7 @@
   align-items: center;
 
   @media (max-width: 768px) {
-    margin-top: 50px;
+    margin-top: 40px;
   }
 }
 
