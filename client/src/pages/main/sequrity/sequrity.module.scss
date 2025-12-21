@@ -300,9 +300,17 @@
   }
 }
 
+.sequrity__link__container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  margin-top: 40px;
+}
+
 .sequrity__link {
   display: block;
-  margin-top: 40px;
   background: var(--color-red);
   border-radius: 16px;
   color: var(--color-white);
@@ -311,6 +319,8 @@
   text-align: center;
   transition: all 0.2s ease;
 
+  width: fit-content;
+
   &:hover {
     transform: scale(0.98);
   }
@@ -318,6 +328,5 @@
   @media (max-width: 768px) {
     padding: 15px 40px;
     font-size: 14px;
-    margin-top: 60px;
   }
 }
