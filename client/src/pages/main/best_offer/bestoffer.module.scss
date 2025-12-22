@@ -55,6 +55,10 @@
     }
   }
 
+  @media (max-width: 1400px) {
+    padding: 30px;
+  }
+
   @media (max-width: 710px) {
     flex-direction: column;
     padding: 20px;
