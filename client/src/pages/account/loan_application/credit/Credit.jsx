@@ -21,7 +21,7 @@ const TERMS = [
 const TARGETS = [
   { value: "cash", title: "Кредит наличными" },
   { value: "mortgage", title: "Ипотека" },
-  { value: "car", title: "Автокредит" },
+  { value: "car", title: "Покупка авто" },
   { value: "education", title: "Образование" },
   { value: "renovation", title: "Ремонт" },
   { value: "travel", title: "Путешествия" },
