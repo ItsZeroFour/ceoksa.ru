@@ -78,6 +78,10 @@
         }
       }
 
+      @media (max-width: 1400px) {
+        padding: 30px;
+      }
+
       @media (max-width: 768px) {
         width: calc((100% - 20px) / 2);
       }
