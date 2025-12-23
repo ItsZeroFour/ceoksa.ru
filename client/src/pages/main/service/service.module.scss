@@ -299,7 +299,7 @@
     white-space: nowrap;
     flex-wrap: nowrap;
     justify-content: flex-start;
-    width: 97vw;
+    width: 96.1vw;
     margin-left: auto;
     margin-right: auto;
     height: auto;
@@ -351,7 +351,7 @@
   }
 
   @media (max-width: 710px) {
-    width: calc(100vw - 30px);
+    width: calc(100vw - 35px);
   }
 
   @media (max-width: 490px) {
