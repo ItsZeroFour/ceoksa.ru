@@ -277,6 +277,11 @@
     }
   }
 
+  @media (max-width: 1400px) {
+    padding: 30px;
+    padding-top: 0;
+  }
+
   @media (max-width: 768px) {
     gap: 10px;
   }
