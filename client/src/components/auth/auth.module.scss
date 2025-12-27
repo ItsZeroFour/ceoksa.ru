@@ -29,6 +29,11 @@
 
     gap: 20px;
 
+    & > a > img {
+      width: 157px;
+      height: auto;
+    }
+
     & > p {
       opacity: 0.5;
       font-size: 13px;
