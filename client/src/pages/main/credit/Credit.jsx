@@ -34,7 +34,7 @@ const TARGETS = [
   { value: "other", title: "Другое" },
 ];
 
-const Credit = () => {
+const Credit = ({ setOpenAuthMenu }) => {
   const [value, setValue] = useState(500_000);
   const [selectedTerm, setSelectedTerm] = useState(TERMS[5]);
   const [selectedTarget, setSelectedTarget] = useState(TARGETS[0]);
@@ -216,16 +216,23 @@ const Credit = () => {
                   </div>
                 </div>
 
-                <button className={style.credit__main__form__auth}>
-                  <img src={gosuslugi} alt="Госуслуги" /> Продолжить
-                  через Госуслуги
-                </button>
+                <div className="credit__buttons">
+                  <button
+                    type="button"
+                    className="credit__buttons__continue"
+                    onClick={() => setOpenAuthMenu(true)}
+                  >
+                    Продолжить
+                  </button>
+
+                  <button className={style.credit__main__form__auth} disabled>
+                    <img src={gosuslugi} alt="Госуслуги" /> Продолжить
+                    через Госуслуги
+                  </button>
+                </div>
               </form>
 
-              <Notification
-                text="Войдите через Госуслуги — мы заполним данные автоматически и рассчитаем
-                    ставку и сумму на основе кредитной истории"
-              />
+              <Notification text="Авторизация через Госуслуги находится в процессе разработки и скоро будет доступна" />
             </div>
           </div>
         )}

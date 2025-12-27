@@ -1,0 +1,288 @@
+.auth {
+  position: fixed;
+
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(5px);
+
+  width: 100vw;
+  height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 999;
+
+  .auth__wrapper {
+    background: var(--color-payments-modal-bg);
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid #777777;
+
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    gap: 20px;
+
+    & > p {
+      opacity: 0.5;
+      font-size: 13px;
+    }
+
+    p {
+      text-align: center;
+    }
+
+    .auth__text {
+      width: 460px;
+
+      h2 {
+        font-weight: 600;
+        font-family: "Inter", sans-serif;
+        font-size: 24px;
+        text-align: center;
+
+        @media (max-width: 430px) {
+          font-size: 18px;
+        }
+      }
+
+      p {
+        font-size: 16px;
+        font-weight: 300;
+        margin-top: 15px;
+        opacity: 0.8;
+
+        @media (max-width: 430px) {
+          font-size: 14px;
+        }
+      }
+
+      @media (max-width: 620px) {
+        width: 100%;
+      }
+    }
+
+    form {
+      width: 460px;
+
+      .auth__form__input {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        label {
+          opacity: 0.5;
+          font-size: 14px;
+        }
+
+        input {
+          padding: 20px;
+          border-radius: 15px;
+          background: var(--color-block-bg);
+          border: 1px solid var(--color-input-border);
+          color: var(--color-black);
+        }
+      }
+
+      button {
+        width: 100%;
+        margin-top: 12px;
+        padding: 15px;
+        border-radius: 14px;
+        background: var(--color-blue);
+        color: var(--color-white);
+        transition: all 0.2s ease;
+
+        &:hover {
+          opacity: 0.8;
+        }
+
+        @media (max-width: 430px) {
+          font-size: 14px;
+        }
+      }
+
+      p {
+        margin-top: 10px;
+        font-size: 13px;
+        text-align: left;
+        opacity: 0.6;
+        font-weight: 300;
+      }
+
+      .auth__code {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+
+        input {
+          width: 105px;
+          height: 65px;
+          border-radius: 15px;
+
+          background: var(--color-block-bg);
+          border: 1px solid var(--color-input-border);
+          color: var(--color-black);
+
+          font-size: 24px;
+
+          font-weight: 600;
+
+          text-align: center;
+
+          @media (max-width: 540px) {
+            width: 80px;
+            height: 50px;
+          }
+
+          @media (max-width: 430px) {
+            width: 60px;
+            height: 50px;
+          }
+        }
+      }
+
+      @media (max-width: 620px) {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 430px) {
+      gap: 12px;
+    }
+  }
+}
+
+.auth__or {
+  width: 460px;
+
+  .auth__or__text {
+    width: 100%;
+    position: relative;
+
+    margin-bottom: 20px;
+
+    &::before {
+      content: "";
+      position: absolute;
+
+      top: 50%;
+
+      width: 45%;
+
+      height: 1px;
+      background: #b7b7b7;
+
+      @media (max-width: 480px) {
+        width: 40%;
+      }
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+
+      top: 50%;
+
+      right: 0;
+
+      width: 45%;
+
+      height: 1px;
+      background: #b7b7b7;
+
+      @media (max-width: 480px) {
+        width: 40%;
+      }
+    }
+
+    p {
+      opacity: 0.5;
+      font-weight: 400;
+      font-size: 16px;
+    }
+  }
+
+  @media (max-width: 620px) {
+    width: 100%;
+  }
+}
+
+.auth__code_input.error {
+  border: 1px solid var(--color-red) !important;
+}
+
+.auth__code__error {
+  font-size: 13px;
+  color: var(--color-red);
+  margin-top: 5px !important ;
+}
+
+.auth__code__newcode {
+  width: 100%;
+  padding: 20px;
+  border-radius: 20px;
+  background: none;
+  border: 1px solid var(--color-blue);
+  color: var(--color-blue);
+
+  @media (max-width: 430px) {
+    font-size: 14px;
+  }
+}
+
+.auth__code__back {
+  background: none;
+  color: var(--color-blue);
+  text-decoration: underline;
+
+  @media (max-width: 430px) {
+    font-size: 14px;
+  }
+}
+
+.auth__close {
+  width: 24px;
+  height: 24px;
+
+  top: 0;
+  left: 90%;
+  margin-top: 20px;
+
+  background: none;
+
+  position: absolute;
+
+  &::before {
+    content: "";
+    position: absolute;
+
+    left: 0;
+
+    width: 100%;
+    height: 1px;
+    background: #666666;
+
+    transform: rotate(45deg);
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+
+    left: 0;
+
+    width: 100%;
+    height: 1px;
+    background: #666666;
+
+    transform: rotate(-45deg);
+  }
+}

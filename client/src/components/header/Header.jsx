@@ -8,7 +8,7 @@ import signin from "../../assets/icons/signin.svg";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../hooks/useTheme";
 
-const Header = ({ setOpenMenu, openMenu }) => {
+const Header = ({ setOpenMenu, openMenu, setOpenAuthMenu }) => {
   const navigation = useNavigate();
   const location = useLocation();
 
@@ -39,7 +39,8 @@ const Header = ({ setOpenMenu, openMenu }) => {
 
             <button
               className={style.header__button_signin}
-              onClick={() => navigation("/account/loan_applications")}
+              // onClick={() => navigation("/account/loan_applications")}
+              onClick={() => setOpenAuthMenu(true)}
             >
               <img src={signin} alt="Войти" />
               <p>Войти</p>
