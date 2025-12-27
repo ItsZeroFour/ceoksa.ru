@@ -70,29 +70,23 @@
 
 .credit__main__form__auth {
   width: 100%;
-  font-size: 16px;
-  font-weight: 600;
   padding: 20px;
-  background: var(--color-blue);
-  color: var(--color-white);
-
   border-radius: 16px;
-  margin-top: 10px;
+
+  background: #d9d9d9;
+  color: #b7b7b7;
 
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   gap: 10px;
 
-  transition: opacity 0.2s ease;
+  font-size: 17px;
 
   img {
     width: 24px;
     height: auto;
-  }
-
-  &:hover {
-    opacity: 0.8;
+    filter: grayscale(100%);
   }
 
   @media (max-width: 1450px) {
