@@ -12,6 +12,7 @@ import Notification from "../../../components/notification/Notification";
 import { useDispatch, useSelector } from "react-redux";
 import CreditSceleton from "../../../components/sceletons/CreditSceleton";
 import { fetchCredit } from "../../../redux/slices/strapi/creditSlice";
+import { useScreenWidth } from "../../../hooks/useScreenWidth";
 
 const TERMS = [
   { value: 3, title: "3 месяца" },
@@ -41,6 +42,8 @@ const Credit = ({ setOpenAuthMenu }) => {
   const [isTotalFocused, setIsTotalFocused] = useState(false);
   const termRef = useRef(null);
   const targetRef = useRef(null);
+
+  const screenWidth = useScreenWidth();
 
   const dispatch = useDispatch();
 
@@ -217,18 +220,43 @@ const Credit = ({ setOpenAuthMenu }) => {
                 </div>
 
                 <div className="credit__buttons">
-                  <button
-                    type="button"
-                    className="credit__buttons__continue"
-                    onClick={() => setOpenAuthMenu(true)}
-                  >
-                    Продолжить
-                  </button>
+                  {screenWidth >= 980 ? (
+                    <>
+                      <button
+                        className={style.credit__main__form__auth}
+                        disabled
+                      >
+                        <img src={gosuslugi} alt="Госуслуги" /> Продолжить
+                        через Госуслуги
+                      </button>
 
-                  <button className={style.credit__main__form__auth} disabled>
-                    <img src={gosuslugi} alt="Госуслуги" /> Продолжить
-                    через Госуслуги
-                  </button>
+                      <button
+                        type="button"
+                        className="credit__buttons__continue"
+                        onClick={() => setOpenAuthMenu(true)}
+                      >
+                        Продолжить
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        className="credit__buttons__continue"
+                        onClick={() => setOpenAuthMenu(true)}
+                      >
+                        Продолжить
+                      </button>
+
+                      <button
+                        className={style.credit__main__form__auth}
+                        disabled
+                      >
+                        <img src={gosuslugi} alt="Госуслуги" /> Продолжить
+                        через Госуслуги
+                      </button>
+                    </>
+                  )}
                 </div>
               </form>
 
