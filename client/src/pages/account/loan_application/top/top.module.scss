@@ -58,10 +58,6 @@
   border-radius: 16px;
 
   margin-top: 25px;
-
-  @media (max-width: 480px) {
-    align-items: start;
-  }
 }
 
 .top__main__name__avatar {
@@ -87,6 +83,8 @@
 }
 
 .top__main__name__main {
+  width: 100%;
+
   & > p {
     font-size: 24px;
     font-weight: 600;
