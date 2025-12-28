@@ -34,7 +34,7 @@ const Birth = () => {
             <div className={style.passport__item__text}>
               <InputField
                 label="Дата рождения"
-                placeholder="Например: 17 октября 1998"
+                placeholder="Например: 17.10.1998"
                 id="birth-date"
                 type="text"
                 value={birthDate}
