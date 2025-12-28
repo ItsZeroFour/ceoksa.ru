@@ -48,7 +48,7 @@ const Passport = () => {
             <div className={style.passport__item__text}>
               <InputField
                 label="Серия и номер паспорта"
-                placeholder="Серия и номер паспорта"
+                placeholder="Серия и номер"
                 id="passport-number"
                 type="text"
                 value={passportNumber}
@@ -63,7 +63,7 @@ const Passport = () => {
             <div className={style.passport__item__text}>
               <InputField
                 label="Дата выдачи"
-                placeholder="Дата выдачи паспорта"
+                placeholder="Дата выдачи"
                 id="issue-date"
                 type="text"
                 value={issueDate}
@@ -93,7 +93,7 @@ const Passport = () => {
             <div className={style.passport__item__text}>
               <InputField
                 label="Кем выдан"
-                placeholder="Укажите кем выдан паспорт"
+                placeholder="Укажите кем выдан"
                 id="issued-by"
                 type="text"
                 value={issuedBy}
