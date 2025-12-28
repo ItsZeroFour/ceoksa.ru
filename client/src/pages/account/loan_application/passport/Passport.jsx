@@ -2,12 +2,41 @@ import React, { useState } from "react";
 import style from "./passport.module.scss";
 import { ReactComponent as PassportIcon } from "../../../../assets/icons/account/passport.svg";
 import InputField from "../../../../components/input_field/InputField";
+import { useIMask } from "../../../../hooks/useIMask";
+import IMask from "imask";
 
 const Passport = () => {
   const [passportNumber, setPassportNumber] = useState("");
   const [issueDate, setIssueDate] = useState("");
   const [departmentCode, setDepartmentCode] = useState("");
   const [issuedBy, setIssuedBy] = useState("");
+
+  const passportMask = {
+    mask: "0000 000000",
+    lazy: true,
+    placeholderChar: "_",
+  };
+  const [passportRef] = useIMask(passportMask, setPassportNumber);
+
+  const dateMask = {
+    mask: Date,
+    pattern: "d{.}`m{.}`Y",
+    blocks: {
+      d: { mask: IMask.MaskedRange, from: 1, to: 31, maxLength: 2 },
+      m: { mask: IMask.MaskedRange, from: 1, to: 12, maxLength: 2 },
+      Y: { mask: IMask.MaskedRange, from: 1900, to: 2099, maxLength: 4 },
+    },
+    autofix: true,
+    lazy: true,
+  };
+  const [dateRef] = useIMask(dateMask, setIssueDate);
+
+  const departmentMask = {
+    mask: "000-000",
+    lazy: true,
+    placeholderChar: "_",
+  };
+  const [departmentRef] = useIMask(departmentMask, setDepartmentCode);
 
   return (
     <section className={style.passport}>
@@ -24,7 +53,8 @@ const Passport = () => {
                 type="text"
                 value={passportNumber}
                 icon={PassportIcon}
-                onChange={(e) => setPassportNumber(e.target.value)}
+                inputMode="numeric"
+                ref={passportRef}
               />
             </div>
           </li>
@@ -33,12 +63,13 @@ const Passport = () => {
             <div className={style.passport__item__text}>
               <InputField
                 label="Дата выдачи"
-                placeholder="Дату выдачи паспорта"
+                placeholder="Дата выдачи паспорта"
                 id="issue-date"
                 type="text"
                 value={issueDate}
                 icon={PassportIcon}
-                onChange={(e) => setIssueDate(e.target.value)}
+                inputMode="numeric"
+                ref={dateRef}
               />
             </div>
           </li>
@@ -52,7 +83,8 @@ const Passport = () => {
                 type="text"
                 value={departmentCode}
                 icon={PassportIcon}
-                onChange={(e) => setDepartmentCode(e.target.value)}
+                inputMode="numeric"
+                ref={departmentRef}
               />
             </div>
           </li>
@@ -61,7 +93,7 @@ const Passport = () => {
             <div className={style.passport__item__text}>
               <InputField
                 label="Кем выдан"
-                placeholder="Укажите код подразделения паспорта"
+                placeholder="Укажите кем выдан паспорт"
                 id="issued-by"
                 type="text"
                 value={issuedBy}

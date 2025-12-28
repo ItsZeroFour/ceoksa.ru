@@ -17,6 +17,7 @@ const InputField = forwardRef(
       children,
       onChange,
       fontSize,
+      inputMode,
     },
     ref
   ) => {
@@ -35,7 +36,7 @@ const InputField = forwardRef(
               : style.inputfield__content
           }`}
         >
-          {label && <label htmlFor={id}>{label}</label>}
+          {/* {label && <label htmlFor={id}>{label}</label>} */}
           <div className={style.inputwith__action}>
             <input
               id={id}
@@ -44,6 +45,7 @@ const InputField = forwardRef(
               onChange={onChange}
               readOnly={readOnly}
               {...fieldProps}
+              inputMode={inputMode || "text"}
               ref={ref}
               style={fontSize ? { fontSize: fontSize } : { fontSize: 16 }}
             />
