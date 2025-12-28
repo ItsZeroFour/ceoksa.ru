@@ -29,6 +29,13 @@ const Address = ({ setIsChecked, isChecked }) => {
     setRegistrationDate
   );
 
+  const apartmentMask = {
+    mask: "00000",
+    lazy: true,
+  };
+
+  const [apartmentRef] = useIMask(apartmentMask, setApartment);
+
   return (
     <section className={style.address}>
       <div className={style.address__wrapper}>
@@ -53,11 +60,11 @@ const Address = ({ setIsChecked, isChecked }) => {
                 label="Квартира"
                 placeholder="Номер квартиры"
                 id="apartment"
-                type="number"
+                type="text"
                 inputMode="numeric"
                 value={apartment}
                 icon={Location}
-                onChange={(e) => setApartment(e.target.value)}
+                ref={apartmentRef}
               />
             </div>
 
