@@ -8,6 +8,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import Contacts from "./contacts/Contacts";
 import Credit from "./credit/Credit";
 import MobileLeftPanel from "../../../components/mobile_left_panel/MobileLeftPanel";
+import Birth from "./birth/Birth";
+import PhotoPassport from "./photo_passport/PhotoPassport";
+import PhotoWithPassport from "./photo_with_passport/PhotoWithPassport";
 
 const LoanApplication = ({ setOpenMenu, openMenu }) => {
   const [isChecked, setIsChecked] = useState(true);
@@ -21,6 +24,7 @@ const LoanApplication = ({ setOpenMenu, openMenu }) => {
 
           <div className="loan_application__main">
             <Top />
+            <Birth />
             <Passport />
             <Address isChecked={isChecked} setIsChecked={setIsChecked} />
             <AnimatePresence>
@@ -38,6 +42,8 @@ const LoanApplication = ({ setOpenMenu, openMenu }) => {
               )}
             </AnimatePresence>
             <Contacts />
+            <PhotoPassport />
+            <PhotoWithPassport />
             <Credit />
           </div>
         </div>

@@ -1,4 +1,4 @@
-.passport {
+.birth {
   margin-top: 25px;
 
   @media (max-width: 480px) {
@@ -6,7 +6,7 @@
   }
 }
 
-.passport__wrapper {
+.birth__wrapper {
   padding: 35px;
   border-radius: 20px;
   background: var(--color-gray-secondary);
@@ -23,10 +23,11 @@
   ul {
     margin-top: 15px;
 
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
+
+    // display: grid;
+    // grid-template-columns: 1fr 1fr;
     gap: 15px;
-    width: 100%;
 
     li {
       padding: 10px;
@@ -37,6 +38,7 @@
       display: flex;
       align-items: center;
       gap: 15px;
+      width: 100%;
 
       &:nth-child(3) {
         // grid-column: 1 / -1;
@@ -68,7 +70,6 @@
         display: flex;
         flex-direction: column;
         gap: 5px;
-        width: 100%;
 
         p {
           &:first-child {
@@ -88,7 +89,6 @@
       }
 
       &:last-child {
-        grid-column: 1 / -1;
         align-items: start;
       }
 
@@ -107,54 +107,3 @@
     padding: 18px;
   }
 }
-
-.passport__item__icon {
-  svg {
-    color: var(--color-blue-secondary);
-  }
-}
-
-.passport__item__text__container {
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  grid-template-columns: repeat(3, 1fr);
-  height: 100%;
-  gap: 12px;
-
-  width: 100%;
-
-  .passport__item__text {
-    width: 100%;
-  }
-}
-
-.passport__item__text__container > :nth-child(1) {
-  grid-row: 1;
-  grid-column: 1;
-}
-
-.passport__item__text__container > :nth-child(2) {
-  grid-row: 1;
-  grid-column: 2;
-}
-
-.passport__item__text__container > :nth-child(3) {
-  grid-row: 1;
-  grid-column: 3;
-}
-
-.passport__item__text__container > :nth-child(4) {
-  grid-row: 3;
-  grid-column: 1 / span 3;
-}
-
-// @media (max-width: 768px) {
-//   ul {
-//     grid-template-columns: 1fr;
-//     li {
-//       &:nth-child(3) {
-//         grid-column: auto; // сброс
-//       }
-//     }
-//   }
-// }
