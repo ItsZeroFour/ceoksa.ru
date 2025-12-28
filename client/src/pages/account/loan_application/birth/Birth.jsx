@@ -1,12 +1,28 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import style from "./birth.module.scss";
 import { ReactComponent as Bag } from "../../../../assets/icons/account/bag.svg";
 import { ReactComponent as Town } from "../../../../assets/icons/account/town.svg";
 import InputField from "../../../../components/input_field/InputField";
+import { useIMask } from "../../../../hooks/useIMask";
+import IMask from "imask";
 
 const Birth = () => {
-  const [birthDate, setBirthDate] = useState("17 октября 1998");
-  const [birthPlace, setBirthPlace] = useState("город Москва");
+  const [birthDate, setBirthDate] = useState("");
+  const [birthPlace, setBirthPlace] = useState("");
+
+  const dateMask = {
+    mask: Date,
+    pattern: "d{.}`m{.}`Y",
+    blocks: {
+      d: { mask: IMask.MaskedRange, from: 1, to: 31, maxLength: 2 },
+      m: { mask: IMask.MaskedRange, from: 1, to: 12, maxLength: 2 },
+      Y: { mask: IMask.MaskedRange, from: 1900, to: 2099, maxLength: 4 },
+    },
+    autofix: true,
+    lazy: true,
+  };
+
+  const [dateInputRef] = useIMask(dateMask, setBirthDate);
 
   return (
     <section className={style.birth}>
@@ -22,8 +38,9 @@ const Birth = () => {
                 id="birth-date"
                 type="text"
                 value={birthDate}
+                inputMode="numeric"
                 icon={Bag}
-                onChange={(e) => setBirthDate(e.target.value)}
+                ref={dateInputRef}
               />
             </div>
           </li>

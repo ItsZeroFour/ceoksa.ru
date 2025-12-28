@@ -4,11 +4,30 @@ import { ReactComponent as Location } from "../../../../assets/icons/account/loc
 import { ReactComponent as Passport } from "../../../../assets/icons/account/passport.svg";
 import Checkbox from "../../../../components/checkbox/Checkbox";
 import InputField from "../../../../components/input_field/InputField";
+import { useIMask } from "../../../../hooks/useIMask";
+import IMask from "imask";
 
 const Address = ({ setIsChecked, isChecked }) => {
   const [streetAddress, setStreetAddress] = useState("");
   const [apartment, setApartment] = useState("");
   const [registrationDate, setRegistrationDate] = useState("");
+
+  const registrationDateMask = {
+    mask: Date,
+    pattern: "d{.}`m{.}`Y",
+    blocks: {
+      d: { mask: IMask.MaskedRange, from: 1, to: 31, maxLength: 2 },
+      m: { mask: IMask.MaskedRange, from: 1, to: 12, maxLength: 2 },
+      Y: { mask: IMask.MaskedRange, from: 1900, to: 2099, maxLength: 4 },
+    },
+    autofix: true,
+    lazy: true,
+  };
+
+  const [registrationDateRef] = useIMask(
+    registrationDateMask,
+    setRegistrationDate
+  );
 
   return (
     <section className={style.address}>
@@ -34,7 +53,8 @@ const Address = ({ setIsChecked, isChecked }) => {
                 label="Квартира"
                 placeholder="Номер квартиры"
                 id="apartment"
-                type="text"
+                type="number"
+                inputMode="numeric"
                 value={apartment}
                 icon={Location}
                 onChange={(e) => setApartment(e.target.value)}
@@ -44,12 +64,13 @@ const Address = ({ setIsChecked, isChecked }) => {
             <div className={style.address__item__text}>
               <InputField
                 label="Дата регистрации"
-                placeholder="Например: 18 октября 1998"
+                placeholder="Укажите дату регистрации"
                 id="registration-date"
                 type="text"
                 value={registrationDate}
                 icon={Passport}
-                onChange={(e) => setRegistrationDate(e.target.value)}
+                inputMode="numeric"
+                ref={registrationDateRef}
               />
             </div>
           </div>
