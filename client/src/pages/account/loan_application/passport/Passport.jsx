@@ -93,7 +93,7 @@ const Passport = () => {
             <div className={style.passport__item__text}>
               <InputField
                 label="Кем выдан"
-                placeholder="Укажите кем выдан"
+                placeholder="Кем выдан"
                 id="issued-by"
                 type="text"
                 value={issuedBy}
