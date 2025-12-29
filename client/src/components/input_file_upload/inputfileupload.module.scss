@@ -18,6 +18,10 @@
     opacity: 0.6;
     font-weight: 30;
   }
+
+  @media (max-width: 480px) {
+    padding: 10px;
+  }
 }
 
 .input_file_upload__icon,

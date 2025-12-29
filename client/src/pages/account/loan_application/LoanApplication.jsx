@@ -24,7 +24,7 @@ const LoanApplication = ({ setOpenMenu, openMenu }) => {
 
           <div className="loan_application__main">
             <Top />
-            <Birth />
+            {/* <Birth /> */}
             <Passport />
             <Address isChecked={isChecked} setIsChecked={setIsChecked} />
             <AnimatePresence>
