@@ -35,9 +35,13 @@ const Top = () => {
                 <p>ФИ</p>
               </div>
 
-              <button>
-                <img src={camera} alt="Загрузить фото" />
-              </button>
+              <input type="file" id="avatar" hidden accept=".jpg,.jpeg,.png" />
+
+              <label htmlFor="avatar">
+                {/* <button> */}
+                  <img src={camera} alt="Загрузить фото" />
+                {/* </button> */}
+              </label>
             </div>
 
             <div className={style.top__main__name__main}>
@@ -45,7 +49,7 @@ const Top = () => {
                 label="Имя, Фамилия Отчество"
                 placeholder={
                   screenWidth > 768
-                    ? "Необходимо указать Фамилию, Имя и Отчество (при наличии)"
+                    ? "Укажите Фамилию, Имя и Отчество (при наличии)"
                     : "Укажите ФИО"
                 }
                 id="full-name"

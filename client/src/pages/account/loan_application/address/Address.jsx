@@ -71,7 +71,7 @@ const Address = ({ setIsChecked, isChecked }) => {
             <div className={style.address__item__text}>
               <InputField
                 label="Дата регистрации"
-                placeholder="Укажите дату регистрации"
+                placeholder="Дата регистрации"
                 id="registration-date"
                 type="text"
                 value={registrationDate}

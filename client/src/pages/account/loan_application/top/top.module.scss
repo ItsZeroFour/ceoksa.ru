@@ -63,9 +63,11 @@
 .top__main__name__avatar {
   position: relative;
 
-  button {
+  label {
     width: 28px;
     height: 28px;
+
+    cursor: pointer;
 
     display: flex;
     flex-direction: column;
