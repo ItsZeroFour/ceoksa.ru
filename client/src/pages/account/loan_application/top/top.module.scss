@@ -58,6 +58,10 @@
   border-radius: 16px;
 
   margin-top: 25px;
+
+  @media (max-width: 550px) {
+    padding: 10px;
+  }
 }
 
 .top__main__name__avatar {
