@@ -1,0 +1,34 @@
+.policy__wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  strong {
+    font-weight: bold;
+  }
+
+  section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    h2 {
+      font-size: 20px;
+    }
+
+    ul {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-left: 20px;
+
+      li {
+        list-style-type: disc;
+      }
+    }
+  }
+}
+
+.policy {
+  margin-top: 20px;
+}
