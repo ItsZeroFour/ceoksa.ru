@@ -23,7 +23,7 @@ const Footer = () => {
             <p>{data.text}</p>
 
             <Link to="/">Пользовательское соглашение</Link>
-            <Link to="/">Политика конфиденциальности</Link>
+            <Link to="/policy">Политика конфиденциальности</Link>
           </div>
         )}
       </div>

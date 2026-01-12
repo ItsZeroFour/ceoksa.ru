@@ -7,6 +7,7 @@ import Rating from "./pages/account/rating/Rating";
 import Profile from "./pages/account/profile/Profile";
 import { ThemeProvider } from "./context/ThemeContext";
 import Auth from "./components/auth/Auth";
+import Policy from "./pages/policy/Policy";
 
 const Header = lazy(() => import("./components/header/Header"));
 const Main = lazy(() => import("./pages/main/Main"));
@@ -78,6 +79,8 @@ function App() {
                     <Profile setOpenMenu={setOpenMenu} openMenu={openMenu} />
                   }
                 />
+
+                <Route path="/policy" element={<Policy />} />
               </Routes>
             </main>
 
