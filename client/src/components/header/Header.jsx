@@ -19,7 +19,7 @@ const Header = ({ setOpenMenu, openMenu, setOpenAuthMenu }) => {
       <div className="container">
         <div className={style.header__wrapper}>
           <div className={style.header__logo}>
-            {location.pathname !== "/" && (
+            {location.pathname !== "/" && location.pathname !== "/policy" && (
               <button
                 className={style.header__menu}
                 onClick={() => setOpenMenu(!openMenu)}
