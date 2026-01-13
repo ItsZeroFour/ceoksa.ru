@@ -19,12 +19,14 @@ const Header = ({ setOpenMenu, openMenu, setOpenAuthMenu }) => {
       <div className="container">
         <div className={style.header__wrapper}>
           <div className={style.header__logo}>
-            {location.pathname !== "/" && location.pathname !== "/privacy-policy" && (
-              <button
-                className={style.header__menu}
-                onClick={() => setOpenMenu(!openMenu)}
-              ></button>
-            )}
+            {location.pathname !== "/" &&
+              location.pathname !== "/privacy-policy" &&
+              location.pathname !== "/polzovatelskoe-soglashenie" && (
+                <button
+                  className={style.header__menu}
+                  onClick={() => setOpenMenu(!openMenu)}
+                ></button>
+              )}
 
             <Link to="/">
               <img src={theme === "light" ? logo : logoDark} alt="лого" />
