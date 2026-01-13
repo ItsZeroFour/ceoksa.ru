@@ -41,6 +41,8 @@
   .howget__item {
     display: flex;
     flex-direction: column;
+    // justify-content: center;
+    align-items: center;
 
     transition: all 0.2s ease;
 
@@ -153,6 +155,11 @@
 
     .howget__item__img {
       position: absolute;
+      top: 33%;
+      left: 50%;
+      transform: translateX(-50%);
+
+      width: 230px;
 
       -webkit-user-select: none;
 
@@ -162,9 +169,17 @@
 
       user-select: none;
 
+      @media (max-width: 960px) {
+        left: 85%;
+        top: 10%;
+      }
+
       @media (max-width: 768px) {
-        width: 300px;
-        height: auto;
+        width: 150px;
+      }
+
+      @media (max-width: 560px) {
+        left: 80%;
       }
     }
 
@@ -177,6 +192,9 @@
     @media (max-width: 960px) {
       width: 100%;
       height: 250px;
+
+      justify-content: start;
+      align-items: start;
     }
 
     @media (max-width: 768px) {
@@ -208,110 +226,110 @@
     }
   }
 
-  &:nth-child(1) {
-    .howget__item__img {
-      top: 30%;
-      left: 0%;
+  // &:nth-child(1) {
+  //   .howget__item__img {
+  //     top: 30%;
+  //     left: 0%;
 
-      @media (max-width: 960px) {
-        top: -15%;
-        left: 55%;
-      }
+  //     @media (max-width: 960px) {
+  //       top: -15%;
+  //       left: 55%;
+  //     }
 
-      @media (max-width: 768px) {
-        top: -15%;
-        left: 55%;
-      }
+  //     @media (max-width: 768px) {
+  //       top: -15%;
+  //       left: 55%;
+  //     }
 
-      @media (max-width: 525px) {
-        left: 45%;
-      }
+  //     @media (max-width: 525px) {
+  //       left: 45%;
+  //     }
 
-      @media (max-width: 425px) {
-        right: -25%;
-        left: 40%;
-      }
-    }
+  //     @media (max-width: 425px) {
+  //       right: -25%;
+  //       left: 40%;
+  //     }
+  //   }
 
-    a {
-      display: block;
-      text-align: center;
+  //   a {
+  //     display: block;
+  //     text-align: center;
 
-      padding: 20px;
-      width: 100%;
+  //     padding: 20px;
+  //     width: 100%;
 
-      background: var(--color-blue);
-      color: var(--color-white);
-      border-radius: 16px;
+  //     background: var(--color-blue);
+  //     color: var(--color-white);
+  //     border-radius: 16px;
 
-      z-index: 1;
-      position: relative;
-      margin-top: auto;
+  //     z-index: 1;
+  //     position: relative;
+  //     margin-top: auto;
 
-      @media (max-width: 1200px) {
-        padding: 15px;
-        font-size: 14px;
-      }
+  //     @media (max-width: 1200px) {
+  //       padding: 15px;
+  //       font-size: 14px;
+  //     }
 
-      @media (max-width: 668px) {
-        margin-top: 10px;
-      }
-    }
-  }
+  //     @media (max-width: 668px) {
+  //       margin-top: 10px;
+  //     }
+  //   }
+  // }
 
-  &:nth-child(2) {
-    .howget__item__img {
-      top: 30%;
-      left: 0%;
+  // &:nth-child(2) {
+  //   .howget__item__img {
+  //     top: 30%;
+  //     left: 0%;
 
-      @media (max-width: 960px) {
-        top: -10%;
-        right: -10%;
-        left: 55%;
-      }
+  //     @media (max-width: 960px) {
+  //       top: -10%;
+  //       right: -10%;
+  //       left: 55%;
+  //     }
 
-      @media (max-width: 768px) {
-        top: -15%;
-        left: 55%;
-      }
+  //     @media (max-width: 768px) {
+  //       top: -15%;
+  //       left: 55%;
+  //     }
 
-      @media (max-width: 525px) {
-        left: 45%;
-      }
+  //     @media (max-width: 525px) {
+  //       left: 45%;
+  //     }
 
-      @media (max-width: 425px) {
-        right: -25%;
-        left: 40%;
-      }
-    }
-  }
+  //     @media (max-width: 425px) {
+  //       right: -25%;
+  //       left: 40%;
+  //     }
+  //   }
+  // }
 
-  &:nth-child(3) {
-    .howget__item__img {
-      top: 15%;
-      left: -5%;
+  // &:nth-child(3) {
+  //   .howget__item__img {
+  //     top: 15%;
+  //     left: -5%;
 
-      @media (max-width: 960px) {
-        top: -45%;
-        right: -5%;
-        left: 55%;
-      }
+  //     @media (max-width: 960px) {
+  //       top: -45%;
+  //       right: -5%;
+  //       left: 55%;
+  //     }
 
-      @media (max-width: 768px) {
-        top: -50%;
-        left: 55%;
-      }
+  //     @media (max-width: 768px) {
+  //       top: -50%;
+  //       left: 55%;
+  //     }
 
-      @media (max-width: 525px) {
-        left: 45%;
-      }
+  //     @media (max-width: 525px) {
+  //       left: 45%;
+  //     }
 
-      @media (max-width: 425px) {
-        right: -25%;
-        left: 40%;
-      }
-    }
-  }
+  //     @media (max-width: 425px) {
+  //       right: -25%;
+  //       left: 40%;
+  //     }
+  //   }
+  // }
 }
 
 .howget__item__notification {

@@ -22,8 +22,8 @@ const Footer = () => {
           <div className={style.footer__wrappe}>
             <p>{data.text}</p>
 
-            <Link to="/">Пользовательское соглашение</Link>
-            <Link to="/policy">Политика конфиденциальности</Link>
+            <Link to="/polzovatelskoe-soglashenie">Пользовательское соглашение</Link>
+            <Link to="/privacy-policy">Политика конфиденциальности</Link>
           </div>
         )}
       </div>
