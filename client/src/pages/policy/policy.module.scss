@@ -11,20 +11,18 @@
     }
   }
 
-  h2 {
-    font-size: 24px;
+  p,
+  li {
+    line-height: 120%;
+  }
 
-    @media (max-width: 768px) {
-      font-size: 22px;
-    }
+  h2 {
+    font-size: 16px;
   }
 
   h3 {
-    font-size: 20px;
-
-    @media (max-width: 768px) {
-      font-size: 18px;
-    }
+    font-size: 16px;
+    font-weight: 400;
   }
 
   section,
