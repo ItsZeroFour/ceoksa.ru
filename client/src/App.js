@@ -8,6 +8,7 @@ import Profile from "./pages/account/profile/Profile";
 import { ThemeProvider } from "./context/ThemeContext";
 import Auth from "./components/auth/Auth";
 import Policy from "./pages/policy/Policy";
+import UserAgreement from "./pages/user_agreement/UserAgreement";
 
 const Header = lazy(() => import("./components/header/Header"));
 const Main = lazy(() => import("./pages/main/Main"));
@@ -80,7 +81,11 @@ function App() {
                   }
                 />
 
-                <Route path="/policy" element={<Policy />} />
+                <Route path="/privacy-policy" element={<Policy />} />
+                <Route
+                  path="/polzovatelskoe-soglashenie"
+                  element={<UserAgreement />}
+                />
               </Routes>
             </main>
 
