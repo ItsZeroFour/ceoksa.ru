@@ -57,6 +57,12 @@
 
     position: relative;
 
+    &:nth-child(3) {
+      .howget__item__top h3 {
+        line-height: 130%;
+      }
+    }
+
     .howget__item__top {
       display: flex;
       align-items: center;
