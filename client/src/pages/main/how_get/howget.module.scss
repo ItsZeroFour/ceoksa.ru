@@ -57,10 +57,8 @@
 
     position: relative;
 
-    &:nth-child(3) {
-      .howget__item__top h3 {
-        line-height: 130%;
-      }
+    .howget__item__top h3 {
+      line-height: 130% !important;
     }
 
     .howget__item__top {
@@ -154,7 +152,7 @@
     &:last-child {
       & > p {
         @media (max-width: 425px) {
-          margin-top: 30px;
+          // margin-top: 30px;
         }
       }
     }
