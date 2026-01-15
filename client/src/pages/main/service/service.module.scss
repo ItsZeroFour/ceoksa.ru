@@ -117,10 +117,10 @@
   position: absolute;
 
   left: 60%;
-  top: 30%;
+  top: 12%;
 
   img {
-    width: 505px;
+    width: 455px;
     height: auto;
     -o-object-fit: contain;
     object-fit: contain;
@@ -144,10 +144,10 @@
     }
   }
 
-  @media (max-width: 1400px) {
-    left: 55%;
-    top: 35%;
-  }
+  // @media (max-width: 1400px) {
+  //   left: 55%;
+  //   top: 35%;
+  // }
 
   @media (max-width: 960px) {
     display: none;
