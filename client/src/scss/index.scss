@@ -397,6 +397,12 @@ button {
 
   position: relative;
 
+  button {
+    svg {
+      color: var(--color-black);
+    }
+  }
+
   .dropdown__list {
     position: absolute;
 
