@@ -1,0 +1,40 @@
+.files__wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  h1 {
+    font-size: 32px;
+
+    @media (max-width: 768px) {
+      font-size: 24px;
+    }
+  }
+
+  p,
+  li {
+    line-height: 120%;
+    font-size: 14px;
+    font-weight: 300;
+  }
+
+  h2 {
+    font-size: 14px;
+  }
+
+  h3 {
+    font-size: 14px;
+    font-weight: 400;
+  }
+
+  section,
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+.files {
+  margin-top: 20px;
+}
