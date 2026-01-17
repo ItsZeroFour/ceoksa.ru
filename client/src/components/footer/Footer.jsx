@@ -1,23 +1,31 @@
-import React from "react";
+import React, { useEffect } from "react";
 import style from "./footer.module.scss";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchFooter } from "../../redux/slices/strapi/footerSlice";
 
 const Footer = () => {
+  const dispatch = useDispatch();
+
+  const { data, status, error } = useSelector((state) => state.footer);
+
+  useEffect(() => {
+    dispatch(fetchFooter("futer?populate=*"));
+  }, [dispatch]);
+
+  const isDataReady = Boolean(status === "succeeded" && data?.text);
+
   return (
     <footer className={style.footer}>
       <div className="container">
-        <div className={style.footer__wrappe}>
-          <p>
-            Мы использует файлы «cookie», с целью персонализации сервисов
-            и повышения удобства пользования веб-сайтом. «Cookie» представляют
-            собой небольшие файлы, содержащие информацию о предыдущих посещениях
-            веб-сайта. Если вы не хотите использовать файлы «cookie», измените
-            настройки браузера.
-          </p>
+        {isDataReady && (
+          <div className={style.footer__wrappe}>
+            <p>{data.text}</p>
 
-          <Link to="/">Пользовательское соглашение</Link>
-          <Link to="/">Политика конфиденциальности</Link>
-        </div>
+            <Link to="/polzovatelskoe-soglashenie">Пользовательское соглашение</Link>
+            <Link to="/privacy-policy">Политика конфиденциальности</Link>
+          </div>
+        )}
       </div>
     </footer>
   );

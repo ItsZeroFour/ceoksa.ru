@@ -1,6 +1,10 @@
 .footer {
   margin-top: 100px;
   margin-bottom: 60px;
+
+  @media (max-width: 768px) {
+    margin-top: 50px;
+  }
 }
 
 .footer__wrappe {
@@ -11,7 +15,7 @@
 
   gap: 20px;
 
-  border-top: 1px solid rgba(5, 18, 37, 0.2);
+  border-top: 1px solid var(--color-footer-border);
 
   p {
     margin-top: 40px;
@@ -28,6 +32,7 @@
     @media (max-width: 768px) {
       font-size: 13px;
       width: 90%;
+      margin-top: 20px;
     }
   }
 

@@ -24,11 +24,12 @@
     margin-top: 15px;
 
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
     gap: 15px;
+    width: 100%;
 
     li {
-      padding: 20px;
+      padding: 10px;
 
       background: var(--color-block-bg);
       border-radius: 14px;
@@ -38,7 +39,7 @@
       gap: 15px;
 
       &:nth-child(3) {
-        grid-column: 1 / -1;
+        // grid-column: 1 / -1;
 
         @media (max-width: 780px) {
           .passport__item__text__container {
@@ -67,6 +68,7 @@
         display: flex;
         flex-direction: column;
         gap: 5px;
+        width: 100%;
 
         p {
           &:first-child {
@@ -86,17 +88,26 @@
       }
 
       &:last-child {
+        grid-column: 1 / -1;
         align-items: start;
       }
 
-      @media (max-width: 480px) {
-        padding: 14px;
+      @media (max-width: 550px) {
+        padding: 10px;
       }
     }
 
     @media (max-width: 780px) {
       display: flex;
       flex-direction: column;
+    }
+
+    &:last-child {
+      display: flex;
+
+      li {
+        width: 100%;
+      }
     }
   }
 

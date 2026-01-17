@@ -1,0 +1,43 @@
+{
+  "kind": "singleType",
+  "collectionName": "kak_poluchit_kredits",
+  "info": {
+    "singularName": "kak-poluchit-kredit",
+    "pluralName": "kak-poluchit-kredits",
+    "displayName": "Как получить кредит"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "card_title_1": {
+      "type": "string",
+      "required": true
+    },
+    "card_text_1": {
+      "type": "text",
+      "required": true
+    },
+    "card_title_2": {
+      "type": "string",
+      "required": true
+    },
+    "card_text_2": {
+      "type": "text",
+      "required": true
+    },
+    "card_title_3": {
+      "type": "string",
+      "required": true
+    },
+    "card_text_3": {
+      "type": "text",
+      "required": true
+    }
+  }
+}

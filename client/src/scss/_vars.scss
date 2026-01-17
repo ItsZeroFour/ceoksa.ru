@@ -62,6 +62,10 @@
   --color-green: #4cbd20;
 
   --color-white-opacity: #e3f4fa;
+
+  --color-footer-border: rgba(5, 18, 37, 0.2);
+
+  --color-input-border: #e2e2e2;
 }
 
 [data-theme="dark"] {
@@ -119,4 +123,8 @@
   --color-green: #4cbd20;
 
   --color-white-opacity: rgba(255, 255, 255, 0.6);
+
+  --color-footer-border: rgba(255, 255, 255, 0.2);
+
+  --color-input-border: #3e3f43;
 }

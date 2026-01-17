@@ -59,17 +59,19 @@
 
   margin-top: 25px;
 
-  @media (max-width: 480px) {
-    align-items: start;
+  @media (max-width: 550px) {
+    padding: 10px;
   }
 }
 
 .top__main__name__avatar {
   position: relative;
 
-  button {
+  label {
     width: 28px;
     height: 28px;
+
+    cursor: pointer;
 
     display: flex;
     flex-direction: column;
@@ -87,6 +89,8 @@
 }
 
 .top__main__name__main {
+  width: 100%;
+
   & > p {
     font-size: 24px;
     font-weight: 600;

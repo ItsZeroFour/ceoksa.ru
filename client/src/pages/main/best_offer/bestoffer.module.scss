@@ -1,8 +1,8 @@
 .best_offer {
-  margin-top: 100px;
+  margin-top: 64px;
 
   @media (max-width: 768px) {
-    margin-top: 50px;
+    margin-top: 40px;
   }
 }
 
@@ -51,8 +51,12 @@
     }
 
     @media (max-width: 380px) {
-      top: 70%;
+      top: 65%;
     }
+  }
+
+  @media (max-width: 1400px) {
+    padding: 30px;
   }
 
   @media (max-width: 710px) {
@@ -60,6 +64,10 @@
     padding: 20px;
     padding-bottom: 150px;
     gap: 20px;
+  }
+
+  @media (max-width: 480px) {
+    padding-bottom: 130px;
   }
 }
 
@@ -111,10 +119,6 @@
 
     transition: transform 0.2s ease;
 
-    &:hover {
-      transform: scale(1.05);
-    }
-
     @media (max-width: 1024px) {
       font-size: 14px;
     }
@@ -129,8 +133,12 @@
       top: 72%;
     }
 
-    @media (max-width: 425px) {
+    @media (max-width: 480px) {
       top: 77%;
+    }
+
+    @media (max-width: 425px) {
+      top: 79%;
     }
   }
 
@@ -216,7 +224,7 @@
   color: var(--color-white);
   background: var(--color-die);
 
-  border-radius: 8px;
+  border-radius: 80px;
 
   @media (max-width: 1024px) {
     font-size: 14px;

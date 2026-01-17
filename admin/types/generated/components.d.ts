@@ -26,6 +26,18 @@ export interface AdvantagesPreimushhestva extends Struct.ComponentSchema {
   };
 }
 
+export interface BanksBank extends Struct.ComponentSchema {
+  collectionName: 'components_banks_bank';
+  info: {
+    displayName: '\u0411\u0430\u043D\u043A';
+    icon: 'archive';
+  };
+  attributes: {
+    logo: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'> &
+      Schema.Attribute.Required;
+  };
+}
+
 export interface CardsBanksKartochkiBankov extends Struct.ComponentSchema {
   collectionName: 'components_cards_banks_kartochki_bankov';
   info: {
@@ -44,12 +56,28 @@ export interface CardsBanksKartochkiBankov extends Struct.ComponentSchema {
   };
 }
 
+export interface ServiceNashServis extends Struct.ComponentSchema {
+  collectionName: 'components_service_nash_servis';
+  info: {
+    displayName: '\u041D\u0430\u0448 \u0441\u0435\u0440\u0432\u0438\u0441';
+    icon: 'phone';
+  };
+  attributes: {
+    description: Schema.Attribute.Text & Schema.Attribute.Required;
+    image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'> &
+      Schema.Attribute.Required;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
       'advantages.advantages': AdvantagesAdvantages;
       'advantages.preimushhestva': AdvantagesPreimushhestva;
+      'banks.bank': BanksBank;
       'cards-banks.kartochki-bankov': CardsBanksKartochkiBankov;
+      'service.nash-servis': ServiceNashServis;
     }
   }
 }

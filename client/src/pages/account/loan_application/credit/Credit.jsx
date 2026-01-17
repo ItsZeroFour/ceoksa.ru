@@ -21,7 +21,7 @@ const TERMS = [
 const TARGETS = [
   { value: "cash", title: "Кредит наличными" },
   { value: "mortgage", title: "Ипотека" },
-  { value: "car", title: "Автокредит" },
+  { value: "car", title: "Покупка авто" },
   { value: "education", title: "Образование" },
   { value: "renovation", title: "Ремонт" },
   { value: "travel", title: "Путешествия" },
@@ -32,6 +32,7 @@ const Credit = () => {
   const [value, setValue] = useState(500_000);
   const [selectedTerm, setSelectedTerm] = useState(TERMS[5]);
   const [selectedTarget, setSelectedTarget] = useState(TARGETS[0]);
+  const [isTotalFocused, setIsTotalFocused] = useState(false);
   const termRef = useRef(null);
   const targetRef = useRef(null);
 
@@ -61,12 +62,14 @@ const Credit = () => {
   };
 
   const handleTotalFocus = (event) => {
+    setIsTotalFocused(true);
     if (value === 0) {
       event.target.value = "";
     }
   };
 
   const handleTotalBlur = (event) => {
+    setIsTotalFocused(false);
     if (event.target.value === "") {
       setValue(0);
     }
@@ -99,10 +102,20 @@ const Credit = () => {
 
                   <input
                     className="credit__main__form__item__total"
-                    value={value === 0 ? "0" : value.toLocaleString()}
+                    inputMode="numeric"
+                    value={
+                      isTotalFocused
+                        ? value === 0
+                          ? ""
+                          : String(value)
+                        : value === 0
+                        ? ""
+                        : `${value} ₽`
+                    }
                     onChange={handleTotalChange}
                     onFocus={handleTotalFocus}
                     onBlur={handleTotalBlur}
+                    max="10000000"
                   />
 
                   <button

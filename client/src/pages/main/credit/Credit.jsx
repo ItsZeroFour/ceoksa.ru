@@ -12,6 +12,7 @@ import Notification from "../../../components/notification/Notification";
 import { useDispatch, useSelector } from "react-redux";
 import CreditSceleton from "../../../components/sceletons/CreditSceleton";
 import { fetchCredit } from "../../../redux/slices/strapi/creditSlice";
+import { useScreenWidth } from "../../../hooks/useScreenWidth";
 
 const TERMS = [
   { value: 3, title: "3 месяца" },
@@ -27,19 +28,22 @@ const TERMS = [
 const TARGETS = [
   { value: "cash", title: "Кредит наличными" },
   { value: "mortgage", title: "Ипотека" },
-  { value: "car", title: "Автокредит" },
+  { value: "car", title: "Покупка авто" },
   { value: "education", title: "Образование" },
   { value: "renovation", title: "Ремонт" },
   { value: "travel", title: "Путешествия" },
   { value: "other", title: "Другое" },
 ];
 
-const Credit = () => {
+const Credit = ({ setOpenAuthMenu }) => {
   const [value, setValue] = useState(500_000);
   const [selectedTerm, setSelectedTerm] = useState(TERMS[5]);
   const [selectedTarget, setSelectedTarget] = useState(TARGETS[0]);
+  const [isTotalFocused, setIsTotalFocused] = useState(false);
   const termRef = useRef(null);
   const targetRef = useRef(null);
+
+  const screenWidth = useScreenWidth();
 
   const dispatch = useDispatch();
 
@@ -62,25 +66,31 @@ const Credit = () => {
   } = useSalaryValidation();
 
   const handleTotalChange = (event) => {
-    let inputValue = event.target.value;
-    inputValue = inputValue.replace(/\D/g, "");
+    let inputValue = event.target.value.replace(/\D/g, "");
 
     if (inputValue === "") {
       setValue(0);
       return;
     }
 
-    const numValue = Number(inputValue);
-    setValue(numValue < 0 ? 0 : numValue);
+    let numValue = Number(inputValue);
+
+    if (numValue > 10_000_000) {
+      numValue = 10_000_000;
+    }
+
+    setValue(numValue);
   };
 
   const handleTotalFocus = (event) => {
+    setIsTotalFocused(true);
     if (value === 0) {
       event.target.value = "";
     }
   };
 
   const handleTotalBlur = (event) => {
+    setIsTotalFocused(false);
     if (event.target.value === "") {
       setValue(0);
     }
@@ -105,7 +115,9 @@ const Credit = () => {
                     <button
                       type="button"
                       onClick={() =>
-                        setValue((prev) => Math.max(0, prev - 1000))
+                        setValue((prev) =>
+                          Math.min(10_000_000, Math.max(0, prev - 1000))
+                        )
                       }
                     >
                       <Minus />
@@ -113,15 +125,27 @@ const Credit = () => {
 
                     <input
                       className="credit__main__form__item__total"
-                      value={value === 0 ? "0" : value.toLocaleString()}
+                      inputMode="numeric"
+                      value={
+                        isTotalFocused
+                          ? value === 0
+                            ? ""
+                            : String(value)
+                          : value === 0
+                          ? ""
+                          : `${value} ₽`
+                      }
                       onChange={handleTotalChange}
                       onFocus={handleTotalFocus}
                       onBlur={handleTotalBlur}
+                      max="10000000"
                     />
 
                     <button
                       type="button"
-                      onClick={() => setValue((prev) => prev + 1000)}
+                      onClick={() =>
+                        setValue((prev) => Math.min(10_000_000, prev + 1000))
+                      }
                     >
                       <Plus />
                     </button>
@@ -195,16 +219,48 @@ const Credit = () => {
                   </div>
                 </div>
 
-                <button className={style.credit__main__form__auth}>
-                  <img src={gosuslugi} alt="Госуслуги" /> Продолжить
-                  через Госуслуги
-                </button>
+                <div className="credit__buttons">
+                  {screenWidth >= 980 ? (
+                    <>
+                      <button
+                        className={style.credit__main__form__auth}
+                        disabled
+                      >
+                        <img src={gosuslugi} alt="Госуслуги" /> Продолжить
+                        через Госуслуги
+                      </button>
+
+                      <button
+                        type="button"
+                        className="credit__buttons__continue"
+                        onClick={() => setOpenAuthMenu(true)}
+                      >
+                        Продолжить
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        className="credit__buttons__continue"
+                        onClick={() => setOpenAuthMenu(true)}
+                      >
+                        Продолжить
+                      </button>
+
+                      <button
+                        className={style.credit__main__form__auth}
+                        disabled
+                      >
+                        <img src={gosuslugi} alt="Госуслуги" /> Продолжить
+                        через Госуслуги
+                      </button>
+                    </>
+                  )}
+                </div>
               </form>
 
-              <Notification
-                text="Войдите через Госуслуги — мы заполним данные автоматически и рассчитаем
-                    ставку и сумму на основе кредитной истории"
-              />
+              <Notification text="Авторизация через Госуслуги находится в процессе разработки и скоро будет доступна" />
             </div>
           </div>
         )}

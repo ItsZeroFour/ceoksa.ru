@@ -6,6 +6,9 @@ import Credits from "./pages/account/credits/Credits";
 import Rating from "./pages/account/rating/Rating";
 import Profile from "./pages/account/profile/Profile";
 import { ThemeProvider } from "./context/ThemeContext";
+import Auth from "./components/auth/Auth";
+import Policy from "./pages/policy/Policy";
+import UserAgreement from "./pages/user_agreement/UserAgreement";
 
 const Header = lazy(() => import("./components/header/Header"));
 const Main = lazy(() => import("./pages/main/Main"));
@@ -13,6 +16,7 @@ const Footer = lazy(() => import("./components/footer/Footer"));
 
 function App() {
   const [openMenu, setOpenMenu] = useState(false);
+  const [openAuthMenu, setOpenAuthMenu] = useState(false);
 
   const scrollToBlock = (id) => {
     const element = document.getElementById(id);
@@ -29,14 +33,25 @@ function App() {
         <Suspense>
           <div className="wrapper">
             <div className="header__container">
-              <Header setOpenMenu={setOpenMenu} openMenu={openMenu} />
+              <Header
+                setOpenMenu={setOpenMenu}
+                openMenu={openMenu}
+                setOpenAuthMenu={setOpenAuthMenu}
+              />
             </div>
+
+            {openAuthMenu && <Auth setOpenAuthMenu={setOpenAuthMenu} />}
 
             <main>
               <Routes>
                 <Route
                   path="/"
-                  element={<Main scrollToBlock={scrollToBlock} />}
+                  element={
+                    <Main
+                      scrollToBlock={scrollToBlock}
+                      setOpenAuthMenu={setOpenAuthMenu}
+                    />
+                  }
                 />
                 <Route
                   path="/account/loan_applications"
@@ -64,6 +79,12 @@ function App() {
                   element={
                     <Profile setOpenMenu={setOpenMenu} openMenu={openMenu} />
                   }
+                />
+
+                <Route path="/privacy-policy" element={<Policy />} />
+                <Route
+                  path="/polzovatelskoe-soglashenie"
+                  element={<UserAgreement />}
                 />
               </Routes>
             </main>

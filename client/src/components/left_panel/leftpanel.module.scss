@@ -128,7 +128,20 @@
 
   a {
     img {
-      width: 80%;
+      width: 196px;
+
+      @media (max-width: 768px) {
+        width: 176px;
+        height: auto;
+      }
+
+      @media (max-width: 480px) {
+        width: 157px;
+      }
+
+      @media (max-width: 360px) {
+        width: 137px;
+      }
     }
   }
 
@@ -145,7 +158,7 @@
       position: absolute;
       width: 100%;
       height: 2px;
-      background: var(--color-blue);
+      background: var(--color-text-button);
       border-radius: 3px;
       top: 0;
       left: 0;
@@ -179,5 +192,6 @@
     background: none;
     text-align: left;
     padding: 5px;
+    color: var(--color-black);
   }
 }

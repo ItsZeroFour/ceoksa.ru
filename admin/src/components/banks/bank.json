@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_banks_bank",
+  "info": {
+    "displayName": "Банк",
+    "icon": "archive"
+  },
+  "options": {},
+  "attributes": {
+    "logo": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    }
+  },
+  "config": {}
+}
