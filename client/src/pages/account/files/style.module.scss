@@ -1,7 +1,6 @@
 .files__wrapper {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  // gap: 10px;
 
   h1 {
     font-size: 32px;
@@ -37,4 +36,10 @@
 
 .files {
   margin-top: 20px;
+}
+
+.files__main {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
