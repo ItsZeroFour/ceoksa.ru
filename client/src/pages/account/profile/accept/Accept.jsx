@@ -5,12 +5,12 @@ import { ReactComponent as File } from "../../../../assets/icons/profile/file.sv
 
 const files = [
   {
-    path: "/",
+    path: "/soglasie-na-obrabotku-personalnyh-dannyh",
     text: "Согласие на обработку персональных данных",
   },
 
   {
-    path: "/",
+    path: "/soglasie-na-poluchenie-reklamy",
     text: "Согласие на получение рекламы",
   },
 
