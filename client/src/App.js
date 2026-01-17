@@ -92,11 +92,11 @@ function App() {
                 {/* Files */}
                 <Route
                   path="/soglasie-na-obrabotku-personalnyh-dannyh"
-                  element={<PersonalData />}
+                  element={<PersonalData setOpenMenu={setOpenMenu} openMenu={openMenu} />}
                 />
                 <Route
                   path="/soglasie-na-poluchenie-reklamy"
-                  element={<ADS />}
+                  element={<ADS setOpenMenu={setOpenMenu} openMenu={openMenu} />}
                 />
               </Routes>
             </main>
