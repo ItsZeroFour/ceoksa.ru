@@ -87,6 +87,10 @@
       font-size: 13px;
       opacity: 0.6;
       font-weight: 300;
+
+      @media (max-width: 450px) {
+        font-size: 11px;
+      }
     }
 
     &:last-child {
@@ -95,4 +99,75 @@
       opacity: 0.3;
     }
   }
+}
+
+.camera_modal_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.camera_modal {
+  background: var(--color-bg);
+  border-radius: 16px;
+  overflow: hidden;
+  width: 90vw;
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+
+  @media (max-width: 900px) {
+    height: fit-content;
+  }
+}
+
+.webcam_preview {
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #000;
+}
+
+.camera_modal_buttons {
+  display: flex;
+  gap: 16px;
+  margin-top: 20px;
+  width: 100%;
+  justify-content: center;
+
+  @media (max-width: 425px) {
+    flex-direction: column;
+  }
+}
+
+.camera_modal_button_capture,
+.camera_modal_button_cancel {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  flex: 1;
+  width: 100%;
+}
+
+.camera_modal_button_capture {
+  background: var(--color-blue);
+  color: var(--color-white);
+}
+
+.camera_modal_button_cancel {
+  background: var(--color-red);
+  color: var(--color-white);
 }

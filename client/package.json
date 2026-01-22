@@ -25,6 +25,7 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.9.6",
     "react-scripts": "5.0.1",
+    "react-webcam": "^7.2.0",
     "recharts": "^3.5.1",
     "sass": "^1.94.2",
     "swiper": "^12.0.3",
