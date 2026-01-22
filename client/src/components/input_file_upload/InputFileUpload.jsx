@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import style from "./inputfileupload.module.scss";
 import { ReactComponent as Image } from "../../assets/icons/account/image.svg";
 import { ReactComponent as Photo } from "../../assets/icons/account/photo.svg";
@@ -6,58 +6,51 @@ import { ReactComponent as Photo } from "../../assets/icons/account/photo.svg";
 const InputFileUpload = ({ fileType, onFileSelect, id, fileName }) => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
-  const [isCapturing, setIsCapturing] = useState(false);
 
   const handleCaptureClick = async () => {
     let stream = null;
-
     try {
       const constraints = { video: { facingMode: "environment" } };
       stream = await navigator.mediaDevices.getUserMedia(constraints);
 
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        await new Promise((resolve) => {
-          videoRef.current.onloadedmetadata = resolve;
-        });
-      }
+      const video = videoRef.current;
+      video.srcObject = stream;
+
+      await new Promise((resolve) => {
+        video.onloadedmetadata = resolve;
+      });
 
       const canvas = canvasRef.current;
-      const video = videoRef.current;
-      const context = canvas.getContext("2d");
-
+      const ctx = canvas.getContext("2d");
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
       const blob = await new Promise((resolve) =>
-        canvas.toBlob(resolve, "image/jpeg", 0.9)
+        canvas.toBlob(resolve, "image/jpeg", 0.92)
       );
 
       if (!blob) {
-        alert("Не удалось создать изображение.");
-        return;
+        throw new Error("Не удалось создать изображение");
       }
 
-      const file = new File([blob], "photo.jpg", { type: "image/jpeg" });
+      const file = new File([blob], "camera-photo.jpg", { type: "image/jpeg" });
 
-      const maxSize = 10 * 1024 * 1024; // 10 МБ
-      if (file.size > maxSize) {
-        alert("Снимок слишком большой. Максимум — 10 МБ.");
+      if (file.size > 10 * 1024 * 1024) {
+        alert("Фото слишком большое. Максимум — 10 МБ.");
         return;
       }
 
       onFileSelect?.(file);
     } catch (err) {
-      console.error("Ошибка доступа к камере:", err);
+      console.error("Ошибка захвата с камеры:", err);
       alert(
-        "Камера не найдена или доступ запрещён. Убедитесь, что вы используете устройство с камерой и разрешили доступ."
+        "Камера не найдена или доступ запрещён. Используйте устройство с камерой и разрешите доступ."
       );
     } finally {
       if (stream) {
         stream.getTracks().forEach((track) => track.stop());
       }
-      setIsCapturing(false);
     }
   };
 
@@ -90,7 +83,10 @@ const InputFileUpload = ({ fileType, onFileSelect, id, fileName }) => {
 
         <div
           className={style.input_file_upload__upload}
-          onClick={handleCaptureClick}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleCaptureClick();
+          }}
         >
           <Photo />
         </div>
