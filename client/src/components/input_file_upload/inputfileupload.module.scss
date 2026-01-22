@@ -69,6 +69,15 @@
 .input_file_upload__main {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  cursor: pointer;
+}
+
+.input_file_upload__text__container {
+  display: flex;
+  align-items: center;
   gap: 12px;
 }
 

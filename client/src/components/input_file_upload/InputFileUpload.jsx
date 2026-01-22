@@ -1,52 +1,86 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import style from "./inputfileupload.module.scss";
 import { ReactComponent as Image } from "../../assets/icons/account/image.svg";
-import { ReactComponent as Upload } from "../../assets/icons/account/upload.svg";
+import { ReactComponent as Photo } from "../../assets/icons/account/photo.svg";
 
 const InputFileUpload = ({ fileType, onFileSelect, id, fileName }) => {
-  const fileInputRef = useRef(null);
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const [isCapturing, setIsCapturing] = useState(false);
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
+  const handleCaptureClick = async () => {
+    let stream = null;
 
-    const validTypes = ["image/jpeg", "image/png", "application/pdf"];
-    const maxSize = 10 * 1024 * 1024;
+    try {
+      const constraints = { video: { facingMode: "environment" } };
+      stream = await navigator.mediaDevices.getUserMedia(constraints);
 
-    if (!validTypes.includes(file.type)) {
-      alert("Неверный формат. Разрешены: JPG, PNG, PDF.");
-      return;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        await new Promise((resolve) => {
+          videoRef.current.onloadedmetadata = resolve;
+        });
+      }
+
+      const canvas = canvasRef.current;
+      const video = videoRef.current;
+      const context = canvas.getContext("2d");
+
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      const blob = await new Promise((resolve) =>
+        canvas.toBlob(resolve, "image/jpeg", 0.9)
+      );
+
+      if (!blob) {
+        alert("Не удалось создать изображение.");
+        return;
+      }
+
+      const file = new File([blob], "photo.jpg", { type: "image/jpeg" });
+
+      const maxSize = 10 * 1024 * 1024; // 10 МБ
+      if (file.size > maxSize) {
+        alert("Снимок слишком большой. Максимум — 10 МБ.");
+        return;
+      }
+
+      onFileSelect?.(file);
+    } catch (err) {
+      console.error("Ошибка доступа к камере:", err);
+      alert(
+        "Камера не найдена или доступ запрещён. Убедитесь, что вы используете устройство с камерой и разрешили доступ."
+      );
+    } finally {
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+      }
+      setIsCapturing(false);
     }
-
-    if (file.size > maxSize) {
-      alert("Файл слишком большой. Максимум — 10 МБ.");
-      return;
-    }
-
-    onFileSelect?.(file);
   };
 
   return (
     <div className={style.input_file_upload}>
-      <input
-        type="file"
-        id={`file-${id}`}
-        hidden
-        accept=".jpg,.jpeg,.png,.pdf"
-        onChange={handleFileChange}
-        ref={fileInputRef}
-      />
-      <label htmlFor={`file-${id}`}>
-        <div className={style.input_file_upload__main}>
+      <div style={{ display: "none" }}>
+        <video ref={videoRef} autoPlay playsInline muted />
+        <canvas ref={canvasRef} />
+      </div>
+
+      <div
+        className={style.input_file_upload__main}
+        onClick={handleCaptureClick}
+      >
+        <div className={style.input_file_upload__text__container}>
           <div className={style.input_file_upload__icon}>
             <Image />
           </div>
-
           <div className={style.input_file_upload__text}>
             <p>{fileType}</p>
             <p>
               {!fileName
-                ? "Загрузите фото документа"
+                ? "Сделайте фото документа"
                 : fileName.length > 25
                 ? `${fileName.slice(0, 25)}...`
                 : fileName}
@@ -54,14 +88,13 @@ const InputFileUpload = ({ fileType, onFileSelect, id, fileName }) => {
           </div>
         </div>
 
-        <div className={style.input_file_upload__upload}>
-          <Upload />
+        <div
+          className={style.input_file_upload__upload}
+          onClick={handleCaptureClick}
+        >
+          <Photo />
         </div>
-      </label>
-
-      <p>
-        Файлы в формате JPG, PNG или PDF. <br /> Размер одного файла — до 10 МБ.
-      </p>
+      </div>
     </div>
   );
 };
