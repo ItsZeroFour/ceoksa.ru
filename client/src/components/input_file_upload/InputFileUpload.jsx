@@ -27,7 +27,8 @@ const InputFileUpload = ({ fileType, onFileSelect, id, fileName }) => {
     fetch(imageSrc)
       .then((res) => res.blob())
       .then((blob) => {
-        const file = new File([blob], "camera-photo.jpg", {
+        const randomString = Math.random().toString(36).substring(2, 12);
+        const file = new File([blob], `camera-photo-${randomString}.jpg`, {
           type: "image/jpeg",
         });
 
@@ -99,9 +100,9 @@ const InputFileUpload = ({ fileType, onFileSelect, id, fileName }) => {
               ref={webcamRef}
               screenshotFormat="image/jpeg"
               videoConstraints={{
-                facingMode: "environment", // задняя камера
+                facingMode: "environment",
               }}
-              // onUserMediaError={handleCameraError}
+              onUserMediaError={handleCameraError}
               className={style.webcam_preview}
             />
 
