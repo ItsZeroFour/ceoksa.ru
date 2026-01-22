@@ -25,6 +25,11 @@
 
     width: 70%;
 
+    & > a {
+      opacity: 1;
+      text-decoration: underline;
+    }
+
     @media (max-width: 1024px) {
       font-size: 14px;
     }
