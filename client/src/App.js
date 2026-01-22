@@ -9,6 +9,8 @@ import { ThemeProvider } from "./context/ThemeContext";
 import Auth from "./components/auth/Auth";
 import Policy from "./pages/policy/Policy";
 import UserAgreement from "./pages/user_agreement/UserAgreement";
+import PersonalData from "./pages/account/files/PersonalData";
+import ADS from "./pages/account/files/ADS";
 
 const Header = lazy(() => import("./components/header/Header"));
 const Main = lazy(() => import("./pages/main/Main"));
@@ -85,6 +87,16 @@ function App() {
                 <Route
                   path="/polzovatelskoe-soglashenie"
                   element={<UserAgreement />}
+                />
+
+                {/* Files */}
+                <Route
+                  path="/soglasie-na-obrabotku-personalnyh-dannyh"
+                  element={<PersonalData setOpenMenu={setOpenMenu} openMenu={openMenu} />}
+                />
+                <Route
+                  path="/soglasie-na-poluchenie-reklamy"
+                  element={<ADS setOpenMenu={setOpenMenu} openMenu={openMenu} />}
                 />
               </Routes>
             </main>
