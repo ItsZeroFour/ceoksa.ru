@@ -1,97 +1,130 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
+import Webcam from "react-webcam";
 import style from "./inputfileupload.module.scss";
 import { ReactComponent as Image } from "../../assets/icons/account/image.svg";
 import { ReactComponent as Photo } from "../../assets/icons/account/photo.svg";
 
 const InputFileUpload = ({ fileType, onFileSelect, id, fileName }) => {
-  const videoRef = useRef(null);
-  const canvasRef = useRef(null);
+  const webcamRef = useRef(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleCaptureClick = async () => {
-    let stream = null;
-    try {
-      const constraints = { video: { facingMode: "environment" } };
-      stream = await navigator.mediaDevices.getUserMedia(constraints);
+  const openCameraModal = () => {
+    setIsModalOpen(true);
+  };
 
-      const video = videoRef.current;
-      video.srcObject = stream;
+  const closeCameraModal = () => {
+    setIsModalOpen(false);
+  };
 
-      await new Promise((resolve) => {
-        video.onloadedmetadata = resolve;
-      });
-
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext("2d");
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      const blob = await new Promise((resolve) =>
-        canvas.toBlob(resolve, "image/jpeg", 0.92)
-      );
-
-      if (!blob) {
-        throw new Error("Не удалось создать изображение");
-      }
-
-      const file = new File([blob], "camera-photo.jpg", { type: "image/jpeg" });
-
-      if (file.size > 10 * 1024 * 1024) {
-        alert("Фото слишком большое. Максимум — 10 МБ.");
-        return;
-      }
-
-      onFileSelect?.(file);
-    } catch (err) {
-      console.error("Ошибка захвата с камеры:", err);
-      alert(
-        "Камера не найдена или доступ запрещён. Используйте устройство с камерой и разрешите доступ."
-      );
-    } finally {
-      if (stream) {
-        stream.getTracks().forEach((track) => track.stop());
-      }
+  const handleCapture = () => {
+    const imageSrc = webcamRef.current?.getScreenshot();
+    if (!imageSrc) {
+      alert("Не удалось сделать снимок.");
+      return;
     }
+
+    // Конвертируем data URL в File
+    fetch(imageSrc)
+      .then((res) => res.blob())
+      .then((blob) => {
+        const file = new File([blob], "camera-photo.jpg", {
+          type: "image/jpeg",
+        });
+
+        if (file.size > 10 * 1024 * 1024) {
+          alert("Фото слишком большое. Максимум — 10 МБ.");
+          return;
+        }
+
+        onFileSelect?.(file);
+        closeCameraModal();
+      })
+      .catch((err) => {
+        console.error("Ошибка конвертации:", err);
+        alert("Ошибка при создании файла.");
+      });
+  };
+
+  const handleCameraError = (error) => {
+    console.error("Ошибка камеры:", error);
+    alert(
+      "Камера не найдена или доступ запрещён. Используйте устройство с камерой."
+    );
+    closeCameraModal();
   };
 
   return (
-    <div className={style.input_file_upload}>
-      <div style={{ display: "none" }}>
-        <video ref={videoRef} autoPlay playsInline muted />
-        <canvas ref={canvasRef} />
-      </div>
-
-      <div
-        className={style.input_file_upload__main}
-        onClick={handleCaptureClick}
-      >
-        <div className={style.input_file_upload__text__container}>
-          <div className={style.input_file_upload__icon}>
-            <Image />
-          </div>
-          <div className={style.input_file_upload__text}>
-            <p>{fileType}</p>
-            <p>
-              {!fileName
-                ? "Сделайте фото документа"
-                : fileName.length > 25
-                ? `${fileName.slice(0, 25)}...`
-                : fileName}
-            </p>
-          </div>
-        </div>
-
+    <>
+      <div className={style.input_file_upload}>
         <div
-          className={style.input_file_upload__upload}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleCaptureClick();
-          }}
+          className={style.input_file_upload__main}
+          onClick={openCameraModal}
         >
-          <Photo />
+          <div className={style.input_file_upload__text__container}>
+            <div className={style.input_file_upload__icon}>
+              <Image />
+            </div>
+            <div className={style.input_file_upload__text}>
+              <p>{fileType}</p>
+              <p>
+                {!fileName
+                  ? "Сделайте фото документа"
+                  : fileName.length > 25
+                  ? `${fileName.slice(0, 25)}...`
+                  : fileName}
+              </p>
+            </div>
+          </div>
+
+          <div
+            className={style.input_file_upload__upload}
+            onClick={(e) => {
+              e.stopPropagation();
+              openCameraModal();
+            }}
+          >
+            <Photo />
+          </div>
         </div>
       </div>
-    </div>
+
+      {isModalOpen && (
+        <div className={style.camera_modal_overlay} onClick={closeCameraModal}>
+          <div
+            className={style.camera_modal}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Webcam
+              audio={false}
+              ref={webcamRef}
+              screenshotFormat="image/jpeg"
+              videoConstraints={{
+                facingMode: "environment", // задняя камера
+              }}
+              // onUserMediaError={handleCameraError}
+              className={style.webcam_preview}
+            />
+
+            <div className={style.camera_modal_buttons}>
+              <button
+                type="button"
+                className={style.camera_modal_button_capture}
+                onClick={handleCapture}
+              >
+                Сфотографировать
+              </button>
+              <button
+                type="button"
+                className={style.camera_modal_button_cancel}
+                onClick={closeCameraModal}
+              >
+                Отмена
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
