@@ -219,7 +219,7 @@ const InputFileUpload = ({ fileType, onFileSelect, id, fileName }) => {
                 transition={modalTransition}
               >
                 <button type="button" onClick={closeCameraModal}>
-                  <Angle /> Назад
+                  <Angle /> Отмена
                 </button>
                 <h3>Фото</h3>
                 <div></div>

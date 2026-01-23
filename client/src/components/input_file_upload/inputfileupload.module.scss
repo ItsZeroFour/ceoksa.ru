@@ -249,6 +249,7 @@
   overflow: hidden;
   object-fit: cover;
   background: #000;
+  transform: scaleX(1) !important;
 
   // margin-top: 20px;
 }
