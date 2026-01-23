@@ -23,8 +23,8 @@ const Cookies = () => {
     <div className={style.cookies}>
       <div className={style.cookies__wrapper}>
         <p>
-          Мы используем <Link to="/privacy-policy">файлы куки</Link>, чтобы
-          показывать вам подходящий контент 
+          Оставаясь с нами, вы соглашаетесь на использование{" "}
+          <Link to="/privacy-policy">файлов куки</Link>.
         </p>
 
         <button onClick={handleAccept}>Ок</button>
