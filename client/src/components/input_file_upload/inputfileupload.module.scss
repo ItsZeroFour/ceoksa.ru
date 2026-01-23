@@ -160,6 +160,8 @@
   position: absolute;
   bottom: 0;
 
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+
   display: flex;
   flex-direction: column;
   justify-content: space-between;
