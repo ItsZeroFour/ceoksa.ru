@@ -112,31 +112,140 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
+
+  @media (max-width: 900px) {
+    align-items: end;
+  }
 }
 
 .camera_modal {
   background: var(--color-bg);
-  border-radius: 16px;
+  border-radius: 16px 16px 0 0;
   overflow: hidden;
-  width: 90vw;
+  width: 100vw;
   height: 90vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 16px;
 
+  position: relative;
+
+  h3 {
+    font-family: "Inter", sans-serif;
+    font-weight: 600;
+    font-size: 20px;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 5px;
+    width: 35px;
+    height: 5px;
+    border-radius: 20px;
+    background: rgba(60, 60, 67, 0.302);
+  }
+
   @media (max-width: 900px) {
-    height: fit-content;
+    height: 90vh;
+    padding: 0;
   }
 }
 
-.webcam_preview {
+.webcam_nav {
+  padding: 20px;
+  background: rgba(5, 18, 37, 0.6);
   width: 100%;
-  max-width: 100%;
-  aspect-ratio: 4 / 3;
-  border-radius: 8px;
+  position: absolute;
+  bottom: 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: end;
+
+  .webcam_nav__container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+
+    div {
+      width: 33% !important;
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  .webcam_nav__photo__rotate {
+    justify-content: end;
+
+    button {
+      background: none;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      border-radius: 50%;
+
+      width: 35px;
+      height: 35px;
+
+      background: rgba(255, 255, 255, 0.2);
+    }
+  }
+
+  .webcam_nav__photo {
+    justify-content: center;
+
+    button {
+      width: 50px;
+      height: 50px;
+      background: var(--color-white);
+      border-radius: 50%;
+      position: relative;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      transform-style: preserve-3d;
+
+      &::before {
+        content: "";
+        position: absolute;
+        width: 60px;
+        height: 60px;
+        background: none;
+        border-radius: 50%;
+        border: 2px solid var(--color-white);
+
+        transform: translateZ(-1px);
+      }
+    }
+  }
+}
+
+.webcam_nav__container__captured {
+  height: 50px;
+  background: none;
+  color: var(--color-white);
+  font-weight: 300;
+}
+
+.webcam_preview,
+.captured_preview {
+  width: 100%;
+  height: 100%;
+  // aspect-ratio: 4 / 3;
   overflow: hidden;
   background: #000;
+
+  // margin-top: 20px;
 }
 
 .camera_modal_buttons {
@@ -170,4 +279,36 @@
 .camera_modal_button_cancel {
   background: var(--color-red);
   color: var(--color-white);
+}
+
+.camera_modal__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  padding: 20px;
+
+  div,
+  button,
+  h3 {
+    width: 33%;
+  }
+
+  h3 {
+    text-align: center;
+  }
+
+  button {
+    text-align: left;
+    background: none;
+    color: var(--color-blue);
+
+    display: flex;
+    align-items: center;
+
+    svg {
+      transform: rotate(90deg);
+    }
+  }
 }
