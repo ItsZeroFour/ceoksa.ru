@@ -28,6 +28,7 @@
 
   p {
     font-size: 14px;
+    color: var(--color-cookies);
 
     a {
       text-decoration: underline;
@@ -46,7 +47,7 @@
     color: var(--color-white);
 
     @media (max-width: 600px) {
-      padding: 10px 30px;
+      padding: 10px 18px;
     }
   }
 
