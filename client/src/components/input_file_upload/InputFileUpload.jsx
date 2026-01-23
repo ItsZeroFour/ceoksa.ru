@@ -160,10 +160,19 @@ const InputFileUpload = ({ fileType, onFileSelect, id, fileName }) => {
 
   return (
     <>
+      <input
+        type="file"
+        id={`file-${id}`}
+        hidden
+        accept="image/*"
+        capture="environment"
+      />
+
       <div className={style.input_file_upload}>
-        <div
+        <label
+          htmlFor={`file-${id}`}
           className={style.input_file_upload__main}
-          onClick={openCameraModal}
+          // onClick={openCameraModal}
         >
           <div className={style.input_file_upload__text__container}>
             <div className={style.input_file_upload__icon}>
@@ -183,17 +192,17 @@ const InputFileUpload = ({ fileType, onFileSelect, id, fileName }) => {
 
           <div
             className={style.input_file_upload__upload}
-            onClick={(e) => {
-              e.stopPropagation();
-              openCameraModal();
-            }}
+            // onClick={(e) => {
+            //   e.stopPropagation();
+            //   openCameraModal();
+            // }}
           >
             <Photo />
           </div>
-        </div>
+        </label>
       </div>
 
-      <AnimatePresence>
+      {/* <AnimatePresence>
         {isModalOpen && (
           <motion.div
             className={style.camera_modal_overlay}
@@ -283,28 +292,10 @@ const InputFileUpload = ({ fileType, onFileSelect, id, fileName }) => {
                   </div>
                 )}
               </div>
-
-              {/* 
-            <div className={style.camera_modal_buttons}>
-              <button
-                type="button"
-                className={style.camera_modal_button_capture}
-                onClick={handleCapture}
-              >
-                Сфотографировать
-              </button>
-              <button
-                type="button"
-                className={style.camera_modal_button_cancel}
-                onClick={closeCameraModal}
-              >
-                Отмена
-              </button>
-            </div> */}
             </div>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence> */}
     </>
   );
 };

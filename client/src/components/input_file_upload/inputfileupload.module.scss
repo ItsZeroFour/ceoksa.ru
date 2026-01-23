@@ -4,13 +4,13 @@
   border-radius: 14px;
   width: 100%;
 
-  label {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  // label {
+  //   display: flex;
+  //   justify-content: space-between;
+  //   align-items: center;
 
-    cursor: pointer;
-  }
+  //   cursor: pointer;
+  // }
 
   & > p {
     font-size: 13px;
@@ -130,9 +130,7 @@
   padding: 16px;
 
   position: relative;
-  padding-bottom: env(safe-area-inset-bottom, 16px)
-
-  h3 {
+  padding-bottom: env(safe-area-inset-bottom, 16px) h3 {
     font-family: "Inter", sans-serif;
     font-weight: 600;
     font-size: 20px;
