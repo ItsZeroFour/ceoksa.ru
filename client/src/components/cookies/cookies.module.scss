@@ -19,6 +19,7 @@
   border-radius: 20px;
 
   display: flex;
+  align-items: center;
   gap: 20px;
 
   background: var(--color-payments-modal-bg);
@@ -39,6 +40,7 @@
     padding: 13px 42px;
     border-radius: 12px;
     background: var(--color-blue);
+    color: var(--color-white);
 
     @media (max-width: 600px) {
       padding: 10px 30px;
@@ -47,5 +49,7 @@
 
   @media (max-width: 600px) {
     width: 95%;
+    padding: 15px;
+    gap: 10px;
   }
 }
