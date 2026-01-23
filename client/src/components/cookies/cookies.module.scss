@@ -1,0 +1,51 @@
+.cookies {
+  width: 100%;
+
+  position: fixed;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  bottom: 16px;
+
+  z-index: 999;
+}
+
+.cookies__wrapper {
+  width: 520px;
+  padding: 30px;
+  border-radius: 20px;
+
+  display: flex;
+  gap: 20px;
+
+  background: var(--color-payments-modal-bg);
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
+
+  p {
+    a {
+      text-decoration: underline;
+      color: var(--color-blue);
+    }
+
+    @media (max-width: 600px) {
+      font-size: 14px;
+    }
+  }
+
+  button {
+    padding: 13px 42px;
+    border-radius: 12px;
+    background: var(--color-blue);
+
+    @media (max-width: 600px) {
+      padding: 10px 30px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    width: 95%;
+  }
+}

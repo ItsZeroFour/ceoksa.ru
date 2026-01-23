@@ -11,6 +11,7 @@ import Policy from "./pages/policy/Policy";
 import UserAgreement from "./pages/user_agreement/UserAgreement";
 import PersonalData from "./pages/account/files/PersonalData";
 import ADS from "./pages/account/files/ADS";
+import Cookies from "./components/cookies/Cookies";
 
 const Header = lazy(() => import("./components/header/Header"));
 const Main = lazy(() => import("./pages/main/Main"));
@@ -92,14 +93,23 @@ function App() {
                 {/* Files */}
                 <Route
                   path="/soglasie-na-obrabotku-personalnyh-dannyh"
-                  element={<PersonalData setOpenMenu={setOpenMenu} openMenu={openMenu} />}
+                  element={
+                    <PersonalData
+                      setOpenMenu={setOpenMenu}
+                      openMenu={openMenu}
+                    />
+                  }
                 />
                 <Route
                   path="/soglasie-na-poluchenie-reklamy"
-                  element={<ADS setOpenMenu={setOpenMenu} openMenu={openMenu} />}
+                  element={
+                    <ADS setOpenMenu={setOpenMenu} openMenu={openMenu} />
+                  }
                 />
               </Routes>
             </main>
+
+            <Cookies />
 
             <Footer />
           </div>
