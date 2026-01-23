@@ -13,6 +13,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import useDisableScroll from "../../hooks/useDisableScroll";
 import { useScreenWidth } from "../../hooks/useScreenWidth";
+import { useSafeAreaBottom } from "../../hooks/useSafeAreaBottom";
 
 const InputFileUpload = ({ fileType, onFileSelect, id, fileName }) => {
   const webcamRef = useRef(null);
@@ -23,6 +24,9 @@ const InputFileUpload = ({ fileType, onFileSelect, id, fileName }) => {
   const [capturedImage, setCapturedImage] = useState(null);
 
   const screenWidth = useScreenWidth();
+  const safeAreaBottom = useSafeAreaBottom();
+
+  console.log(safeAreaBottom);
 
   useDisableScroll(isModalOpen);
 
@@ -238,7 +242,10 @@ const InputFileUpload = ({ fileType, onFileSelect, id, fileName }) => {
                 />
               )}
 
-              <div className={style.webcam_nav}>
+              <div
+                className={style.webcam_nav}
+                style={{ paddingBottom: `${safeAreaBottom}px` }}
+              >
                 {!capturedImage ? (
                   <div className={style.webcam_nav__container}>
                     <div></div>
