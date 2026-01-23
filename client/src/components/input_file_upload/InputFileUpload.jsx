@@ -233,7 +233,7 @@ const InputFileUpload = ({ fileType, onFileSelect, id, fileName }) => {
                   ref={webcamRef}
                   screenshotFormat="image/jpeg"
                   videoConstraints={{ facingMode }}
-                  onUserMediaError={handleCameraError}
+                  // onUserMediaError={handleCameraError}
                   className={style.webcam_preview}
                 />
               )}
