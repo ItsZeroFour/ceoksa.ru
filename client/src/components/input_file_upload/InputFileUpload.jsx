@@ -28,22 +28,28 @@ const InputFileUpload = ({ fileType, onFileSelect, id, fileName }) => {
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
+  
     if (file.size > 10 * 1024 * 1024) {
       alert("Фото слишком большое. Максимум — 10 МБ.");
       if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
-
-    if (!file.type.match("image/jpeg|image/png")) {
+  
+    if (!file.type.match(/^image\/(jpeg|png|jpg)$/)) {
       alert("Разрешены только JPG и PNG.");
       if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
-
-    onFileSelect?.(file);
-
-    setCurrentFileName(file.name);
+  
+    const randomString = Math.random().toString(36).substring(2, 12);
+    const extension = file.type === "image/jpeg" ? "jpg" : "png";
+    const newFileName = `photo-${randomString}.${extension}`;
+  
+    const renamedFile = new File([file], newFileName, { type: file.type });
+  
+    onFileSelect?.(renamedFile);
+  
+    setCurrentFileName(newFileName);
   };
 
   // const screenWidth = useScreenWidth();
