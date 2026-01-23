@@ -259,10 +259,18 @@ const InputFileUpload = ({ fileType, onFileSelect, id, fileName }) => {
                   </div>
                 ) : (
                   <div className={style.webcam_nav__container}>
-                    <button className={style.webcam_nav__container__captured}>
+                    <button
+                      className={style.webcam_nav__container__captured}
+                      type="button"
+                      onClick={handleConfirm}
+                    >
                       Переснять
                     </button>
-                    <button className={style.webcam_nav__container__captured}>
+                    <button
+                      className={style.webcam_nav__container__captured}
+                      type="button"
+                      onClick={handleCapture}
+                    >
                       Использовать фото
                     </button>
                   </div>
