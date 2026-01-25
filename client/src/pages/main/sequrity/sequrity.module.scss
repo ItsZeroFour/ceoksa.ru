@@ -258,30 +258,29 @@
     }
 
     @media (max-width: 768px) {
-      overflow-x: auto;
-      overflow-y: hidden;
+      display: flex;
       flex-wrap: nowrap;
       justify-content: flex-start;
-      gap: 10px;
-
-      padding-left: 20px; // левый отступ
-      padding-right: 20px; // вот этот — правый отступ
-      width: 100%; // не vw, чтобы Safari считал правильно
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding-left: 20px;
       box-sizing: border-box;
+      -webkit-overflow-scrolling: touch;
 
       &::-webkit-scrollbar {
         display: none;
       }
 
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-
       & > li {
         flex: 0 0 auto;
         width: 280px;
-        height: auto;
         min-height: 280px;
-        white-space: normal; // текст в несколько строк
+        white-space: normal;
+        margin-right: 10px;
+      }
+
+      & > li:last-child {
+        margin-right: 20px;
       }
     }
 
