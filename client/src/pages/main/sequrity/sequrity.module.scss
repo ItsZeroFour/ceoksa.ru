@@ -259,18 +259,15 @@
 
     @media (max-width: 768px) {
       overflow-x: auto;
-      overflow-y: auto;
-      white-space: nowrap;
+      overflow-y: hidden;
       flex-wrap: nowrap;
       justify-content: flex-start;
-      width: 90vw;
-      margin-left: auto;
-      margin-right: auto;
-      height: auto;
-      padding: 0 60px;
-      padding-top: 5px;
+      gap: 10px;
 
-      padding-right: 60px;
+      padding-left: 20px; // левый отступ
+      padding-right: 20px; // вот этот — правый отступ
+      width: 100%; // не vw, чтобы Safari считал правильно
+      box-sizing: border-box;
 
       &::-webkit-scrollbar {
         display: none;
@@ -284,9 +281,7 @@
         width: 280px;
         height: auto;
         min-height: 280px;
-        margin-top: 0;
-        white-space: normal;
-        float: none;
+        white-space: normal; // текст в несколько строк
       }
     }
 

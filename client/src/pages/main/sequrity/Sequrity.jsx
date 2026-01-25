@@ -69,7 +69,6 @@ const Sequrity = ({ scrollToBlock }) => {
                 <ul>
                   <li>
                     <h3>{data.list_item_1_title}</h3>
-
                     <ol>
                       <li>
                         <div>
@@ -94,7 +93,6 @@ const Sequrity = ({ scrollToBlock }) => {
 
                   <li>
                     <h3>{data.list_item_2_title}</h3>
-
                     <ol>
                       <li>
                         <div>
@@ -119,7 +117,6 @@ const Sequrity = ({ scrollToBlock }) => {
 
                   <li>
                     <h3>{data.list_item_3_title}</h3>
-
                     <p>{data.list_item_3_text}</p>
 
                     <div className={style.sequrity__item__contacts}>
