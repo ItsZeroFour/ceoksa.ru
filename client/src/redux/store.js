@@ -8,6 +8,7 @@ import howgetReducer from "./slices/strapi/howgetSlice";
 import banksReducer from "./slices/strapi/banksSlice";
 import sequrityReducer from "./slices/strapi/sequritySlice";
 import footerSlice from "./slices/strapi/footerSlice";
+import filesSlice from "./slices/strapi/FilesSlide";
 
 export const store = configureStore({
   reducer: {
@@ -20,5 +21,6 @@ export const store = configureStore({
     banks: banksReducer,
     sequrity: sequrityReducer,
     footer: footerSlice,
+    files: filesSlice,
   },
 });
