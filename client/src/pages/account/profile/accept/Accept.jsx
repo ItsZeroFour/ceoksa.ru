@@ -107,7 +107,7 @@ const Accept = () => {
               </Link>
             </li>
 
-            {/* <li>
+            <li>
               <Link
                 to={`${process.env.REACT_APP_ADMIN_IMAGES}${data.terms_of_transfer_of_informationconsent.url}`}
                 target="_blank"
@@ -144,7 +144,7 @@ const Accept = () => {
 
                 <p>Соглашение обиспользовании простой электронной подписи</p>
               </Link>
-            </li> */}
+            </li>
             {/* ))} */}
           </ul>
         </div>
