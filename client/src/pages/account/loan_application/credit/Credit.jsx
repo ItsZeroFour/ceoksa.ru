@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import style from "./credit.module.scss";
 import { ReactComponent as Minus } from "../../../../assets/icons/minus.svg";
 import { ReactComponent as Plus } from "../../../../assets/icons/plus.svg";
@@ -6,6 +6,9 @@ import DropdownSelector from "../../../../components/dropdown_selector/DropdownS
 import { useOutsideClick } from "../../../../hooks/useOutsideClick";
 import { useDropdown } from "../../../../hooks/useDropdown";
 import { useSalaryValidation } from "../../../../hooks/useSalaryValidation";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchFiles } from "../../../../redux/slices/strapi/FilesSlide";
+import { Link } from "react-router-dom";
 
 const TERMS = [
   { value: 3, title: "3 месяца" },
@@ -35,6 +38,14 @@ const Credit = () => {
   const [isTotalFocused, setIsTotalFocused] = useState(false);
   const termRef = useRef(null);
   const targetRef = useRef(null);
+
+  const dispatch = useDispatch();
+
+  const { data, status, error } = useSelector((state) => state.files);
+
+  useEffect(() => {
+    dispatch(fetchFiles("fajly?populate=*"));
+  }, [dispatch]);
 
   /* HOOKS */
   const { openDropdown, toggleDropdown, closeDropdown, setOpenDropdown } =
@@ -205,13 +216,27 @@ const Credit = () => {
           </form>
         </div>
 
-        <div className={style.credit__bottom}>
-          <button>Направить в банки</button>
-          <p>
-            Нажимая кнопку «Направить в банки», Вы даете согласия и принимаете
-            условия передачи информации
-          </p>
-        </div>
+        {status === "succeeded" && (
+          <div className={style.credit__bottom}>
+            <button>Направить в банки</button>
+            <p>
+              Нажимая кнопку «Направить в банки», Вы даете{" "}
+              <Link
+                to={`${process.env.REACT_APP_ADMIN_IMAGES}${data.consent_to_the_processing_of_personal_data_by_telecom_operators.url}`}
+                target="_blank"
+              >
+                согласия
+              </Link>{" "}
+              и принимаете условия{" "}
+              <Link
+                to={`${process.env.REACT_APP_ADMIN_IMAGES}${data.terms_of_information_transfer.url}`}
+                target="_blank"
+              >
+                передачи информации
+              </Link>
+            </p>
+          </div>
+        )}
       </div>
     </section>
   );
