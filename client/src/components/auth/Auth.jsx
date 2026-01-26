@@ -7,6 +7,8 @@ import { Link } from "react-router-dom";
 import gosuslugi from "../../assets/gosuslugi.png";
 import GosuslugiButton from "../gosuslugi_button/GosuslugiButton";
 import IMask from "imask";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchFiles } from "../../redux/slices/strapi/FilesSlide";
 
 const Auth = ({ setOpenAuthMenu }) => {
   const { theme } = useTheme();
@@ -20,6 +22,14 @@ const Auth = ({ setOpenAuthMenu }) => {
   const inputRefs = useRef([]);
   const [resendDisabled, setResendDisabled] = useState(false);
   const [resendTimer, setResendTimer] = useState(60);
+
+  const dispatch = useDispatch();
+
+  const { data, status, error } = useSelector((state) => state.files);
+
+  useEffect(() => {
+    dispatch(fetchFiles("fajly?populate=*"));
+  }, [dispatch]);
 
   useEffect(() => {
     if (!phoneInputRef.current) return;
@@ -181,18 +191,31 @@ const Auth = ({ setOpenAuthMenu }) => {
                   />
                 </div>
 
-                <button
-                  type="button"
-                  disabled={!isPhoneComplete}
-                  onClick={onSendSms}
-                >
-                  Получить код
-                </button>
+                {status === "succeeded" && (
+                  <>
+                    <button
+                      type="button"
+                      disabled={!isPhoneComplete}
+                      onClick={onSendSms}
+                    >
+                      Получить код
+                    </button>
 
-                <p>
-                  Нажимая на кнопку «Получить код», Вы даете согласие и
-                  принимаете условия политики конфиденциальности.
-                </p>
+                    <p>
+                      Нажимая на кнопку «Получить код», Вы даете{" "}
+                      <Link
+                        to={`${process.env.REACT_APP_ADMIN_IMAGES}${data.consent_to_the_processing_of_personal_data_by_telecom_operators.url}`}
+                        target="_blank"
+                      >
+                        согласия
+                      </Link>{" "}
+                      и принимаете условия{" "}
+                      <Link to="/privacy-policy" target="_blank">
+                        политики конфиденциальности.
+                      </Link>
+                    </p>
+                  </>
+                )}
               </form>
 
               <div className={style.auth__or}>
