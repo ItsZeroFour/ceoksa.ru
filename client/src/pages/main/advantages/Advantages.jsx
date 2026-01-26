@@ -8,23 +8,23 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchAdvantages } from "../../../redux/slices/strapi/advantagesSlice";
 
 const Advantages = () => {
-  const advantagesData = [
-    {
-      lines: ["Одобрение", "без документов"],
-      image: advantagesImg1,
-      alt: "Одобрение без документов",
-    },
-    {
-      lines: ["Без звонков", "из банка"],
-      image: advantagesImg2,
-      alt: "Без звонков из банка",
-    },
-    {
-      lines: ["Гарантия низкой", "ставки"],
-      image: advantagesImg3,
-      alt: "Гарантия низкой ставки",
-    },
-  ];
+  // const advantagesData = [
+  //   {
+  //     lines: ["Одобрение", "без документов"],
+  //     image: advantagesImg1,
+  //     alt: "Одобрение без документов",
+  //   },
+  //   {
+  //     lines: ["Без звонков", "из банка"],
+  //     image: advantagesImg2,
+  //     alt: "Без звонков из банка",
+  //   },
+  //   {
+  //     lines: ["Гарантия низкой", "ставки"],
+  //     image: advantagesImg3,
+  //     alt: "Гарантия низкой ставки",
+  //   },
+  // ];
 
   const dispatch = useDispatch();
 
