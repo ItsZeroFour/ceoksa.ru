@@ -145,6 +145,22 @@ const Accept = () => {
                 <p>Соглашение об использовании простой электронной подписи</p>
               </Link>
             </li>
+
+            <li>
+              <Link
+                to={`${process.env.REACT_APP_ADMIN_IMAGES}${data.consent_to_the_processing_of_personal_data_by_telecom_operators.url}`}
+                target="_blank"
+              >
+                <div className={style.accept__item__icon}>
+                  <File />
+                </div>
+
+                <p>
+                  Согласие на обработку персональных данныхоператорамисвязи
+                  (МТС, Билайн, Мегафон, Т2)
+                </p>
+              </Link>
+            </li>
             {/* ))} */}
           </ul>
         </div>
