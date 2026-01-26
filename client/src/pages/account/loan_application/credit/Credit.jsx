@@ -222,17 +222,17 @@ const Credit = () => {
             <p>
               Нажимая кнопку «Направить в банки», Вы даете{" "}
               <Link
-                to={`${process.env.REACT_APP_ADMIN_IMAGES}${data.consent_to_the_processing_of_personal_data_by_telecom_operators.url}`}
+                to={`${process.env.REACT_APP_ADMIN_IMAGES}${data.terms_of_transfer_of_informationconsent.url}`}
                 target="_blank"
               >
                 согласия
               </Link>{" "}
-              и принимаете условия{" "}
+              и принимаете{" "}
               <Link
                 to={`${process.env.REACT_APP_ADMIN_IMAGES}${data.terms_of_information_transfer.url}`}
                 target="_blank"
               >
-                передачи информации
+                условия передачи информации
               </Link>
             </p>
           </div>
