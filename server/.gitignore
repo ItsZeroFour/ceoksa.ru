@@ -1,3 +1,6 @@
 .env
 /node_modules
 /cert
+private.pem
+jwks.json
+jwks.js
