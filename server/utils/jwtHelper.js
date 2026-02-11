@@ -39,6 +39,7 @@ export const generateRequestJWT = (params) => {
   const kid = getKidFromJwks();
 
   const payload = {
+    client_id: CLIENT_ID,
     iss: CLIENT_ID,
     aud: MTS_AUDIENCE,
     version: "mc_si_r2_v1.0",
