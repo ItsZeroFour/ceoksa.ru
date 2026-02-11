@@ -166,15 +166,15 @@ export const initiateAuth = async (req, res) => {
     // Отправляем запрос в МТС
     const response = await axios.post(
       MTS_ENDPOINT,
-      qs.stringify({
-        client_id: CLIENT_ID,
+      {
+        client_id: CLIENT_ID.trim(),
         response_type: "mc_si_async_code",
         scope: "openid mc_authn",
         request: requestJWT,
-      }),
+      },
       {
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
+          "Content-Type": "application/json",
         },
       }
     );
