@@ -58,7 +58,9 @@ export const generateRequestJWT = (params) => {
   // Подписываем с алгоритмом RS256
   return jwt.sign(payload, privateKey, {
     algorithm: "RS256",
-    kid: kid,
+    header: {
+      kid: kid,
+    },
     expiresIn: "5m",
   });
 };
