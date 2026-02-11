@@ -63,6 +63,104 @@ export const initiateAuth = async (req, res) => {
       correlationId,
     });
 
+    console.log(requestJWT);
+
+    // 🔍 ПРОВЕРКА 1: Декодируем и выводим структуру токена
+    console.log("\n" + "=".repeat(60));
+    console.log("🔍 ПРОВЕРКА JWT ТОКЕНА");
+    console.log("=".repeat(60));
+    console.log(
+      "🔐 Сырой токен (первые 100 символов):",
+      requestJWT.substring(0, 100) + "..."
+    );
+    console.log("=".repeat(60));
+
+    // Декодируем токен для проверки
+    const decodedToken = jwt.decode(requestJWT, { complete: true });
+    console.log("📋 Декодированный токен:");
+    console.log("  Header:", JSON.stringify(decodedToken.header, null, 2));
+    console.log("  Payload:", JSON.stringify(decodedToken.payload, null, 2));
+    console.log("=".repeat(60));
+
+    // 🔍 ПРОВЕРКА 2: Проверяем наличие обязательных полей в заголовке
+    console.log("✅ Проверка заголовка (Header):");
+    console.log(
+      "  alg:",
+      decodedToken.header.alg,
+      decodedToken.header.alg === "RS256" ? "✅" : "❌"
+    );
+    console.log(
+      "  kid:",
+      decodedToken.header.kid,
+      decodedToken.header.kid ? "✅" : "❌"
+    );
+    console.log("=".repeat(60));
+
+    // 🔍 ПРОВЕРКА 3: Проверяем обязательные поля в payload
+    console.log("✅ Проверка payload:");
+    const requiredFields = [
+      "iss",
+      "aud",
+      "version",
+      "scope",
+      "response_type",
+      "nonce",
+      "notification_uri",
+      "client_notification_token",
+      "login_hint",
+      "acr_values",
+    ];
+    requiredFields.forEach((field) => {
+      const exists = decodedToken.payload.hasOwnProperty(field);
+      console.log(
+        `  ${field}:`,
+        exists ? "✅" : "❌",
+        exists ? decodedToken.payload[field] : "(отсутствует)"
+      );
+    });
+    console.log("=".repeat(60));
+
+    // 🔍 ПРОВЕРКА 4: Проверяем длину nonce (должно быть 32 символа)
+    const nonceLength = decodedToken.payload.nonce?.length || 0;
+    console.log(
+      `🔢 Длина nonce: ${nonceLength} символов`,
+      nonceLength === 32 ? "✅" : `❌ (должно быть 32)`
+    );
+    console.log("=".repeat(60));
+
+    // 🔍 ПРОВЕРКА 5: Сверяем kid с JWKS
+    const jwksPath = path.join(__dirname, "../jwks.json");
+    const jwks = JSON.parse(fs.readFileSync(jwksPath, "utf8"));
+    const jwksKid = jwks.keys.find((k) => k.use === "sig")?.kid;
+    console.log("🔑 Сравнение kid:");
+    console.log("  kid в токене:", decodedToken.header.kid);
+    console.log("  kid в JWKS:", jwksKid);
+    console.log(
+      "  Совпадают:",
+      decodedToken.header.kid === jwksKid ? "✅" : "❌"
+    );
+    console.log("=".repeat(60));
+
+    // 🔍 ПРОВЕРКА 6: Проверяем, что iss совпадает с CLIENT_ID
+    console.log("🆔 Проверка issuer (iss):");
+    console.log("  iss в токене:", decodedToken.payload.iss);
+    console.log("  CLIENT_ID из .env:", CLIENT_ID);
+    console.log(
+      "  Совпадают:",
+      decodedToken.payload.iss === CLIENT_ID ? "✅" : "❌"
+    );
+    console.log("=".repeat(60));
+
+    // 🔍 ПРОВЕРКА 7: Проверяем, что aud совпадает с MTS_AUDIENCE
+    console.log("🎯 Проверка audience (aud):");
+    console.log("  aud в токене:", decodedToken.payload.aud);
+    console.log("  MTS_AUDIENCE из .env:", process.env.MTS_AUDIENCE);
+    console.log(
+      "  Совпадают:",
+      decodedToken.payload.aud === process.env.MTS_AUDIENCE ? "✅" : "❌"
+    );
+    console.log("=".repeat(60) + "\n");
+
     console.log("🔐 Generated JWT request for phone:", phone);
 
     // Отправляем запрос в МТС
