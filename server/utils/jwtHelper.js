@@ -22,7 +22,7 @@ const getKidFromJwks = () => {
     const key = jwks.keys.find((k) => k.use === "sig");
     return key?.kid || "rsa1";
   } catch (err) {
-    console.warn("⚠️ Не удалось прочитать kid из JWKS, используем дефолтный");
+    console.warn("Не удалось прочитать kid из JWKS, используем дефолтный");
     return "rsa1";
   }
 };
@@ -32,7 +32,7 @@ export const generateRequestJWT = (params) => {
     notificationUri,
     clientNotificationToken,
     correlationId,
-    acrValues = "2", // Уровень аутентификации (2 = SMS-OTP)
+    acrValues = "2",
   } = params;
 
   const privateKey = fs.readFileSync(PRIVATE_KEY_PATH, "utf8");
@@ -52,11 +52,7 @@ export const generateRequestJWT = (params) => {
     acr_values: acrValues,
     ...(correlationId && { correlation_id: correlationId }),
   };
-
-  console.log("📝 JWT payload:", payload);
-  console.log("🔑 Using kid:", kid);
-
-  // Подписываем с алгоритмом RS256
+  
   return jwt.sign(payload, privateKey, {
     algorithm: "RS256",
     header: {
@@ -68,7 +64,6 @@ export const generateRequestJWT = (params) => {
   });
 };
 
-// Верификация ID Token от МТС
 export const verifyIdToken = (idToken, publicKeyPem) => {
   return jwt.verify(idToken, publicKeyPem, {
     algorithms: ["RS256"],
