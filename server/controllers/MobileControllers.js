@@ -61,7 +61,6 @@ export const initiateAuth = async (req, res) => {
       notificationUri: `${BASE_URL}/mobile/notifications`,
       clientNotificationToken,
       correlationId,
-      acrValues,
     });
 
     // Отправляем запрос в МТС
