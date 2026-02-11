@@ -41,7 +41,7 @@ export const generateRequestJWT = (params) => {
   const payload = {
     iss: CLIENT_ID,
     aud: MTS_AUDIENCE,
-    version: 1,
+    version: "mc_si_r2_v1.0",
     scope: "openid mc_authn",
     response_type: "mc_si_async_code",
     nonce: crypto.randomBytes(16).toString("hex").slice(0, 32),
@@ -59,6 +59,8 @@ export const generateRequestJWT = (params) => {
   return jwt.sign(payload, privateKey, {
     algorithm: "RS256",
     header: {
+      alg: "RS256",
+      typ: "JWT",
       kid: kid,
     },
     expiresIn: "5m",
