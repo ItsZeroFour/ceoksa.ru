@@ -53,7 +53,7 @@ export const initiateAuth = async (req, res) => {
     }
 
     const correlationId = crypto.randomUUID();
-    const clientNotificationToken = crypto.randomBytes(32).toString("hex");
+    const clientNotificationToken = process.env.CLIENT_NOTIFICATION_TOKEN;
 
     // Генерируем JWT request
     const requestJWT = generateRequestJWT({
