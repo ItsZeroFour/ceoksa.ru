@@ -44,7 +44,7 @@ export const generateRequestJWT = (params) => {
     version: 1,
     scope: "openid mc_authn",
     response_type: "mc_si_async_code",
-    nonce: crypto.randomBytes(16).toString("hex"),
+    nonce: crypto.randomBytes(16).toString("hex").slice(0, 32),
     notification_uri: notificationUri,
     client_notification_token: clientNotificationToken,
     login_hint: `MSISDN:${phoneNumber}`,
