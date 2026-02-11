@@ -55,19 +55,12 @@ export const generateRequestJWT = (params) => {
   console.log("📝 JWT payload:", payload);
   console.log("🔑 Using kid:", kid);
 
-  const token = jwt.sign(payload, privateKey, {
+  // Подписываем с алгоритмом RS256
+  return jwt.sign(payload, privateKey, {
     algorithm: "RS256",
-    header: { kid: kid },
+    kid: kid,
     expiresIn: "5m",
   });
-
-  const decoded = jwt.decode(token, { complete: true });
-  console.log("🔍 Сформированный JWT:", {
-    header: decoded.header,
-    payload: decoded.payload,
-  });
-
-  return token;
 };
 
 // Верификация ID Token от МТС
