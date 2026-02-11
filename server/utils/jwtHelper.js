@@ -40,7 +40,6 @@ export const generateRequestJWT = (params) => {
 
   const payload = {
     iss: CLIENT_ID,
-    client_id: CLIENT_ID,
     aud: MTS_AUDIENCE,
     version: 1,
     scope: "openid mc_authn",
