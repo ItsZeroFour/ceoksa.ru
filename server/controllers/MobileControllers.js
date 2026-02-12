@@ -324,8 +324,8 @@ export const handleNotification = async (req, res) => {
 
     res.cookie("app_token", appToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: "None",
+      secure: false,
+      sameSite: "Lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 

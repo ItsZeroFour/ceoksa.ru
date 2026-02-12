@@ -31,9 +31,14 @@ const MONGO_URI = process.env.MONGO_URI;
 /* MIDDLEWARES */
 app.use(express.urlencoded({ extended: true }));
 // app.use(cookieSession({ name: "sess", keys: [CONFIG.SESSION_KEY] }));
-app.use(cookieParser()); 
+app.use(cookieParser());
 app.use(express.json({ limit: "50mb" }));
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://ceoksa.ru",
+    credentials: true,
+  })
+);
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(morgan("common"));
