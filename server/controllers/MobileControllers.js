@@ -214,6 +214,8 @@ export const verifySmsCode = async (req, res) => {
 
 export const handleNotification = async (req, res) => {
   try {
+    console.log("NOTIFICATION");
+
     const {
       auth_req_id,
       id_token,
@@ -261,6 +263,8 @@ export const handleNotification = async (req, res) => {
       return res.status(204).end();
     }
 
+    console.log("NOTIFICATION 2");
+
     if (!id_token || !access_token) {
       return res.status(400).json({
         error: "invalid_request",
@@ -274,11 +278,6 @@ export const handleNotification = async (req, res) => {
     }
 
     const decoded = verifyIdToken(id_token, publicKey);
-
-    console.log("ID Token верифицирован:", {
-      sub: decoded.sub,
-      phone_number: decoded.phone_number,
-    });
 
     const user = await User.findOneAndUpdate(
       { phone: transaction.phone },
