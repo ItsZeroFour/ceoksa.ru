@@ -160,7 +160,7 @@ const Auth = ({ setOpenAuthMenu }) => {
         clearInterval(interval);
 
         await axios.get(
-          `${API}/auth/complete?auth_req_id=${mobileAuth.auth_req_id}`,
+          `${process.env.REACT_APP_SERVERF_API}/auth/complete?auth_req_id=${mobileAuth.auth_req_id}`,
           { withCredentials: true }
         );
 
