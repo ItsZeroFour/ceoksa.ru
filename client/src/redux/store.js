@@ -10,6 +10,7 @@ import sequrityReducer from "./slices/strapi/sequritySlice";
 import footerSlice from "./slices/strapi/footerSlice";
 import filesSlice from "./slices/strapi/FilesSlide";
 import mobileAuthReducer from "./slices/auth/mobileAuthSlice";
+import authReducer from "./slices/auth/authSlice";
 
 export const store = configureStore({
   reducer: {
@@ -24,5 +25,6 @@ export const store = configureStore({
     footer: footerSlice,
     files: filesSlice,
     mobileAuth: mobileAuthReducer,
+    auth: authReducer,
   },
 });

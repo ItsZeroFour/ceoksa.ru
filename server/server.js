@@ -12,6 +12,7 @@ import multer from "multer";
 import cookieSession from "cookie-session";
 import MobileRoutes from "./routes/mobileRoutes.js";
 import { getJwks } from "./controllers/MobileControllers.js";
+import cookieParser from "cookie-parser";
 
 /* ROUTES */
 
@@ -44,6 +45,12 @@ app.use(
   })
 );
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use(
+  cors({
+    origin: "https://ceoksa.ru",
+    credentials: true,
+  })
+);
 
 /**
  * @description Загрузка изображений в папку uploads

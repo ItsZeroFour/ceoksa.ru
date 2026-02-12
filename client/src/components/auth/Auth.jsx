@@ -14,6 +14,7 @@ import {
   verifyCode,
   checkStatus,
 } from "../../redux/slices/auth/mobileAuthSlice";
+import { fetchMe } from "../../redux/slices/auth/authSlice";
 
 const Auth = ({ setOpenAuthMenu }) => {
   const { theme } = useTheme();
@@ -154,7 +155,8 @@ const Auth = ({ setOpenAuthMenu }) => {
 
       if (res.payload?.status === "success") {
         clearInterval(interval);
-        console.log("Пользователь авторизован:", res.payload.user);
+
+        await dispatch(fetchMe());
 
         setOpenAuthMenu(false);
       }
