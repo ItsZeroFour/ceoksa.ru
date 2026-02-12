@@ -227,6 +227,8 @@ export const handleNotification = async (req, res) => {
       error_description,
     } = req.body;
 
+    console.log(req.body);
+
     if (!auth_req_id) {
       return res.status(400).json({
         error: "invalid_request",
