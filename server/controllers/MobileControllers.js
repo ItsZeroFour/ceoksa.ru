@@ -279,7 +279,7 @@ export const handleNotification = async (req, res) => {
       throw new Error("Не удалось загрузить публичный ключ");
     }
 
-    const decoded = verifyIdToken(id_token, publicKey);
+    const decoded = await verifyIdToken(id_token);
 
     const user = await User.findOneAndUpdate(
       { phone: transaction.phone },
