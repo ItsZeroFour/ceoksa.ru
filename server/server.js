@@ -13,6 +13,8 @@ import cookieSession from "cookie-session";
 import MobileRoutes from "./routes/mobileRoutes.js";
 import { getJwks } from "./controllers/MobileControllers.js";
 import cookieParser from "cookie-parser";
+import { authMiddleware } from "./middlewares/authMiddleware.js";
+import User from "./models/User.js";
 
 /* ROUTES */
 
@@ -87,6 +89,12 @@ app.post("/upload", upload.single("image"), (req, res) => {
 /* ROUTES */
 app.use("/mobile", MobileRoutes);
 app.get("/.well-known/jwks.json", getJwks);
+
+app.get("/api/me", authMiddleware, async (req, res) => {
+  const user = await User.findById(req.user.userId);
+
+  res.json(user);
+});
 
 /* START FUNCTION */
 async function start() {
