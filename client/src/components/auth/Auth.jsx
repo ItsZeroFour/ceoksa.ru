@@ -15,6 +15,9 @@ import {
   checkStatus,
 } from "../../redux/slices/auth/mobileAuthSlice";
 import { fetchMe } from "../../redux/slices/auth/authSlice";
+import axios from "axios";
+
+axios.defaults.withCredentials = true;
 
 const Auth = ({ setOpenAuthMenu }) => {
   const { theme } = useTheme();
@@ -155,6 +158,11 @@ const Auth = ({ setOpenAuthMenu }) => {
 
       if (res.payload?.status === "success") {
         clearInterval(interval);
+
+        await axios.get(
+          `${API}/auth/complete?auth_req_id=${mobileAuth.auth_req_id}`,
+          { withCredentials: true }
+        );
 
         await dispatch(fetchMe());
 
