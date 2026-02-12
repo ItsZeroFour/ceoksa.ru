@@ -47,12 +47,12 @@ app.use(
   })
 );
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-app.use(
-  cors({
-    origin: "https://ceoksa.ru",
-    credentials: true,
-  })
-);
+// app.use(
+//   cors({
+//     origin: "https://ceoksa.ru",
+//     credentials: true,
+//   })
+// );
 
 /**
  * @description Загрузка изображений в папку uploads
