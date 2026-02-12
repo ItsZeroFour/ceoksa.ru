@@ -10,6 +10,13 @@
   justify-content: center;
   align-items: center;
 
+  img {
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 12px;
+  }
+
   p {
     font-size: 26px;
     font-weight: 500;

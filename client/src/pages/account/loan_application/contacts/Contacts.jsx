@@ -8,7 +8,7 @@ import { useScreenWidth } from "../../../../hooks/useScreenWidth";
 import InputField from "../../../../components/input_field/InputField";
 import { usePhoneMask } from "../../../../hooks/usePhoneMask";
 
-const Contacts = () => {
+const Contacts = ({ userData }) => {
   const [emailValue, setEmailValue] = useState("");
   const [phoneValue, setPhoneValue] = useState("");
 
@@ -60,7 +60,8 @@ const Contacts = () => {
               placeholder="+7 (9XX) XXX-XX-XX"
               id="phone"
               type="tel"
-              value={phoneValue}
+              readOnly={true}
+              value={userData.phone}
               ref={phoneInputRef}
             />
           </li>

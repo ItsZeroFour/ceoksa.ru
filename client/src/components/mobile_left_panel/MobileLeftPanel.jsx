@@ -17,8 +17,8 @@ import { useTheme } from "../../hooks/useTheme";
 const personalItems = [
   { icon: <List />, text: "Заявка на кредит", path: "/loan_applications" },
   { icon: <Money />, text: "Кредиты", path: "/credits" },
-  { icon: <Rate />, text: "Кредитный рейтинг", path: "/rating" },
-  { icon: <Profile />, text: "Профиль", path: "/profile" },
+  { icon: <Rate />, text: "Кредитный рейтинг", path: "#" },
+  { icon: <Profile />, text: "Профиль", path: "#" },
 ];
 
 const businessItems = [];
@@ -131,13 +131,20 @@ const MobileLeftPanel = ({ setOpenMenu, openMenu }) => {
                             }}
                             className={isActive(item.path) ? style.active : ""}
                           >
-                            <Link
-                              to={`/account${item.path}`}
-                              onClick={() => setOpenMenu(false)}
-                            >
-                              {item.icon}
-                              <p>{item.text}</p>
-                            </Link>
+                            {item.path === "#" ? (
+                              <span>
+                                {item.icon}
+                                <p>{item.text}</p>
+                              </span>
+                            ) : (
+                              <Link
+                                to={`/account${item.path}`}
+                                onClick={() => setOpenMenu(false)}
+                              >
+                                {item.icon}
+                                <p>{item.text}</p>
+                              </Link>
+                            )}
                           </motion.li>
                         ))}
                       </ul>

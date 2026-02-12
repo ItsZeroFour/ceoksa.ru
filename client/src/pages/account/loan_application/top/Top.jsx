@@ -1,46 +1,176 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import style from "./top.module.scss";
 import Notification from "../../../../components/notification/Notification";
 import camera from "../../../../assets/icons/account/camera.svg";
-// import gosuslugi from "../../../../assets/gosuslugi.png";
-// import { ReactComponent as Load } from "../../../../assets/icons/account/load.svg";
-// import { motion } from "framer-motion";
 import InputField from "../../../../components/input_field/InputField";
 import { useScreenWidth } from "../../../../hooks/useScreenWidth";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  updateUser,
+  clearError,
+  clearUpdateSuccess,
+} from "../../../../redux/slices/user/updateUserSlice";
+import {
+  uploadPhoto,
+  clearUploadError,
+  resetUpload,
+} from "../../../../redux/slices/user/uploadSlice";
 
 const Top = () => {
-  const [fullName, setFullName] = useState("");
+  const dispatch = useDispatch();
+  const { currentUser, loading, error, updateSuccess } = useSelector(
+    (state) => state.updateUser
+  );
+  const user = useSelector((state) => state.auth);
+
+  const {
+    uploadedPath,
+    uploading,
+    error: uploadError,
+    uploadSuccess,
+  } = useSelector((state) => state.upload);
+
+  const [formData, setFormData] = useState({
+    fullName: "",
+    profilePhoto: "",
+  });
+  const [photoPreview, setPhotoPreview] = useState(null);
+  const timeoutRef = useRef(null);
+
   const screenWidth = useScreenWidth();
-  // const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // const handleRefresh = () => {
-  //   setIsRefreshing(true);
+  useEffect(() => {
+    if (user.status === "succeeded" && user.user.data) {
+      setFormData({
+        fullName: user.user.data.fullName || "",
+        profilePhoto: user.user.data.profilePhoto || "",
+      });
+      if (user.user.data.profilePhoto) {
+        setPhotoPreview(
+          `${process.env.REACT_APP_SERVERF_API}${user.user.data.profilePhoto}`
+        );
+      }
+    }
+  }, [user]);
 
-  //   setTimeout(() => {
-  //     setIsRefreshing(false);
-  //   }, 1500);
-  // };
+  useEffect(() => {
+    if (updateSuccess) {
+      dispatch(clearUpdateSuccess());
+    }
+  }, [updateSuccess, dispatch]);
+
+  useEffect(() => {
+    if (uploadSuccess && uploadedPath) {
+      setFormData((prevData) => {
+        const newFormData = {
+          ...prevData,
+          profilePhoto: uploadedPath,
+        };
+
+        dispatch(clearError());
+        dispatch(updateUser(newFormData));
+
+        return newFormData;
+      });
+
+      dispatch(resetUpload());
+    }
+  }, [uploadSuccess, uploadedPath, dispatch]);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleChange = (e) => {
+    const newFormData = {
+      ...formData,
+      [e.target.name]: e.target.value,
+    };
+
+    setFormData(newFormData);
+
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      dispatch(clearError());
+      dispatch(updateUser(newFormData));
+    }, 3000);
+  };
+
+  const handlePhotoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("Пожалуйста, загрузите изображение");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Размер файла не должен превышать 5MB");
+      return;
+    }
+
+    try {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+
+      dispatch(clearUploadError());
+
+      await dispatch(uploadPhoto(file)).unwrap();
+    } catch (error) {
+      console.error("Ошибка загрузки фото:", error);
+      alert("Ошибка при загрузке фотографии");
+    }
+  };
+
+  const getInitials = () => {
+    if (!formData.fullName) return "ФИ";
+    const names = formData.fullName.trim().split(" ");
+    if (names.length >= 2) {
+      return names[0][0] + names[1][0];
+    }
+    return names[0][0];
+  };
 
   return (
     <section className={style.top}>
       <div className={style.top__wrapper}>
-        <h1>Заявка на кредит</h1>
+        <h1>Заявка на кредит</h1>
 
         <div className={style.top__main}>
-          <Notification text="Чтобы направить заявку, необходимо дозаполнить ваши персональные данные" />
+          <Notification text="Чтобы направить заявку, необходимо дозаполнить ваши персональные данные" />
 
           <div className={style.top__main__name}>
             <div className={style.top__main__name__avatar}>
               <div className={style.top__main__name__avatar__img}>
-                <p>ФИ</p>
+                {photoPreview ? (
+                  <img src={photoPreview} alt="Фото профиля" />
+                ) : (
+                  <p>{getInitials()}</p>
+                )}
               </div>
 
-              <input type="file" id="avatar" hidden accept=".jpg,.jpeg,.png" />
+              <input
+                type="file"
+                id="avatar"
+                hidden
+                accept=".jpg,.jpeg,.png,.webp"
+                onChange={handlePhotoUpload}
+                disabled={uploading}
+              />
 
               <label htmlFor="avatar">
-                {/* <button> */}
-                  <img src={camera} alt="Загрузить фото" />
-                {/* </button> */}
+                <img src={camera} alt="Загрузить фото" />
               </label>
             </div>
 
@@ -54,36 +184,11 @@ const Top = () => {
                 }
                 id="full-name"
                 type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
+                name="fullName"
+                value={formData.fullName}
+                onChange={handleChange}
                 fontSize={screenWidth > 768 ? 24 : 16}
               />
-
-              {/* <div className={style.top__main__name__main__data}>
-                <div className={style.top__main__name__main__data__text}>
-                  <img src={gosuslugi} alt="госуслуги" />
-                  <p>Данные загружены 12 ноября 2025</p>
-                </div>
-                <motion.button
-                  onClick={handleRefresh}
-                  disabled={isRefreshing}
-                  whileTap={{ scale: 0.95 }}
-                  className={isRefreshing ? style.refreshingButton : ""}
-                >
-                  <motion.div
-                    animate={isRefreshing ? { rotate: 360 } : { rotate: 0 }}
-                    transition={{
-                      duration: 1,
-                      repeat: isRefreshing ? Infinity : 0,
-                      ease: "linear",
-                    }}
-                  >
-                    <Load />
-                  </motion.div>
-
-                  {isRefreshing ? "Обновление..." : "Обновить данные"}
-                </motion.button>
-              </div> */}
             </div>
           </div>
         </div>

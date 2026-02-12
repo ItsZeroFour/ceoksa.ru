@@ -11,6 +11,8 @@ import footerSlice from "./slices/strapi/footerSlice";
 import filesSlice from "./slices/strapi/FilesSlide";
 import mobileAuthReducer from "./slices/auth/mobileAuthSlice";
 import authReducer from "./slices/auth/authSlice";
+import userReducer from "./slices/user/updateUserSlice";
+import uploadReducer from "./slices/user/uploadSlice";
 
 export const store = configureStore({
   reducer: {
@@ -26,5 +28,7 @@ export const store = configureStore({
     files: filesSlice,
     mobileAuth: mobileAuthReducer,
     auth: authReducer,
+    updateUser: userReducer,
+    upload: uploadReducer,
   },
 });

@@ -13,8 +13,8 @@ import { Link, useLocation } from "react-router-dom";
 const personalItems = [
   { icon: <List />, text: "Заявка на кредит", path: "/loan_applications" },
   { icon: <Money />, text: "Кредиты", path: "/credits" },
-  { icon: <Rate />, text: "Кредитный рейтинг", path: "/rating" },
-  { icon: <Profile />, text: "Профиль", path: "/profile" },
+  { icon: <Rate />, text: "Кредитный рейтинг", path: "#" },
+  { icon: <Profile />, text: "Профиль", path: "#" },
 ];
 
 const businessItems = [];
@@ -110,10 +110,17 @@ const LeftPanel = () => {
                     transition={{ duration: 0.3, delay: 0.1 + index * 0.05 }}
                     className={isActive(item.path) ? style.active : ""}
                   >
-                    <Link to={`/account${item.path}`}>
-                      {item.icon}
-                      <p>{item.text}</p>
-                    </Link>
+                    {item.path === "#" ? (
+                      <span>
+                        {item.icon}
+                        <p>{item.text}</p>
+                      </span>
+                    ) : (
+                      <Link to={`/account${item.path}`}>
+                        {item.icon}
+                        <p>{item.text}</p>
+                      </Link>
+                    )}
                   </motion.li>
                 ))}
               </ul>

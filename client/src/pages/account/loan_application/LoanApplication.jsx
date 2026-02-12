@@ -12,7 +12,7 @@ import Birth from "./birth/Birth";
 import PhotoPassport from "./photo_passport/PhotoPassport";
 import PhotoWithPassport from "./photo_with_passport/PhotoWithPassport";
 
-const LoanApplication = ({ setOpenMenu, openMenu }) => {
+const LoanApplication = ({ setOpenMenu, openMenu, userData }) => {
   const [isChecked, setIsChecked] = useState(true);
 
   return (
@@ -41,7 +41,7 @@ const LoanApplication = ({ setOpenMenu, openMenu }) => {
                 </motion.div>
               )}
             </AnimatePresence>
-            <Contacts />
+            <Contacts userData={userData} />
             <PhotoPassport />
             <PhotoWithPassport />
             <Credit />

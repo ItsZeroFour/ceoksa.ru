@@ -12,14 +12,11 @@ import crypto from "crypto";
 import path from "path";
 import { fileURLToPath } from "url";
 import multer from "multer";
-import cookieSession from "cookie-session";
 import MobileRoutes from "./routes/mobileRoutes.js";
 import { getJwks } from "./controllers/MobileControllers.js";
 import cookieParser from "cookie-parser";
-import { authMiddleware } from "./middlewares/authMiddleware.js";
-import User from "./models/User.js";
-import AuthTransaction from "./models/AuthTransaction.js";
-import jwt from "jsonwebtoken";
+import AuthRoutes from "./routes/authRoutes.js";
+import UserRoutes from "./routes/userRoutes.js";
 
 /* ROUTES */
 const app = express();
@@ -36,12 +33,12 @@ app.use(express.urlencoded({ extended: true }));
 // app.use(cookieSession({ name: "sess", keys: [CONFIG.SESSION_KEY] }));
 app.use(cookieParser());
 app.use(express.json({ limit: "50mb" }));
-// app.use(
-//   cors({
-//     origin: "https://ceoksa.ru",
-//     credentials: true,
-//   })
-// );
+app.use(
+  cors({
+    origin: ["https://ceoksa.ru", "http://localhost:3000"],
+    credentials: true,
+  })
+);
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(morgan("common"));
@@ -98,40 +95,8 @@ app.post("/upload", upload.single("image"), (req, res) => {
 /* ROUTES */
 app.use("/mobile", MobileRoutes);
 app.get("/.well-known/jwks.json", getJwks);
-
-app.get("/auth/complete", async (req, res) => {
-  const { auth_req_id } = req.query;
-
-  console.log("APP_SECRET:", process.env.APP_SECRET);
-
-  const transaction = await AuthTransaction.findOne({ auth_req_id });
-  if (!transaction || transaction.status !== "success") {
-    return res.status(400).json({ error: "Auth not completed" });
-  }
-
-  const user = await User.findOne({ phone: transaction.phone });
-
-  const appToken = jwt.sign(
-    { userId: user._id, phone: user.phone },
-    process.env.APP_SECRET,
-    { expiresIn: "7d" }
-  );
-
-  res.cookie("app_token", appToken, {
-    httpOnly: true,
-    secure: false,
-    sameSite: "Lax",
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-  });
-
-  res.redirect("https://ceoksa.ru");
-});
-
-app.get("/auth/me", authMiddleware, async (req, res) => {
-  const user = await User.findById(req.user.userId);
-
-  res.json(user);
-});
+app.use("/auth", AuthRoutes);
+app.use("/user", UserRoutes);
 
 /* START FUNCTION */
 async function start() {

@@ -1,5 +1,5 @@
 import { lazy, Suspense, useState, useEffect } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import LoanApplication from "./pages/account/loan_application/LoanApplication";
 import useDisableScroll from "./hooks/useDisableScroll";
 import Credits from "./pages/account/credits/Credits";
@@ -12,7 +12,7 @@ import UserAgreement from "./pages/user_agreement/UserAgreement";
 import PersonalData from "./pages/account/files/PersonalData";
 import ADS from "./pages/account/files/ADS";
 import Cookies from "./components/cookies/Cookies";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { fetchMe } from "./redux/slices/auth/authSlice";
 
 const Header = lazy(() => import("./components/header/Header"));
@@ -22,11 +22,29 @@ const Footer = lazy(() => import("./components/footer/Footer"));
 function App() {
   const [openMenu, setOpenMenu] = useState(false);
   const [openAuthMenu, setOpenAuthMenu] = useState(false);
+  const [userData, setUserData] = useState(null);
   const dispatch = useDispatch();
+  const location = useLocation();
 
   useEffect(() => {
     dispatch(fetchMe());
   }, [dispatch]);
+
+  const user = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (user.status === "succeeded" && user.user) {
+      setUserData(user.user.data);
+    }
+
+    // if (
+    //   user.status !== "succeeded" &&
+    //   !user.user &&
+    //   location.pathname.startsWith("/account")
+    // ) {
+    //   return <Navigate to="/" replace />;
+    // }
+  }, [user]);
 
   const scrollToBlock = (id) => {
     const element = document.getElementById(id);
@@ -63,33 +81,44 @@ function App() {
                     />
                   }
                 />
-                <Route
-                  path="/account/loan_applications"
-                  element={
-                    <LoanApplication
-                      setOpenMenu={setOpenMenu}
-                      openMenu={openMenu}
+                {user.status === "succeeded" && userData !== null && (
+                  <>
+                    <Route
+                      path="/account/loan_applications"
+                      element={
+                        <LoanApplication
+                          setOpenMenu={setOpenMenu}
+                          openMenu={openMenu}
+                          userData={userData}
+                        />
+                      }
                     />
-                  }
-                />
-                <Route
-                  path="/account/credits"
-                  element={
-                    <Credits setOpenMenu={setOpenMenu} openMenu={openMenu} />
-                  }
-                />
-                <Route
-                  path="/account/rating"
-                  element={
-                    <Rating setOpenMenu={setOpenMenu} openMenu={openMenu} />
-                  }
-                />
-                <Route
-                  path="/account/profile"
-                  element={
-                    <Profile setOpenMenu={setOpenMenu} openMenu={openMenu} />
-                  }
-                />
+                    <Route
+                      path="/account/credits"
+                      element={
+                        <Credits
+                          setOpenMenu={setOpenMenu}
+                          openMenu={openMenu}
+                        />
+                      }
+                    />
+                    <Route
+                      path="/account/rating"
+                      element={
+                        <Rating setOpenMenu={setOpenMenu} openMenu={openMenu} />
+                      }
+                    />
+                    <Route
+                      path="/account/profile"
+                      element={
+                        <Profile
+                          setOpenMenu={setOpenMenu}
+                          openMenu={openMenu}
+                        />
+                      }
+                    />
+                  </>
+                )}
 
                 <Route path="/privacy-policy" element={<Policy />} />
                 <Route
