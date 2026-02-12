@@ -9,6 +9,7 @@ import banksReducer from "./slices/strapi/banksSlice";
 import sequrityReducer from "./slices/strapi/sequritySlice";
 import footerSlice from "./slices/strapi/footerSlice";
 import filesSlice from "./slices/strapi/FilesSlide";
+import mobileAuthReducer from "./slices/auth/mobileAuthSlice";
 
 export const store = configureStore({
   reducer: {
@@ -22,5 +23,6 @@ export const store = configureStore({
     sequrity: sequrityReducer,
     footer: footerSlice,
     files: filesSlice,
+    mobileAuth: mobileAuthReducer,
   },
 });

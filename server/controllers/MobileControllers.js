@@ -1,8 +1,8 @@
 import fs from "fs";
-import qs from "qs";
+// import qs from "qs";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
-import jwt from "jsonwebtoken";
+// import jwt from "jsonwebtoken";
 import jwkToPem from "jwk-to-pem";
 import axios from "axios";
 import crypto from "crypto";
@@ -22,7 +22,6 @@ const BASE_URL = process.env.BASE_URL || "https://ceoksa.ru/api";
 
 console.log("CLIENT_ID: ", CLIENT_ID);
 
-// Получение публичного ключа МТС из JWKS
 const getPublicKeyFromJwks = () => {
   try {
     const jwksPath = path.join(__dirname, "../jwks.json");
@@ -35,12 +34,11 @@ const getPublicKeyFromJwks = () => {
 
     return jwkToPem(key);
   } catch (err) {
-    console.error("❌ Error reading JWKS file:", err.message);
+    console.error("Error reading JWKS file:", err.message);
     return null;
   }
 };
 
-// 1️⃣ Инициация аутентификации (ввод номера телефона)
 export const initiateAuth = async (req, res) => {
   try {
     const { phone } = req.body;
@@ -55,7 +53,6 @@ export const initiateAuth = async (req, res) => {
     const correlationId = crypto.randomUUID();
     const clientNotificationToken = process.env.CLIENT_NOTIFICATION_TOKEN;
 
-    // Генерируем JWT request
     const requestJWT = generateRequestJWT({
       phoneNumber: phone,
       notificationUri: `${BASE_URL}/mobile/notifications`,
@@ -63,7 +60,6 @@ export const initiateAuth = async (req, res) => {
       correlationId,
     });
 
-    // Отправляем запрос в МТС
     const response = await axios.post(
       MTS_ENDPOINT,
       {
@@ -79,15 +75,8 @@ export const initiateAuth = async (req, res) => {
       }
     );
 
-    const { auth_req_id, expires_in, hhe_uri } = response.data;
+    const { auth_req_id, expires_in } = response.data;
 
-    console.log("✅ МТС ответ:", {
-      auth_req_id,
-      expires_in,
-      correlation_id: correlationId,
-    });
-
-    // Сохраняем транзакцию в БД
     await AuthTransaction.create({
       auth_req_id,
       correlation_id: correlationId,
@@ -105,7 +94,7 @@ export const initiateAuth = async (req, res) => {
     });
   } catch (error) {
     console.error(
-      "❌ Ошибка инициации аутентификации:",
+      "Ошибка инициации аутентификации:",
       error.response?.data || error.message
     );
 
@@ -117,7 +106,6 @@ export const initiateAuth = async (req, res) => {
   }
 };
 
-// 2️⃣ Callback для SMS OTP (МТС присылает smsotp_endpoint)
 export const handleSmsOtp = async (req, res) => {
   try {
     const { auth_req_id, smsotp_endpoint, send, correlation_id } = req.body;
@@ -129,13 +117,6 @@ export const handleSmsOtp = async (req, res) => {
       });
     }
 
-    console.log("📱 SMS OTP notification получен:", {
-      auth_req_id,
-      smsotp_endpoint,
-      correlation_id,
-    });
-
-    // Обновляем транзакцию в БД
     await AuthTransaction.findOneAndUpdate(
       { auth_req_id },
       {
@@ -145,10 +126,9 @@ export const handleSmsOtp = async (req, res) => {
       }
     );
 
-    // Возвращаем 200 OK (МТС ждет этого)
     res.status(200).end();
   } catch (error) {
-    console.error("❌ Ошибка обработки SMS OTP:", error);
+    console.error("Ошибка обработки SMS OTP:", error);
     res.status(500).json({
       error: "server_error",
       message: error.message,
@@ -156,7 +136,6 @@ export const handleSmsOtp = async (req, res) => {
   }
 };
 
-// 3️⃣ Отправка SMS кода пользователем
 export const verifySmsCode = async (req, res) => {
   try {
     const { auth_req_id, code } = req.body;
@@ -168,7 +147,6 @@ export const verifySmsCode = async (req, res) => {
       });
     }
 
-    // Находим транзакцию
     const transaction = await AuthTransaction.findOne({ auth_req_id });
 
     if (!transaction) {
@@ -192,22 +170,14 @@ export const verifySmsCode = async (req, res) => {
       });
     }
 
-    console.log("🔑 Отправка кода в МТС:", {
-      auth_req_id,
-      endpoint: transaction.smsotp_endpoint,
-    });
-
-    // Формируем запрос на основе шаблона из send_payload
     const payload = { ...transaction.send_payload };
 
-    // Заменяем placeholder на реальный код
     Object.keys(payload).forEach((key) => {
       if (payload[key] === "enter_otp_code") {
         payload[key] = code;
       }
     });
 
-    // Отправляем код в МТС
     const response = await axios.post(transaction.smsotp_endpoint, payload, {
       headers: {
         "Content-Type": "application/json",
@@ -216,14 +186,12 @@ export const verifySmsCode = async (req, res) => {
     });
 
     if (response.status === 200) {
-      console.log("✅ Код принят, ожидаем финальный callback");
-
       res.json({
         success: true,
         message: "Код подтверждения принят, ожидайте завершения аутентификации",
       });
     } else {
-      console.error("❌ Неверный код:", response.data);
+      console.error("Неверный код:", response.data);
 
       res.status(400).json({
         error: "invalid_code",
@@ -233,7 +201,7 @@ export const verifySmsCode = async (req, res) => {
     }
   } catch (error) {
     console.error(
-      "❌ Ошибка верификации кода:",
+      "Ошибка верификации кода:",
       error.response?.data || error.message
     );
 
@@ -244,9 +212,10 @@ export const verifySmsCode = async (req, res) => {
   }
 };
 
-// 4️⃣ Финальный callback от МТС с токенами
 export const handleNotification = async (req, res) => {
   try {
+    console.log("NOTIFICATION");
+
     const {
       auth_req_id,
       id_token,
@@ -258,9 +227,6 @@ export const handleNotification = async (req, res) => {
       error_description,
     } = req.body;
 
-    console.log("=== 📱 Финальный Notification получен ===");
-    console.log("auth_req_id:", auth_req_id);
-
     if (!auth_req_id) {
       return res.status(400).json({
         error: "invalid_request",
@@ -268,20 +234,18 @@ export const handleNotification = async (req, res) => {
       });
     }
 
-    // Находим транзакцию
     const transaction = await AuthTransaction.findOne({ auth_req_id });
 
     if (!transaction) {
-      console.warn("⚠️ Транзакция не найдена:", auth_req_id);
+      console.warn("Транзакция не найдена:", auth_req_id);
       return res.status(404).json({
         error: "not_found",
         message: "Транзакция не найдена",
       });
     }
 
-    // Обработка ошибки аутентификации
     if (error) {
-      console.warn("⚠️ Аутентификация не удалась:", {
+      console.warn("Аутентификация не удалась:", {
         auth_req_id,
         error,
         error_description,
@@ -299,7 +263,8 @@ export const handleNotification = async (req, res) => {
       return res.status(204).end();
     }
 
-    // Проверка наличия токенов
+    console.log("NOTIFICATION 2");
+
     if (!id_token || !access_token) {
       return res.status(400).json({
         error: "invalid_request",
@@ -307,7 +272,6 @@ export const handleNotification = async (req, res) => {
       });
     }
 
-    // Верификация ID Token
     const publicKey = getPublicKeyFromJwks();
     if (!publicKey) {
       throw new Error("Не удалось загрузить публичный ключ");
@@ -315,22 +279,15 @@ export const handleNotification = async (req, res) => {
 
     const decoded = verifyIdToken(id_token, publicKey);
 
-    console.log("✅ ID Token верифицирован:", {
-      sub: decoded.sub,
-      phone_number: decoded.phone_number,
-    });
-
-    // Создаем или обновляем пользователя (адаптировано под вашу модель)
     const user = await User.findOneAndUpdate(
       { phone: transaction.phone },
       {
         $set: {
-          mts_sub: decoded.sub, // используем mts_sub вместо sub
+          mts_sub: decoded.sub,
           lastAuthAt: new Date(),
         },
         $setOnInsert: {
           phone: transaction.phone,
-          // При первом создании можно добавить дефолтные значения
           total_loans: 0,
           is_loan_arrears: false,
           total_debt: 0,
@@ -342,7 +299,6 @@ export const handleNotification = async (req, res) => {
       }
     );
 
-    // Обновляем транзакцию
     await AuthTransaction.findOneAndUpdate(
       { auth_req_id },
       {
@@ -353,16 +309,9 @@ export const handleNotification = async (req, res) => {
       }
     );
 
-    console.log("✅ Пользователь аутентифицирован:", {
-      userId: user._id,
-      phone: user.phone,
-      mts_sub: user.mts_sub,
-    });
-
-    // Возвращаем 204 No Content (как требует МТС)
     res.status(204).end();
   } catch (error) {
-    console.error("❌ Ошибка обработки notification:", error);
+    console.error("Ошибка обработки notification:", error);
 
     res.status(500).json({
       error: "server_error",
@@ -371,7 +320,6 @@ export const handleNotification = async (req, res) => {
   }
 };
 
-// 5️⃣ Проверка статуса аутентификации (для фронтенда)
 export const checkAuthStatus = async (req, res) => {
   try {
     const { auth_req_id } = req.params;
@@ -390,9 +338,8 @@ export const checkAuthStatus = async (req, res) => {
       phone: transaction.phone,
     };
 
-    // Если успешно - возвращаем данные пользователя
     if (transaction.status === "success") {
-      const user = await User.findOne({ mts_sub: transaction.sub }); // изменено на mts_sub
+      const user = await User.findOne({ mts_sub: transaction.sub });
 
       if (user) {
         response.user = {
@@ -406,7 +353,6 @@ export const checkAuthStatus = async (req, res) => {
       }
     }
 
-    // Если ошибка - возвращаем описание
     if (transaction.status === "failed") {
       response.error = transaction.error;
       response.error_description = transaction.error_description;
@@ -414,7 +360,7 @@ export const checkAuthStatus = async (req, res) => {
 
     res.json(response);
   } catch (error) {
-    console.error("❌ Ошибка проверки статуса:", error);
+    console.error("Ошибка проверки статуса:", error);
     res.status(500).json({
       error: "server_error",
       message: error.message,
@@ -422,7 +368,6 @@ export const checkAuthStatus = async (req, res) => {
   }
 };
 
-// 6️⃣ Отдача JWKS (для МТС)
 export const getJwks = (req, res) => {
   try {
     const jwksPath = path.join(__dirname, "../jwks.json");
@@ -431,7 +376,7 @@ export const getJwks = (req, res) => {
     res.setHeader("Content-Type", "application/json");
     res.send(jwks);
   } catch (err) {
-    console.error("❌ Ошибка чтения JWKS:", err);
+    console.error("Ошибка чтения JWKS:", err);
     res.status(500).json({ error: "Failed to load JWKS" });
   }
 };

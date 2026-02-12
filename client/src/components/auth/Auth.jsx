@@ -9,6 +9,11 @@ import GosuslugiButton from "../gosuslugi_button/GosuslugiButton";
 import IMask from "imask";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchFiles } from "../../redux/slices/strapi/FilesSlide";
+import {
+  initiateAuth,
+  verifyCode,
+  checkStatus,
+} from "../../redux/slices/auth/mobileAuthSlice";
 
 const Auth = ({ setOpenAuthMenu }) => {
   const { theme } = useTheme();
@@ -26,6 +31,8 @@ const Auth = ({ setOpenAuthMenu }) => {
   const dispatch = useDispatch();
 
   const { data, status, error } = useSelector((state) => state.files);
+  const { auth_req_id } = useSelector((state) => state.mobileAuth);
+  const mobileAuth = useSelector((state) => state.mobileAuth);
 
   useEffect(() => {
     dispatch(fetchFiles("fajly?populate=*"));
@@ -85,9 +92,15 @@ const Auth = ({ setOpenAuthMenu }) => {
   }, [sendSms]);
 
   const onSendSms = async () => {
-    setSendSms(true);
-    setResendDisabled(true);
-    setResendTimer(60);
+    const clearPhone = phone.replace(/\D/g, "");
+
+    const result = await dispatch(initiateAuth(clearPhone));
+
+    if (result.meta.requestStatus === "fulfilled") {
+      setSendSms(true);
+      setResendDisabled(true);
+      setResendTimer(60);
+    }
   };
 
   const handleResendCode = () => {
@@ -135,21 +148,40 @@ const Auth = ({ setOpenAuthMenu }) => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const startPolling = () => {
+    const interval = setInterval(async () => {
+      const res = await dispatch(checkStatus(mobileAuth.auth_req_id));
+
+      if (res.payload?.status === "success") {
+        clearInterval(interval);
+        console.log("Пользователь авторизован:", res.payload.user);
+
+        setOpenAuthMenu(false);
+      }
+
+      if (res.payload?.status === "failed") {
+        clearInterval(interval);
+        setHasError(true);
+      }
+    }, 2000);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setHasError(true);
-
     const isComplete = code.every((digit) => digit !== "");
-    if (!isComplete) {
-      const firstEmpty = code.findIndex((d) => d === "");
-      if (firstEmpty !== -1) {
-        inputRefs.current[firstEmpty]?.focus();
-      }
+    if (!isComplete) return;
+
+    const smsCode = code.join("");
+
+    const result = await dispatch(verifyCode({ auth_req_id, code: smsCode }));
+
+    if (result.meta.requestStatus === "rejected") {
+      setHasError(true);
       return;
     }
 
-    console.log(code.join(""));
+    startPolling();
   };
 
   const isCodeComplete = code.every((digit) => digit !== "");
