@@ -9,7 +9,7 @@ export const fetchMe = createAsyncThunk(
   "auth/fetchMe",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${API}/me`);
+      const response = await axios.get(`${API}/auth/me`);
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response?.data);

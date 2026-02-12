@@ -90,7 +90,7 @@ app.post("/upload", upload.single("image"), (req, res) => {
 app.use("/mobile", MobileRoutes);
 app.get("/.well-known/jwks.json", getJwks);
 
-app.get("/api/me", authMiddleware, async (req, res) => {
+app.get("/auth/me", authMiddleware, async (req, res) => {
   const user = await User.findById(req.user.userId);
 
   res.json(user);
