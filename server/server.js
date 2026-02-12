@@ -115,6 +115,9 @@ app.get("/auth/complete", async (req, res) => {
     { expiresIn: "7d" }
   );
 
+  console.log("APP_SECRET:", process.env.APP_SECRET);
+
+
   res.cookie("app_token", appToken, {
     httpOnly: true,
     secure: false,
