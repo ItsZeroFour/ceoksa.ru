@@ -10,7 +10,7 @@ import { generateRequestJWT, verifyIdToken } from "../utils/jwtHelper.js";
 import User from "../models/User.js";
 import AuthTransaction from "../models/AuthTransaction.js";
 import dotenv from "dotenv";
-import authMiddleware from "../middlewares/authMiddleware.js";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 dotenv.config();
 
