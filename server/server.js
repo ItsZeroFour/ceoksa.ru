@@ -1,6 +1,9 @@
 import bodyParser from "body-parser";
 import cors from "cors";
 import dotenv from "dotenv";
+
+dotenv.config({ path: "./.env" });
+
 import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
@@ -18,10 +21,7 @@ import User from "./models/User.js";
 import AuthTransaction from "./models/AuthTransaction.js";
 import jwt from "jsonwebtoken";
 
-
 /* ROUTES */
-
-dotenv.config({ path: "./.env" });
 const app = express();
 
 const __filename = fileURLToPath(import.meta.url);
@@ -102,6 +102,8 @@ app.get("/.well-known/jwks.json", getJwks);
 app.get("/auth/complete", async (req, res) => {
   const { auth_req_id } = req.query;
 
+  console.log("APP_SECRET:", process.env.APP_SECRET);
+
   const transaction = await AuthTransaction.findOne({ auth_req_id });
   if (!transaction || transaction.status !== "success") {
     return res.status(400).json({ error: "Auth not completed" });
@@ -114,9 +116,6 @@ app.get("/auth/complete", async (req, res) => {
     process.env.APP_SECRET,
     { expiresIn: "7d" }
   );
-
-  console.log("APP_SECRET:", process.env.APP_SECRET);
-
 
   res.cookie("app_token", appToken, {
     httpOnly: true,
