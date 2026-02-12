@@ -2,7 +2,7 @@ import fs from "fs";
 // import qs from "qs";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
-// import jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import jwkToPem from "jwk-to-pem";
 import axios from "axios";
 import crypto from "crypto";
@@ -10,6 +10,7 @@ import { generateRequestJWT, verifyIdToken } from "../utils/jwtHelper.js";
 import User from "../models/User.js";
 import AuthTransaction from "../models/AuthTransaction.js";
 import dotenv from "dotenv";
+import authMiddleware from "../middlewares/authMiddleware.js";
 
 dotenv.config();
 
@@ -311,6 +312,24 @@ export const handleNotification = async (req, res) => {
       }
     );
 
+    const appToken = jwt.sign(
+      {
+        userId: user._id,
+        phone: user.phone,
+      },
+      process.env.APP_SECRET,
+      {
+        expiresIn: "7d",
+      }
+    );
+
+    res.cookie("app_token", appToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "Strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
     res.status(204).end();
   } catch (error) {
     console.error("Ошибка обработки notification:", error);
@@ -369,6 +388,12 @@ export const checkAuthStatus = async (req, res) => {
     });
   }
 };
+
+app.get("/api/me", authMiddleware, async (req, res) => {
+  const user = await User.findById(req.user.userId);
+
+  res.json(user);
+});
 
 export const getJwks = (req, res) => {
   try {

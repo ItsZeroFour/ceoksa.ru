@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useState, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import LoanApplication from "./pages/account/loan_application/LoanApplication";
 import useDisableScroll from "./hooks/useDisableScroll";
@@ -12,6 +12,8 @@ import UserAgreement from "./pages/user_agreement/UserAgreement";
 import PersonalData from "./pages/account/files/PersonalData";
 import ADS from "./pages/account/files/ADS";
 import Cookies from "./components/cookies/Cookies";
+import { useDispatch } from "react-redux";
+import { fetchMe } from "./redux/slices/auth/authSlice";
 
 const Header = lazy(() => import("./components/header/Header"));
 const Main = lazy(() => import("./pages/main/Main"));
@@ -20,6 +22,11 @@ const Footer = lazy(() => import("./components/footer/Footer"));
 function App() {
   const [openMenu, setOpenMenu] = useState(false);
   const [openAuthMenu, setOpenAuthMenu] = useState(false);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchMe());
+  }, [dispatch]);
 
   const scrollToBlock = (id) => {
     const element = document.getElementById(id);
