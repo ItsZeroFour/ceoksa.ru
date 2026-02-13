@@ -3,9 +3,14 @@ import LeftPanel from "../../../components/left_panel/LeftPanel";
 import MobileLeftPanel from "../../../components/mobile_left_panel/MobileLeftPanel";
 import Active from "./active/Active";
 import Archive from "./archive/Archive";
+import Requisites from "./requisites/Requisites";
+import useDisableScroll from "../../../hooks/useDisableScroll";
 
 const Credits = ({ setOpenMenu, openMenu }) => {
   const [creditTab, setCreditTab] = useState("active");
+  const [showRequisites, setShowRequisites] = useState(false);
+
+  useDisableScroll(showRequisites);
 
   return (
     <div className="credits">
@@ -32,8 +37,19 @@ const Credits = ({ setOpenMenu, openMenu }) => {
               </button>
             </div>
 
-            {creditTab === "active" ? <Active /> : <Archive />}
+            {creditTab === "active" ? (
+              <Active setShowRequisites={setShowRequisites} />
+            ) : (
+              <Archive />
+            )}
           </section>
+
+          {showRequisites && (
+            <Requisites
+              setShowRequisites={setShowRequisites}
+              showRequisites={showRequisites}
+            />
+          )}
         </div>
       </div>
     </div>

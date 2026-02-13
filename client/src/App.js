@@ -65,6 +65,8 @@ function App() {
                 setOpenMenu={setOpenMenu}
                 openMenu={openMenu}
                 setOpenAuthMenu={setOpenAuthMenu}
+                userData={userData}
+                userStatus={user.status}
               />
             </div>
 

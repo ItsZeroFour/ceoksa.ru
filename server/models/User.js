@@ -44,6 +44,7 @@ const UserSchema = new mongoose.Schema(
       corporate_account: String,
       bank_INN: String,
       bank_KPP: String,
+      have_an_account: Boolean,
     },
 
     passport: {

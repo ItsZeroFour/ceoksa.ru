@@ -193,3 +193,42 @@
     }
   }
 }
+
+.header__profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .header__profile__name__avatar {
+    img {
+      width: 42px;
+      height: 42px;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    p {
+      width: 42px;
+      height: 42px;
+      background: var(--color-header-button-second);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+    }
+  }
+
+  .header__profile__name {
+    p {
+      font-size: 13px;
+      opacity: 0.5;
+    }
+
+    h3 {
+      font-size: 16px;
+      font-weight: 500;
+    }
+  }
+}

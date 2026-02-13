@@ -8,11 +8,28 @@ import signin from "../../assets/icons/signin.svg";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../hooks/useTheme";
 
-const Header = ({ setOpenMenu, openMenu, setOpenAuthMenu }) => {
+const Header = ({
+  setOpenMenu,
+  openMenu,
+  setOpenAuthMenu,
+  userData,
+  userStatus,
+}) => {
   const navigation = useNavigate();
   const location = useLocation();
 
   const { theme } = useTheme();
+
+  console.log(userData, userStatus);
+
+  const getInitials = () => {
+    if (!userData.fullName) return "ФИ";
+    const names = userData.fullName.trim().split(" ");
+    if (names.length >= 2) {
+      return names[0][0] + names[1][0];
+    }
+    return names[0][0];
+  };
 
   return (
     <header className={style.header}>
@@ -39,14 +56,43 @@ const Header = ({ setOpenMenu, openMenu, setOpenAuthMenu }) => {
               <p>Бизнесу</p>
             </button>
 
-            <button
-              className={style.header__button_signin}
-              // onClick={() => navigation("/account/loan_applications")}
-              onClick={() => setOpenAuthMenu(true)}
-            >
-              <img src={signin} alt="Войти" />
-              <p>Войти</p>
-            </button>
+            {userStatus === "succeeded" && userData ? (
+              <Link
+                to="/account/loan_applications"
+                className={style.header__profile}
+              >
+                <div className={style.header__profile__name__avatar}>
+                  {userData.profilePhoto ? (
+                    <img
+                      src={`${process.env.REACT_APP_SERVERF_API}${userData.profilePhoto}`}
+                      alt="Фото профиля"
+                    />
+                  ) : (
+                    <p>{getInitials()}</p>
+                  )}
+                </div>
+
+                <div className={style.header__profile__name}>
+                  <p>Профиль</p>
+                  <h3>
+                    {userData?.fullName
+                      ? userData.fullName.length > 20
+                        ? `${userData.fullName.slice(0, 20)}...`
+                        : userData.fullName
+                      : "Фамилия Имя Отчество"}
+                  </h3>
+                </div>
+              </Link>
+            ) : (
+              <button
+                className={style.header__button_signin}
+                // onClick={() => navigation("/account/loan_applications")}
+                onClick={() => setOpenAuthMenu(true)}
+              >
+                <img src={signin} alt="Войти" />
+                <p>Войти</p>
+              </button>
+            )}
           </div>
         </div>
       </div>
