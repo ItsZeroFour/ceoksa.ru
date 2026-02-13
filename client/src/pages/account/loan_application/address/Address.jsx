@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import style from "./address.module.scss";
 import { ReactComponent as Location } from "../../../../assets/icons/account/location.svg";
 import { ReactComponent as Passport } from "../../../../assets/icons/account/passport.svg";
@@ -6,11 +6,22 @@ import Checkbox from "../../../../components/checkbox/Checkbox";
 import InputField from "../../../../components/input_field/InputField";
 import { useIMask } from "../../../../hooks/useIMask";
 import IMask from "imask";
+import { useDispatch, useSelector } from "react-redux";
+import { useDebouncedUpdate } from "../../../../hooks/useDebouncedUpdate";
+import {
+  updateUser,
+  clearError,
+} from "../../../../redux/slices/user/updateUserSlice";
 
 const Address = ({ setIsChecked, isChecked }) => {
-  const [streetAddress, setStreetAddress] = useState("");
-  const [apartment, setApartment] = useState("");
-  const [registrationDate, setRegistrationDate] = useState("");
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth);
+
+  const [formData, setFormData] = useState({
+    street: "",
+    apartment: "",
+    registration_date: "",
+  });
 
   const registrationDateMask = {
     mask: Date,
@@ -24,17 +35,69 @@ const Address = ({ setIsChecked, isChecked }) => {
     lazy: true,
   };
 
-  const [registrationDateRef] = useIMask(
-    registrationDateMask,
-    setRegistrationDate
-  );
+  const [registrationDateRef] = useIMask(registrationDateMask, (value) => {
+    handleFieldChange("registration_date", value);
+  });
 
   const apartmentMask = {
     mask: "00000",
     lazy: true,
   };
 
-  const [apartmentRef] = useIMask(apartmentMask, setApartment);
+  const [apartmentRef] = useIMask(apartmentMask, (value) => {
+    handleFieldChange("apartment", value);
+  });
+
+  const debouncedUpdate = useDebouncedUpdate((data) => {
+    dispatch(clearError());
+    dispatch(
+      updateUser({
+        address: data,
+      })
+    );
+  }, 3000);
+
+  useEffect(() => {
+    if (user.status === "succeeded" && user.user.data) {
+      if (user.user.data.address) {
+        setFormData({
+          street: user.user.data.address.street || "",
+          apartment: user.user.data.address.apartment || "",
+          registration_date: user.user.data.address.registration_date || "",
+        });
+      }
+
+      if (user.user.data.address_doesnt_match !== undefined) {
+        setIsChecked(!user.user.data.address_doesnt_match);
+      }
+    }
+  }, [user, setIsChecked]);
+
+  const handleFieldChange = (fieldName, value) => {
+    const newFormData = {
+      ...formData,
+      [fieldName]: value,
+    };
+
+    setFormData(newFormData);
+    debouncedUpdate(newFormData);
+  };
+
+  const handleChange = (e) => {
+    handleFieldChange(e.target.name, e.target.value);
+  };
+
+  const handleCheckboxChange = () => {
+    const newCheckedState = !isChecked;
+    setIsChecked(newCheckedState);
+
+    dispatch(clearError());
+    dispatch(
+      updateUser({
+        address_doesnt_match: !newCheckedState,
+      })
+    );
+  };
 
   return (
     <section className={style.address}>
@@ -49,9 +112,10 @@ const Address = ({ setIsChecked, isChecked }) => {
                 placeholder="Например: г. Москва, ул. Ленина, д. 10"
                 id="street-address"
                 type="text"
-                value={streetAddress}
+                name="street"
+                value={formData.street}
                 icon={Location}
-                onChange={(e) => setStreetAddress(e.target.value)}
+                onChange={handleChange}
               />
             </div>
 
@@ -62,7 +126,7 @@ const Address = ({ setIsChecked, isChecked }) => {
                 id="apartment"
                 type="text"
                 inputMode="numeric"
-                value={apartment}
+                value={formData.apartment}
                 icon={Location}
                 ref={apartmentRef}
               />
@@ -74,7 +138,7 @@ const Address = ({ setIsChecked, isChecked }) => {
                 placeholder="Дата регистрации"
                 id="registration-date"
                 type="text"
-                value={registrationDate}
+                value={formData.registration_date}
                 icon={Passport}
                 inputMode="numeric"
                 ref={registrationDateRef}
@@ -83,12 +147,9 @@ const Address = ({ setIsChecked, isChecked }) => {
           </div>
         </div>
 
-        <div
-          className={style.address__check}
-          onClick={() => setIsChecked(!isChecked)}
-        >
+        <div className={style.address__check} onClick={handleCheckboxChange}>
           <Checkbox setIsChecked={setIsChecked} isChecked={isChecked} />
-          <p>Адрес фактического проживания совпадает с адресом регистрации</p>
+          <p>Адрес фактического проживания совпадает с адресом регистрации</p>
         </div>
       </div>
     </section>

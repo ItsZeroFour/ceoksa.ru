@@ -1,9 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import style from "./top.module.scss";
 import Notification from "../../../../components/notification/Notification";
 import camera from "../../../../assets/icons/account/camera.svg";
 import InputField from "../../../../components/input_field/InputField";
 import { useScreenWidth } from "../../../../hooks/useScreenWidth";
+import { useDebouncedUpdate } from "../../../../hooks/useDebouncedUpdate";
 import { useDispatch, useSelector } from "react-redux";
 import {
   updateUser,
@@ -35,9 +36,14 @@ const Top = () => {
     profilePhoto: "",
   });
   const [photoPreview, setPhotoPreview] = useState(null);
-  const timeoutRef = useRef(null);
+  const [isUploadingHere, setIsUploadingHere] = useState(false);
 
   const screenWidth = useScreenWidth();
+
+  const debouncedUpdate = useDebouncedUpdate((data) => {
+    dispatch(clearError());
+    dispatch(updateUser(data));
+  }, 3000);
 
   useEffect(() => {
     if (user.status === "succeeded" && user.user.data) {
@@ -60,7 +66,7 @@ const Top = () => {
   }, [updateSuccess, dispatch]);
 
   useEffect(() => {
-    if (uploadSuccess && uploadedPath) {
+    if (uploadSuccess && uploadedPath && isUploadingHere) {
       setFormData((prevData) => {
         const newFormData = {
           ...prevData,
@@ -74,16 +80,9 @@ const Top = () => {
       });
 
       dispatch(resetUpload());
+      setIsUploadingHere(false);
     }
-  }, [uploadSuccess, uploadedPath, dispatch]);
-
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
+  }, [uploadSuccess, uploadedPath, isUploadingHere, dispatch]);
 
   const handleChange = (e) => {
     const newFormData = {
@@ -92,15 +91,7 @@ const Top = () => {
     };
 
     setFormData(newFormData);
-
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-
-    timeoutRef.current = setTimeout(() => {
-      dispatch(clearError());
-      dispatch(updateUser(newFormData));
-    }, 3000);
+    debouncedUpdate(newFormData);
   };
 
   const handlePhotoUpload = async (e) => {
@@ -124,12 +115,14 @@ const Top = () => {
       };
       reader.readAsDataURL(file);
 
+      setIsUploadingHere(true);
       dispatch(clearUploadError());
 
       await dispatch(uploadPhoto(file)).unwrap();
     } catch (error) {
       console.error("Ошибка загрузки фото:", error);
       alert("Ошибка при загрузке фотографии");
+      setIsUploadingHere(false);
     }
   };
 

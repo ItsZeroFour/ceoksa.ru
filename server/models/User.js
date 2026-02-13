@@ -31,6 +31,11 @@ const UserSchema = new mongoose.Schema(
     income: Number,
     profilePhoto: String,
 
+    address_doesnt_match: {
+      type: Boolean,
+      default: true,
+    },
+
     requisites: {
       account_number: String,
       recipient: String,
@@ -54,6 +59,11 @@ const UserSchema = new mongoose.Schema(
       street: String,
       apartment: String,
       registration_date: String,
+    },
+
+    real_address: {
+      street: String,
+      apartment: String,
     },
 
     photos: {
