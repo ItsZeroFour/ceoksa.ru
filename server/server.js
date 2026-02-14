@@ -17,6 +17,7 @@ import { getJwks } from "./controllers/MobileControllers.js";
 import cookieParser from "cookie-parser";
 import AuthRoutes from "./routes/authRoutes.js";
 import UserRoutes from "./routes/userRoutes.js";
+import ValidateBICRoutes from './routes/validateBICRoutes.js'
 
 /* ROUTES */
 const app = express();
@@ -97,6 +98,7 @@ app.use("/mobile", MobileRoutes);
 app.get("/.well-known/jwks.json", getJwks);
 app.use("/auth", AuthRoutes);
 app.use("/user", UserRoutes);
+app.use("/validate", ValidateBICRoutes);
 
 /* START FUNCTION */
 async function start() {
