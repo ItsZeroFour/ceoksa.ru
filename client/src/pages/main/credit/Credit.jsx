@@ -1,269 +1,159 @@
 import React, { useEffect, useRef, useState } from "react";
-import style from "./credit.module.scss";
-import { ReactComponent as Minus } from "../../../assets/icons/minus.svg";
-import { ReactComponent as Plus } from "../../../assets/icons/plus.svg";
-import gosuslugi from "../../../assets/gosuslugi.png";
-import DropdownSelector from "../../../components/dropdown_selector/DropdownSelector";
-import { useOutsideClick } from "../../../hooks/useOutsideClick";
-import { useNumberFormatter } from "../../../hooks/useNumberFormatter";
-import { useDropdown } from "../../../hooks/useDropdown";
-import { useSalaryValidation } from "../../../hooks/useSalaryValidation";
-import Notification from "../../../components/notification/Notification";
 import { useDispatch, useSelector } from "react-redux";
+import style from "./credit.module.scss";
+import DropdownSelector from "../../../components/dropdown_selector/DropdownSelector";
+import Notification from "../../../components/notification/Notification";
 import CreditSceleton from "../../../components/sceletons/CreditSceleton";
-import { fetchCredit } from "../../../redux/slices/strapi/creditSlice";
+import CreditAmountInput from "../../../components/credit/CreditAmountInput/CreditAmountInput";
+import SalaryInput from "../../../components/credit/SalaryInput/SalaryInput";
+import CreditFormButtons from "../../../components/credit/CreditFormButtons/CreditFormButtons";
+import { useOutsideClick } from "../../../hooks/useOutsideClick";
+import { useDropdown } from "../../../hooks/useDropdown";
 import { useScreenWidth } from "../../../hooks/useScreenWidth";
-
-const TERMS = [
-  { value: 3, title: "3 месяца" },
-  { value: 6, title: "6 месяцев" },
-  { value: 9, title: "9 месяцев" },
-  { value: 12, title: "1 год" },
-  { value: 24, title: "2 года" },
-  { value: 36, title: "3 года" },
-  { value: 48, title: "4 года" },
-  { value: 60, title: "5 лет" },
-];
-
-const TARGETS = [
-  { value: "cash", title: "Кредит наличными" },
-  { value: "mortgage", title: "Ипотека" },
-  { value: "car", title: "Покупка авто" },
-  { value: "education", title: "Образование" },
-  { value: "renovation", title: "Ремонт" },
-  { value: "travel", title: "Путешествия" },
-  { value: "other", title: "Другое" },
-];
+import { useCreditAmount } from "../../../hooks/useCreditAmount";
+import { useSalaryValidation } from "../../../hooks/useSalaryValidation";
+import { fetchCredit } from "../../../redux/slices/strapi/creditSlice";
+import {
+  TERMS,
+  TARGETS,
+  CREDIT_LIMITS,
+} from "../../../constants/creditConstants";
 
 const Credit = ({ setOpenAuthMenu }) => {
-  const [value, setValue] = useState(500_000);
   const [selectedTerm, setSelectedTerm] = useState(TERMS[5]);
   const [selectedTarget, setSelectedTarget] = useState(TARGETS[0]);
-  const [isTotalFocused, setIsTotalFocused] = useState(false);
+
   const termRef = useRef(null);
   const targetRef = useRef(null);
 
   const screenWidth = useScreenWidth();
-
   const dispatch = useDispatch();
 
-  const { data, status, error } = useSelector((state) => state.credit);
+  const { data, status } = useSelector((state) => state.credit);
+
+  // Хуки для управления состоянием формы
+  const creditAmount = useCreditAmount({
+    initialValue: 500000,
+    minAmount: CREDIT_LIMITS.MIN_AMOUNT,
+    maxAmount: CREDIT_LIMITS.MAX_AMOUNT,
+    step: CREDIT_LIMITS.STEP,
+  });
+
+  const salary = useSalaryValidation({
+    minSalary: CREDIT_LIMITS.MIN_SALARY,
+    maxSalary: CREDIT_LIMITS.MAX_AMOUNT,
+    debounceDelay: 300,
+  });
+
+  const { openDropdown, toggleDropdown, closeDropdown, setOpenDropdown } =
+    useDropdown();
+
+  useOutsideClick([termRef, targetRef], closeDropdown);
 
   useEffect(() => {
     dispatch(fetchCredit("kredit?populate=*"));
   }, [dispatch]);
 
-  /* HOOKS */
-  const { openDropdown, toggleDropdown, closeDropdown, setOpenDropdown } =
-    useDropdown();
-  useOutsideClick([termRef, targetRef], closeDropdown);
-  const {
-    salaryError,
-    displaySalary,
-    handleSalaryChange,
-    handleSalaryFocus,
-    handleSalaryBlur,
-  } = useSalaryValidation();
-
-  const handleTotalChange = (event) => {
-    let inputValue = event.target.value.replace(/\D/g, "");
-
-    if (inputValue === "") {
-      setValue(0);
-      return;
-    }
-
-    let numValue = Number(inputValue);
-
-    if (numValue > 10_000_000) {
-      numValue = 10_000_000;
-    }
-
-    setValue(numValue);
+  const handleTermSelect = (term) => {
+    setSelectedTerm(term);
+    setOpenDropdown(null);
   };
 
-  const handleTotalFocus = (event) => {
-    setIsTotalFocused(true);
-    if (value === 0) {
-      event.target.value = "";
+  const handleTargetSelect = (target) => {
+    setSelectedTarget(target);
+    setOpenDropdown(null);
+  };
+
+  const handleContinue = () => {
+    if (salary.salaryValue && !salary.salaryError) {
+      setOpenAuthMenu(true);
     }
   };
 
-  const handleTotalBlur = (event) => {
-    setIsTotalFocused(false);
-    if (event.target.value === "") {
-      setValue(0);
-    }
-  };
+  const isContinueDisabled = !salary.salaryValue || !!salary.salaryError;
+
+  if (status === "loading" || status === "failed") {
+    return (
+      <section className={style.credit} id="credit">
+        <div className="container">
+          <CreditSceleton />
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className={style.credit} id="credit">
       <div className="container">
-        {status === "loading" || status === "failed" ? (
-          <CreditSceleton />
-        ) : (
-          <div className={style.credit__wrapper}>
-            <h2 className={style.credit__title}>{data.title}</h2>
-            <p className={style.credit__desc}>{data.description}</p>
+        <div className={style.credit__wrapper}>
+          <h2 className={style.credit__title}>{data.title}</h2>
+          <p className={style.credit__desc}>{data.description}</p>
 
-            <div className={style.credit__main}>
-              <h3 className={style.credit__main__title}>{data.subtitle}</h3>
+          <div className={style.credit__main}>
+            <h3 className={style.credit__main__title}>{data.subtitle}</h3>
 
-              <form className="credit__main__form">
-                <div className="credit__main__form__elem">
-                  <div className={`credit__main__form__item`}>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setValue((prev) =>
-                          Math.min(10_000_000, Math.max(0, prev - 1000))
-                        )
-                      }
-                    >
-                      <Minus />
-                    </button>
+            <form
+              className="credit__main__form"
+              onSubmit={(e) => e.preventDefault()}
+            >
+              <div className="credit__main__form__elem">
+                <CreditAmountInput
+                  value={creditAmount.displayAmount}
+                  onChange={creditAmount.handleAmountChange}
+                  onFocus={creditAmount.handleAmountFocus}
+                  onBlur={creditAmount.handleAmountBlur}
+                  onIncrement={creditAmount.increment}
+                  onDecrement={creditAmount.decrement}
+                />
 
-                    <input
-                      className="credit__main__form__item__total"
-                      inputMode="numeric"
-                      value={
-                        isTotalFocused
-                          ? value === 0
-                            ? ""
-                            : String(value)
-                          : value === 0
-                          ? ""
-                          : `${value} ₽`
-                      }
-                      onChange={handleTotalChange}
-                      onFocus={handleTotalFocus}
-                      onBlur={handleTotalBlur}
-                      max="10000000"
-                    />
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setValue((prev) => Math.min(10_000_000, prev + 1000))
-                      }
-                    >
-                      <Plus />
-                    </button>
-                  </div>
-
-                  <div className="credit__main__data">
-                    <DropdownSelector
-                      ref={termRef}
-                      label="На срок"
-                      selected={selectedTerm}
-                      options={TERMS}
-                      isOpen={openDropdown}
-                      onToggle={() => toggleDropdown("term")}
-                      onSelect={(term) => {
-                        setSelectedTerm(term);
-                        setOpenDropdown(null);
-                      }}
-                      dropdownType="term"
-                      ariaLabel="Выбрать срок кредита"
-                    />
-                  </div>
-                </div>
-
-                <div className="credit__main__form__other">
+                <div className="credit__main__data">
                   <DropdownSelector
-                    ref={targetRef}
-                    label="Цель кредита"
-                    selected={selectedTarget}
-                    options={TARGETS}
+                    ref={termRef}
+                    label="На срок"
+                    selected={selectedTerm}
+                    options={TERMS}
                     isOpen={openDropdown}
-                    onToggle={() => toggleDropdown("target")}
-                    onSelect={(target) => {
-                      setSelectedTarget(target);
-                      setOpenDropdown(null);
-                    }}
-                    dropdownType="target"
-                    ariaLabel="Выбрать цель кредита"
+                    onToggle={() => toggleDropdown("term")}
+                    onSelect={handleTermSelect}
+                    dropdownType="term"
+                    ariaLabel="Выбрать срок кредита"
                   />
-
-                  <div
-                    className={`credit__main__form__cash ${
-                      salaryError && "error"
-                    }`}
-                  >
-                    <div className="credit__main__form__item__value">
-                      <p>Размер заработной платы</p>
-                      <div className="credit__main__form__item__input__container">
-                        <input
-                          type="text"
-                          inputMode="numeric"
-                          placeholder="Например, 100 000 ₽"
-                          value={displaySalary}
-                          onChange={handleSalaryChange}
-                          onFocus={handleSalaryFocus}
-                          onBlur={handleSalaryBlur}
-                          className={`${style.salaryInput} ${
-                            salaryError ? style.inputError : ""
-                          }`}
-                        />
-                      </div>
-
-                      {salaryError && (
-                        <p
-                          id="salary-error"
-                          className="credit__main__form__cash__error"
-                        >
-                          {salaryError}
-                        </p>
-                      )}
-                    </div>
-                  </div>
                 </div>
+              </div>
 
-                <div className="credit__buttons">
-                  {screenWidth >= 980 ? (
-                    <>
-                      <button
-                        className={style.credit__main__form__auth}
-                        disabled
-                      >
-                        <img src={gosuslugi} alt="Госуслуги" /> Продолжить
-                        через Госуслуги
-                      </button>
+              <div className="credit__main__form__other">
+                <DropdownSelector
+                  ref={targetRef}
+                  label="Цель кредита"
+                  selected={selectedTarget}
+                  options={TARGETS}
+                  isOpen={openDropdown}
+                  onToggle={() => toggleDropdown("target")}
+                  onSelect={handleTargetSelect}
+                  dropdownType="target"
+                  ariaLabel="Выбрать цель кредита"
+                />
 
-                      <button
-                        type="button"
-                        className="credit__buttons__continue"
-                        onClick={() => setOpenAuthMenu(true)}
-                      >
-                        Продолжить
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <button
-                        type="button"
-                        className="credit__buttons__continue"
-                        onClick={() => setOpenAuthMenu(true)}
-                      >
-                        Продолжить
-                      </button>
+                <SalaryInput
+                  value={salary.displaySalary}
+                  error={salary.salaryError}
+                  onChange={salary.handleSalaryChange}
+                  onFocus={salary.handleSalaryFocus}
+                  onBlur={salary.handleSalaryBlur}
+                  onKeyDown={salary.handleKeyDown}
+                />
+              </div>
 
-                      <button
-                        className={style.credit__main__form__auth}
-                        disabled
-                      >
-                        <img src={gosuslugi} alt="Госуслуги" /> Продолжить
-                        через Госуслуги
-                      </button>
-                    </>
-                  )}
-                </div>
-              </form>
+              <CreditFormButtons
+                screenWidth={screenWidth}
+                onContinue={handleContinue}
+                isDisabled={isContinueDisabled}
+              />
+            </form>
 
-              <Notification text="Авторизация через Госуслуги находится в процессе разработки и скоро будет доступна" />
-            </div>
+            <Notification text="Авторизация через Госуслуги находится в процессе разработки и скоро будет доступна" />
           </div>
-        )}
+        </div>
       </div>
     </section>
   );
