@@ -9,13 +9,14 @@ const UserSchema = new mongoose.Schema(
       index: true,
     },
 
-    // MTS 
+    // MTS
     mts_sub: {
       type: String,
       unique: true,
       sparse: true,
       index: true,
     },
+
     lastAuthAt: {
       type: Date,
     },
@@ -28,7 +29,23 @@ const UserSchema = new mongoose.Schema(
     is_loan_arrears: Boolean,
     total_debt: Number,
     income: Number,
-    requisite: String,
+    profilePhoto: String,
+
+    address_doesnt_match: {
+      type: Boolean,
+      default: true,
+    },
+
+    requisites: {
+      account_number: String,
+      recipient: String,
+      BIC: String,
+      bank_name: String,
+      corporate_account: String,
+      bank_INN: String,
+      bank_KPP: String,
+      have_an_account: Boolean,
+    },
 
     passport: {
       series_number: String,
@@ -43,6 +60,11 @@ const UserSchema = new mongoose.Schema(
       street: String,
       apartment: String,
       registration_date: String,
+    },
+
+    real_address: {
+      street: String,
+      apartment: String,
     },
 
     photos: {

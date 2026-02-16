@@ -18,6 +18,8 @@ const InputField = forwardRef(
       onChange,
       fontSize,
       inputMode,
+      value,
+      name,
     },
     ref
   ) => {
@@ -47,11 +49,13 @@ const InputField = forwardRef(
               {...fieldProps}
               inputMode={inputMode || "text"}
               ref={ref}
+              name={name || ""}
+              value={value && value}
               style={fontSize ? { fontSize: fontSize } : { fontSize: 16 }}
             />
             {children}
 
-            <Edit />
+            {!readOnly && <Edit />}
           </div>
           {hasError && (
             <span className={style.input_error_text}>{errorText}</span>

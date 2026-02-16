@@ -20,8 +20,6 @@ const MTS_ENDPOINT = process.env.MTS_ENDPOINT;
 const CLIENT_ID = process.env.CLIENT_ID;
 const BASE_URL = process.env.BASE_URL || "https://ceoksa.ru/api";
 
-console.log("CLIENT_ID: ", CLIENT_ID);
-
 const getPublicKeyFromJwks = () => {
   try {
     const jwksPath = path.join(__dirname, "../jwks.json");
@@ -214,8 +212,6 @@ export const verifySmsCode = async (req, res) => {
 
 export const handleNotification = async (req, res) => {
   try {
-    console.log("NOTIFICATION");
-
     const {
       auth_req_id,
       id_token,
@@ -226,8 +222,6 @@ export const handleNotification = async (req, res) => {
       error,
       error_description,
     } = req.body;
-
-    console.log(req.body);
 
     if (!auth_req_id) {
       return res.status(400).json({
@@ -264,8 +258,6 @@ export const handleNotification = async (req, res) => {
 
       return res.status(204).end();
     }
-
-    console.log("NOTIFICATION 2");
 
     if (!id_token || !access_token) {
       return res.status(400).json({

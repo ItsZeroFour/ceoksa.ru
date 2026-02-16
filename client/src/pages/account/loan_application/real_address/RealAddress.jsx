@@ -1,23 +1,66 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import style from "./realaddress.module.scss";
 import { ReactComponent as Location } from "../../../../assets/icons/account/location.svg";
 import { ReactComponent as Edit } from "../../../../assets/icons/account/edit.svg";
 import { useValidation } from "../../../../hooks/useValidation";
 import { useScreenWidth } from "../../../../hooks/useScreenWidth";
+import { useDispatch, useSelector } from "react-redux";
+import { useDebouncedUpdate } from "../../../../hooks/useDebouncedUpdate";
+import {
+  updateUser,
+  clearError,
+} from "../../../../redux/slices/user/updateUserSlice";
 
 const RealAddress = () => {
-  const { getFieldProps, hasError, errors } = useValidation(
-    { city: "", home: "" },
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth);
+  const isInitialized = useRef(false);
+
+  // Инициализируем с данными из Redux, если они есть
+  const initialValues = {
+    street: user?.user?.data?.real_address?.street || "",
+    apartment: user?.user?.data?.real_address?.apartment || "",
+  };
+
+  const { getFieldProps, hasError, errors, values } = useValidation(
+    initialValues,
     {
-      city: [
+      street: [
         (v) => (!v ? "Поле обязательно" : ""),
         (v) => (v.length < 3 ? "Минимум 3 символа" : ""),
       ],
-      home: [(v) => (!v ? "Поле обязательно" : "")],
+      apartment: [(v) => (!v ? "Поле обязательно" : "")],
     }
   );
 
   const screenWidth = useScreenWidth();
+
+  // Используем хук для отложенного обновления
+  const debouncedUpdate = useDebouncedUpdate((data) => {
+    dispatch(clearError());
+    dispatch(
+      updateUser({
+        real_address: data,
+      })
+    );
+  }, 3000);
+
+  // Отслеживаем изменения values и сохраняем их
+  useEffect(() => {
+    // Пропускаем первый рендер (инициализацию)
+    if (!isInitialized.current) {
+      isInitialized.current = true;
+      return;
+    }
+
+    // Сохраняем только если есть изменения
+    if (values.street || values.apartment) {
+      debouncedUpdate({
+        street: values.street,
+        apartment: values.apartment,
+      });
+    }
+  }, [values.street, values.apartment, debouncedUpdate]);
 
   const cityPlaceholder =
     screenWidth < 780
@@ -27,11 +70,7 @@ const RealAddress = () => {
   const homePlaceholder =
     screenWidth < 780 ? "Номер квартиры" : "Необходимо указать номер";
 
-  const handleNumbersOnly = (e) => {
-    e.target.value = e.target.value.replace(/\D/g, "");
-  };
-
-  const homeFieldProps = getFieldProps("home");
+  const apartmentFieldProps = getFieldProps("apartment");
 
   return (
     <div className={style.real_address}>
@@ -46,47 +85,47 @@ const RealAddress = () => {
           <form>
             <div
               className={
-                hasError("city")
+                hasError("street")
                   ? `${style.real_address__form__item} ${style.error}`
                   : style.real_address__form__item
               }
             >
-              <label htmlFor="city">Населённый пункт, улица, дом</label>
+              <label htmlFor="street">Населённый пункт, улица, дом</label>
               <input
                 type="text"
-                id="city"
+                id="street"
                 placeholder={cityPlaceholder}
-                {...getFieldProps("city")}
+                {...getFieldProps("street")}
               />
               <Edit />
-              {hasError("city") && (
-                <span className={style.error_text}>{errors.city}</span>
+              {hasError("street") && (
+                <span className={style.error_text}>{errors.street}</span>
               )}
             </div>
 
             <div
               className={
-                hasError("home")
+                hasError("apartment")
                   ? `${style.real_address__form__item} ${style.error}`
                   : style.real_address__form__item
               }
             >
-              <label htmlFor="home">Квартира</label>
+              <label htmlFor="apartment">Квартира</label>
               <input
                 type="number"
-                id="home"
+                id="apartment"
                 inputMode="numeric"
                 pattern="[0-9]*"
                 placeholder={homePlaceholder}
-                {...homeFieldProps}
+                {...apartmentFieldProps}
                 onInput={(e) => {
                   e.target.value = e.target.value.replace(/\D/g, "");
-                  homeFieldProps.onInput?.(e);
+                  apartmentFieldProps.onInput?.(e);
                 }}
               />
               <Edit />
-              {hasError("home") && (
-                <span className={style.error_text}>{errors.home}</span>
+              {hasError("apartment") && (
+                <span className={style.error_text}>{errors.apartment}</span>
               )}
             </div>
           </form>

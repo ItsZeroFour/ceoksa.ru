@@ -10,7 +10,7 @@ import sber from "../../../../assets/icons/sber.svg";
 import { filterVariants } from "../../../../animations/account-active";
 import { Badge } from "../../../../components/badge/Badge";
 
-const Active = () => {
+const Active = ({ setShowRequisites }) => {
   const [openFilter, setOpenFilter] = useState(false);
   const [sortOption, setSortOption] = useState(null);
 
@@ -255,7 +255,9 @@ const Active = () => {
                     <Info />
                     Условия
                   </button>
-                  <button>Выбрать</button>
+                  <button type="button" onClick={() => setShowRequisites(true)}>
+                    Выбрать
+                  </button>
                 </div>
               </motion.li>
             ))}

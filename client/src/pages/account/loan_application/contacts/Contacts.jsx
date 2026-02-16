@@ -1,19 +1,29 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef } from "react";
 import style from "./contacts.module.scss";
 import { ReactComponent as Phone } from "../../../../assets/icons/account/phone.svg";
 import { ReactComponent as Mail } from "../../../../assets/icons/account/mail.svg";
-import { ReactComponent as Edit } from "../../../../assets/icons/account/edit.svg";
 import { useValidation } from "../../../../hooks/useValidation";
 import { useScreenWidth } from "../../../../hooks/useScreenWidth";
 import InputField from "../../../../components/input_field/InputField";
 import { usePhoneMask } from "../../../../hooks/usePhoneMask";
+import { useDispatch, useSelector } from "react-redux";
+import { useDebouncedUpdate } from "../../../../hooks/useDebouncedUpdate";
+import {
+  updateUser,
+  clearError,
+} from "../../../../redux/slices/user/updateUserSlice";
 
-const Contacts = () => {
-  const [emailValue, setEmailValue] = useState("");
-  const [phoneValue, setPhoneValue] = useState("");
+const Contacts = ({ userData }) => {
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth);
+  const isInitialized = useRef(false);
 
-  const { getFieldProps, hasError, errors } = useValidation(
-    { mail: "" },
+  const initialValues = {
+    mail: user?.user?.data?.email || "",
+  };
+
+  const { getFieldProps, hasError, errors, values } = useValidation(
+    initialValues,
     {
       mail: [
         (v) =>
@@ -24,19 +34,28 @@ const Contacts = () => {
     }
   );
 
-  const mailProps = getFieldProps("mail");
-  const enhancedMailProps = {
-    ...mailProps,
-    onChange: (e) => {
-      mailProps.onChange?.(e);
-      setEmailValue(e.target.value);
-    },
-  };
+  const debouncedUpdate = useDebouncedUpdate((email) => {
+    dispatch(clearError());
+    dispatch(
+      updateUser({
+        email: email,
+      })
+    );
+  }, 3000);
+
+  useEffect(() => {
+    if (!isInitialized.current) {
+      isInitialized.current = true;
+      return;
+    }
+
+    if (values.mail && !hasError("mail")) {
+      debouncedUpdate(values.mail);
+    }
+  }, [values.mail, hasError, debouncedUpdate]);
 
   const { inputRef: phoneInputRef } = usePhoneMask({
-    onAccept: ({ value, unmaskedValue, isValid }) => {
-      setPhoneValue(value);
-    },
+    onAccept: ({ value, unmaskedValue, isValid }) => {},
   });
 
   const screenWidth = useScreenWidth();
@@ -44,8 +63,6 @@ const Contacts = () => {
     screenWidth < 780
       ? "Укажите эл. почту"
       : "Необходимо указать электронную почту";
-
-  console.log(emailValue);
 
   return (
     <section className={style.contacts}>
@@ -60,7 +77,8 @@ const Contacts = () => {
               placeholder="+7 (9XX) XXX-XX-XX"
               id="phone"
               type="tel"
-              value={phoneValue}
+              readOnly={true}
+              value={userData.phone}
               ref={phoneInputRef}
             />
           </li>
@@ -72,8 +90,7 @@ const Contacts = () => {
               placeholder={placeholder}
               id="mail"
               type="email"
-              // fieldProps={getFieldProps("mail")}
-              {...enhancedMailProps}
+              {...getFieldProps("mail")}
               hasError={hasError("mail")}
               errorText={errors.mail}
             />
