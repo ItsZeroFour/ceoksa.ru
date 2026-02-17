@@ -1,88 +1,69 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import style from "./credit.module.scss";
-import { ReactComponent as Minus } from "../../../../assets/icons/minus.svg";
-import { ReactComponent as Plus } from "../../../../assets/icons/plus.svg";
-import DropdownSelector from "../../../../components/dropdown_selector/DropdownSelector";
 import { useOutsideClick } from "../../../../hooks/useOutsideClick";
 import { useDropdown } from "../../../../hooks/useDropdown";
+import { useCreditAmount } from "../../../../hooks/useCreditAmount";
 import { useSalaryValidation } from "../../../../hooks/useSalaryValidation";
-import { useDispatch, useSelector } from "react-redux";
 import { fetchFiles } from "../../../../redux/slices/strapi/FilesSlide";
-import { Link } from "react-router-dom";
-
-const TERMS = [
-  { value: 3, title: "3 месяца" },
-  { value: 6, title: "6 месяцев" },
-  { value: 9, title: "9 месяцев" },
-  { value: 12, title: "1 год" },
-  { value: 24, title: "2 года" },
-  { value: 36, title: "3 года" },
-  { value: 48, title: "4 года" },
-  { value: 60, title: "5 лет" },
-];
-
-const TARGETS = [
-  { value: "cash", title: "Кредит наличными" },
-  { value: "mortgage", title: "Ипотека" },
-  { value: "car", title: "Покупка авто" },
-  { value: "education", title: "Образование" },
-  { value: "renovation", title: "Ремонт" },
-  { value: "travel", title: "Путешествия" },
-  { value: "other", title: "Другое" },
-];
+import {
+  TERMS,
+  TARGETS,
+  CREDIT_LIMITS,
+} from "../../../../constants/creditConstants";
+import CreditAmountSection from "../../../../components/account/CreditAmountSection/CreditAmountSection";
+import CreditTargetSection from "../../../../components/account/CreditTargetSection/CreditTargetSection";
+import CreditSalaryInput from "../../../../components/account/CreditSalaryInput/CreditSalaryInput";
+import CreditFooter from "../../../../components/account/CreditFooter/CreditFooter";
 
 const Credit = () => {
-  const [value, setValue] = useState(500_000);
   const [selectedTerm, setSelectedTerm] = useState(TERMS[5]);
   const [selectedTarget, setSelectedTarget] = useState(TARGETS[0]);
-  const [isTotalFocused, setIsTotalFocused] = useState(false);
+
   const termRef = useRef(null);
   const targetRef = useRef(null);
 
   const dispatch = useDispatch();
+  const { data: filesData, status: filesStatus } = useSelector(
+    (state) => state.files
+  );
 
-  const { data, status, error } = useSelector((state) => state.files);
+  const creditAmount = useCreditAmount({
+    initialValue: 500000,
+    minAmount: CREDIT_LIMITS.MIN_AMOUNT,
+    maxAmount: CREDIT_LIMITS.MAX_AMOUNT,
+    step: CREDIT_LIMITS.STEP,
+  });
+
+  const salary = useSalaryValidation({
+    minSalary: CREDIT_LIMITS.MIN_SALARY,
+    maxSalary: CREDIT_LIMITS.MAX_AMOUNT,
+    debounceDelay: 300,
+  });
+
+  const { openDropdown, toggleDropdown, closeDropdown, setOpenDropdown } =
+    useDropdown();
+
+  useOutsideClick([termRef, targetRef], closeDropdown);
 
   useEffect(() => {
     dispatch(fetchFiles("fajly?populate=*"));
   }, [dispatch]);
 
-  /* HOOKS */
-  const { openDropdown, toggleDropdown, closeDropdown, setOpenDropdown } =
-    useDropdown();
-  useOutsideClick([termRef, targetRef], closeDropdown);
-  const {
-    salaryError,
-    displaySalary,
-    handleSalaryChange,
-    handleSalaryFocus,
-    handleSalaryBlur,
-  } = useSalaryValidation();
+  const handleTermSelect = (term) => {
+    setSelectedTerm(term);
+    setOpenDropdown(null);
+  };
 
-  const handleTotalChange = (event) => {
-    let inputValue = event.target.value;
-    inputValue = inputValue.replace(/\D/g, "");
+  const handleTargetSelect = (target) => {
+    setSelectedTarget(target);
+    setOpenDropdown(null);
+  };
 
-    if (inputValue === "") {
-      setValue(0);
+  const handleSubmit = () => {
+    if (!salary.salaryValue || !!salary.salaryError) {
+      salary.handleSalaryBlur();
       return;
-    }
-
-    const numValue = Number(inputValue);
-    setValue(numValue < 0 ? 0 : numValue);
-  };
-
-  const handleTotalFocus = (event) => {
-    setIsTotalFocused(true);
-    if (value === 0) {
-      event.target.value = "";
-    }
-  };
-
-  const handleTotalBlur = (event) => {
-    setIsTotalFocused(false);
-    if (event.target.value === "") {
-      setValue(0);
     }
   };
 
@@ -90,152 +71,58 @@ const Credit = () => {
     <section className={style.credit} id="credit">
       <div className={style.credit__wrapper}>
         <h2 className={style.credit__title}>
-          Укажите сумму, срок и цель вашего кредита
+          Укажите сумму, срок и цель вашего кредита
         </h2>
 
         <div className={style.credit__main}>
           <form
             className={`credit__main__form ${style.credit__main__form__special}`}
+            onSubmit={(e) => e.preventDefault()}
           >
-            <div
-              className={`credit__main__form__elem ${style.credit__main__form__elem__con}`}
-            >
-              <div className={style.credit__main__form__elem__con__first}>
-                <div
-                  className={`credit__main__form__item ${style.credit__main__form__item__total__con}`}
-                >
-                  <button
-                    type="button"
-                    onClick={() => setValue((prev) => Math.max(0, prev - 1000))}
-                  >
-                    <Minus />
-                  </button>
+            <CreditAmountSection
+              value={creditAmount.displayAmount}
+              onChange={creditAmount.handleAmountChange}
+              onFocus={creditAmount.handleAmountFocus}
+              onBlur={creditAmount.handleAmountBlur}
+              onIncrement={creditAmount.increment}
+              onDecrement={creditAmount.decrement}
+              selectedTerm={selectedTerm}
+              onTermSelect={handleTermSelect}
+              termOptions={TERMS}
+              termRef={termRef}
+              openDropdown={openDropdown}
+              onToggleDropdown={() => toggleDropdown("term")}
+              styles={style}
+            />
 
-                  <input
-                    className="credit__main__form__item__total"
-                    inputMode="numeric"
-                    value={
-                      isTotalFocused
-                        ? value === 0
-                          ? ""
-                          : String(value)
-                        : value === 0
-                        ? ""
-                        : `${value} ₽`
-                    }
-                    onChange={handleTotalChange}
-                    onFocus={handleTotalFocus}
-                    onBlur={handleTotalBlur}
-                    max="10000000"
-                  />
+            <CreditTargetSection
+              selectedTarget={selectedTarget}
+              onTargetSelect={handleTargetSelect}
+              targetOptions={TARGETS}
+              targetRef={targetRef}
+              openDropdown={openDropdown}
+              onToggleDropdown={() => toggleDropdown("target")}
+              styles={style}
+            />
 
-                  <button
-                    type="button"
-                    onClick={() => setValue((prev) => prev + 1000)}
-                  >
-                    <Plus />
-                  </button>
-                </div>
-
-                <div className={style.credit__main__form__item__data__con}>
-                  <DropdownSelector
-                    ref={termRef}
-                    label="На срок"
-                    selected={selectedTerm}
-                    options={TERMS}
-                    isOpen={openDropdown}
-                    onToggle={() => toggleDropdown("term")}
-                    onSelect={(term) => {
-                      setSelectedTerm(term);
-                      setOpenDropdown(null);
-                    }}
-                    dropdownType="term"
-                    ariaLabel="Выбрать срок кредита"
-                  />
-                </div>
-              </div>
-
-              <div
-                className={`credit__main__form__item__special__con ${style.credit__main__form__item__special}`}
-              >
-                <DropdownSelector
-                  ref={targetRef}
-                  label="Цель кредита"
-                  selected={selectedTarget}
-                  options={TARGETS}
-                  isOpen={openDropdown}
-                  onToggle={() => toggleDropdown("target")}
-                  onSelect={(target) => {
-                    setSelectedTarget(target);
-                    setOpenDropdown(null);
-                  }}
-                  dropdownType="target"
-                  ariaLabel="Выбрать цель кредита"
-                />
-              </div>
-            </div>
-
-            <div className="credit__main__form__other">
-              <div
-                className={`credit__main__form__cash ${
-                  salaryError && "error"
-                } ${style.credit__main__form__cash__special}`}
-              >
-                <div
-                  className={`credit__main__form__item__value ${style.credit__main__form__item__value__special}`}
-                >
-                  <p>Размер заработной платы</p>
-                  <div
-                    className={`credit__main__form__item__input__container ${style.credit__main__form__item__input__container__speacial}`}
-                  >
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      placeholder="Например, 100 000 ₽"
-                      value={displaySalary}
-                      onChange={handleSalaryChange}
-                      onFocus={handleSalaryFocus}
-                      onBlur={handleSalaryBlur}
-                      className={`${style.salaryInput} ${
-                        salaryError ? style.inputError : ""
-                      }`}
-                    />
-                  </div>
-
-                  {salaryError && (
-                    <p
-                      id="salary-error"
-                      className="credit__main__form__cash__error"
-                    >
-                      {salaryError}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
+            <CreditSalaryInput
+              value={salary.displaySalary}
+              error={salary.salaryError}
+              onChange={salary.handleSalaryChange}
+              onFocus={salary.handleSalaryFocus}
+              onBlur={salary.handleSalaryBlur}
+              onKeyDown={salary.handleKeyDown}
+              styles={style}
+            />
           </form>
         </div>
 
-        {status === "succeeded" && (
-          <div className={style.credit__bottom}>
-            <button>Направить в банки</button>
-            <p>
-              Нажимая кнопку «Направить в банки», Вы даете{" "}
-              <Link
-                to={`${process.env.REACT_APP_ADMIN_IMAGES}${data.terms_of_transfer_of_informationconsent.url}`}
-                target="_blank"
-              >
-                согласия
-              </Link>{" "}
-              и принимаете{" "}
-              <Link
-                to={`${process.env.REACT_APP_ADMIN_IMAGES}${data.terms_of_information_transfer.url}`}
-                target="_blank"
-              >
-                условия передачи информации
-              </Link>
-            </p>
-          </div>
+        {filesStatus === "succeeded" && (
+          <CreditFooter
+            filesData={filesData}
+            onSubmit={handleSubmit}
+            styles={style}
+          />
         )}
       </div>
     </section>

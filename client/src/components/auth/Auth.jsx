@@ -1,203 +1,91 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import style from "./auth.module.scss";
 import logo from "../../assets/logo.svg";
 import logoDark from "../../assets/logo-dark.svg";
 import { useTheme } from "../../hooks/useTheme";
-import { Link } from "react-router-dom";
-import gosuslugi from "../../assets/gosuslugi.png";
-import GosuslugiButton from "../gosuslugi_button/GosuslugiButton";
-import IMask from "imask";
-import { useDispatch, useSelector } from "react-redux";
+import { usePhoneInput } from "../../hooks/usePhoneInput";
+import { useCodeInput } from "../../hooks/useCodeInput";
+import { useResendTimer } from "../../hooks/useResendTimer";
+import { useAuthPolling } from "../../hooks/useAuthPolling";
+import PhoneAuthStep from "./PhoneAuthStep/PhoneAuthStep";
+import CodeAuthStep from "./CodeAuthStep/CodeAuthStep";
 import { fetchFiles } from "../../redux/slices/strapi/FilesSlide";
 import {
   initiateAuth,
   verifyCode,
-  checkStatus,
 } from "../../redux/slices/auth/mobileAuthSlice";
-import { fetchMe } from "../../redux/slices/auth/authSlice";
-import axios from "axios";
-
-axios.defaults.withCredentials = true;
 
 const Auth = ({ setOpenAuthMenu }) => {
   const { theme } = useTheme();
-
-  const phoneInputRef = useRef(null);
-  const [isPhoneComplete, setIsPhoneComplete] = useState(false);
-  const [sendSms, setSendSms] = useState(false);
-  const [phone, setPhone] = useState("");
-  const [code, setCode] = useState(["", "", "", ""]);
-  const [hasError, setHasError] = useState(false);
-  const inputRefs = useRef([]);
-  const [resendDisabled, setResendDisabled] = useState(false);
-  const [resendTimer, setResendTimer] = useState(60);
+  const [currentStep, setCurrentStep] = useState("phone");
 
   const dispatch = useDispatch();
 
-  const { data, status, error } = useSelector((state) => state.files);
+  const { data: filesData, status: filesStatus } = useSelector(
+    (state) => state.files
+  );
   const { auth_req_id } = useSelector((state) => state.mobileAuth);
-  const mobileAuth = useSelector((state) => state.mobileAuth);
+
+  const phoneInput = usePhoneInput();
+  const codeInput = useCodeInput(4);
+  const resendTimer = useResendTimer(60);
+
+  const authPolling = useAuthPolling({
+    onSuccess: () => setOpenAuthMenu(false),
+    onError: () => codeInput.setError(),
+  });
 
   useEffect(() => {
     dispatch(fetchFiles("fajly?populate=*"));
   }, [dispatch]);
 
-  useEffect(() => {
-    if (!phoneInputRef.current) return;
-
-    const maskOptions = {
-      mask: "+{7} (000) 000-00-00",
-      lazy: true,
-    };
-
-    const mask = IMask(phoneInputRef.current, maskOptions);
-
-    const handleChange = () => {
-      const isValid = mask.unmaskedValue.length === 11;
-
-      console.log(mask.unmaskedValue.length, isValid);
-
-      setIsPhoneComplete(isValid);
-    };
-
-    mask.on("accept", () => {
-      handleChange();
-      setPhone(mask._value);
-    });
-
-    handleChange();
-
-    return () => {
-      mask.destroy();
-    };
-  }, [sendSms]);
-
-  useEffect(() => {
-    let interval = null;
-
-    if (sendSms && resendDisabled && resendTimer > 0) {
-      interval = setInterval(() => {
-        setResendTimer((prev) => prev - 1);
-      }, 1000);
-    } else if (resendTimer === 0) {
-      setResendDisabled(false);
-    }
-
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [sendSms, resendDisabled, resendTimer]);
-
-  useEffect(() => {
-    if (!sendSms) {
-      setResendDisabled(false);
-      setResendTimer(60);
-    }
-  }, [sendSms]);
-
-  const onSendSms = async () => {
-    const clearPhone = phone.replace(/\D/g, "");
-
+  const handleSendSms = async () => {
+    const clearPhone = phoneInput.getCleanPhone();
     const result = await dispatch(initiateAuth(clearPhone));
 
     if (result.meta.requestStatus === "fulfilled") {
-      setSendSms(true);
-      setResendDisabled(true);
-      setResendTimer(60);
+      setCurrentStep("code");
+      resendTimer.start();
     }
   };
 
   const handleResendCode = async () => {
-    if (resendDisabled) return;
+    if (resendTimer.isDisabled) return;
 
-    const clearPhone = phone.replace(/\D/g, "");
+    const clearPhone = phoneInput.getCleanPhone();
     const result = await dispatch(initiateAuth(clearPhone));
 
     if (result.meta.requestStatus === "fulfilled") {
-      setResendDisabled(true);
-      setResendTimer(60);
-      setCode(["", "", "", ""]);
-      setHasError(false);
+      codeInput.reset();
+      resendTimer.start();
     }
   };
 
-  const handleChange = (index, value) => {
-    if (!/^\d?$/.test(value)) return;
-
-    const newCode = [...code];
-    newCode[index] = value;
-    setCode(newCode);
-    setHasError(false);
-
-    if (value && index < 3) {
-      inputRefs.current[index + 1]?.focus();
-    }
-  };
-
-  const handleKeyDown = (index, e) => {
-    if (e.key === "Backspace" && !code[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
-    }
-  };
-
-  const handlePaste = (e) => {
+  const handleSubmitCode = async (e) => {
     e.preventDefault();
-    const pasted = e.clipboardData
-      .getData("text")
-      .replace(/\D/g, "")
-      .slice(0, 4);
-    if (pasted) {
-      const newCode = ["", "", "", ""];
-      for (let i = 0; i < pasted.length; i++) {
-        newCode[i] = pasted[i];
-      }
-      setCode(newCode);
-      setHasError(false);
-      const focusIndex = Math.min(pasted.length - 1, 3);
-      inputRefs.current[focusIndex]?.focus();
-    }
-  };
 
-  const startPolling = (reqId) => {
-    const interval = setInterval(async () => {
-      const res = await dispatch(checkStatus(reqId));
+    if (!codeInput.isComplete) return;
 
-      if (res.payload?.status === "success") {
-        clearInterval(interval);
-        await axios.get(
-          `${process.env.REACT_APP_SERVERF_API}/auth/complete?auth_req_id=${reqId}`,
-          { withCredentials: true }
-        );
-        await dispatch(fetchMe());
-        setOpenAuthMenu(false);
-      }
+    const smsCode = codeInput.getCode();
+    const result = await dispatch(verifyCode({ auth_req_id, code: smsCode }));
 
-      if (
-        res.payload?.status === "failed" ||
-        res.payload?.status === "expired"
-      ) {
-        clearInterval(interval);
-        setHasError(true);
-      }
-    }, 2000);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!code.every((d) => d !== "")) return;
-
-    const result = await dispatch(
-      verifyCode({ auth_req_id, code: code.join("") })
-    );
     if (result.meta.requestStatus === "rejected") {
-      setHasError(true);
+      codeInput.setError();
       return;
     }
 
-    startPolling(auth_req_id);
+    authPolling.startPolling(auth_req_id);
   };
 
-  const isCodeComplete = code.every((digit) => digit !== "");
+  const handleBackToPhone = () => {
+    codeInput.reset();
+    phoneInput.reset();
+    setCurrentStep("phone");
+    resendTimer.reset();
+    authPolling.stopPolling();
+  };
 
   return (
     <section className={style.auth}>
@@ -210,126 +98,37 @@ const Auth = ({ setOpenAuthMenu }) => {
           <button
             className={style.auth__close}
             onClick={() => setOpenAuthMenu(false)}
+            aria-label="Закрыть окно авторизации"
           />
 
           <p>Авторизация</p>
 
-          {!sendSms ? (
-            <>
-              <div className={style.auth__text}>
-                <h2>Введите номер телефона</h2>
-
-                <p>
-                  Введите номер мобильного телефона для использования сервиса
-                  ОКСА.
-                </p>
-              </div>
-
-              <form>
-                <div className={style.auth__form__input}>
-                  <label htmlFor="phone">Номер телефона</label>
-                  <input
-                    ref={phoneInputRef}
-                    type="tel"
-                    id="phone"
-                    placeholder="+7 (9XX) XXX-XX-XX"
-                  />
-                </div>
-
-                {status === "succeeded" && (
-                  <>
-                    <button
-                      type="button"
-                      disabled={!isPhoneComplete}
-                      onClick={onSendSms}
-                    >
-                      Войти
-                    </button>
-
-                    <p>
-                      Нажимая на кнопку «Войти», Вы даете{" "}
-                      <Link
-                        to={`${process.env.REACT_APP_ADMIN_IMAGES}${data.consent_to_the_processing_of_personal_data_by_telecom_operators.url}`}
-                        target="_blank"
-                      >
-                        согласия
-                      </Link>{" "}
-                      и принимаете{" "}
-                      <Link to="/privacy-policy" target="_blank">
-                        условия политики конфиденциальности.
-                      </Link>
-                    </p>
-                  </>
-                )}
-              </form>
-
-              <div className={style.auth__or}>
-                <div className={style.auth__or__text}>
-                  <p>или</p>
-                </div>
-
-                <GosuslugiButton />
-              </div>
-            </>
+          {currentStep === "phone" ? (
+            <PhoneAuthStep
+              phoneInputRef={phoneInput.phoneInputRef}
+              isPhoneComplete={phoneInput.isComplete}
+              onSubmit={handleSendSms}
+              filesData={filesData}
+              filesStatus={filesStatus}
+              styles={style}
+            />
           ) : (
-            <>
-              <div className={style.auth__text}>
-                <h2>Введите код из SMS</h2>
-
-                <p>На номер {phone} отправлен SMS-код подтверждения</p>
-              </div>
-
-              <form onSubmit={handleSubmit}>
-                <div className={style.auth__code}>
-                  {code.map((digit, index) => (
-                    <input
-                      key={index}
-                      type="text"
-                      inputMode="numeric"
-                      pattern="\d"
-                      maxLength={1}
-                      value={digit}
-                      onChange={(e) => handleChange(index, e.target.value)}
-                      onKeyDown={(e) => handleKeyDown(index, e)}
-                      onPaste={handlePaste}
-                      ref={(el) => (inputRefs.current[index] = el)}
-                      className={`${style.auth__code_input} ${
-                        hasError ? style.error : ""
-                      }`}
-                    />
-                  ))}
-                </div>
-
-                {hasError && (
-                  <p className={style.auth__code__error}>Неверный код</p>
-                )}
-
-                <button type="submit" disabled={!isCodeComplete}>
-                  Отправить
-                </button>
-              </form>
-
-              <button
-                className={style.auth__code__newcode}
-                onClick={handleResendCode}
-                disabled={resendDisabled}
-              >
-                {resendDisabled
-                  ? `Запросить повторно через ${resendTimer} сек.`
-                  : "Запросить повторный код"}
-              </button>
-
-              <button
-                className={style.auth__code__back}
-                onClick={() => {
-                  setCode(["", "", "", ""]);
-                  setPhone("");
-                  setSendSms(false);
-                }}
-              >
-                Вернуться ко входу
-              </button>
-            </>
+            <CodeAuthStep
+              phone={phoneInput.phone}
+              code={codeInput.code}
+              hasError={codeInput.hasError}
+              inputRefs={codeInput.inputRefs}
+              isComplete={codeInput.isComplete}
+              onCodeChange={codeInput.handleChange}
+              onKeyDown={codeInput.handleKeyDown}
+              onPaste={codeInput.handlePaste}
+              onSubmit={handleSubmitCode}
+              onResend={handleResendCode}
+              onBack={handleBackToPhone}
+              resendDisabled={resendTimer.isDisabled}
+              resendTimer={resendTimer.timeLeft}
+              styles={style}
+            />
           )}
         </div>
       </div>

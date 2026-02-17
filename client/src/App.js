@@ -1,5 +1,11 @@
 import { lazy, Suspense, useState, useEffect } from "react";
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import {
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import LoanApplication from "./pages/account/loan_application/LoanApplication";
 import useDisableScroll from "./hooks/useDisableScroll";
 import Credits from "./pages/account/credits/Credits";
@@ -19,12 +25,36 @@ const Header = lazy(() => import("./components/header/Header"));
 const Main = lazy(() => import("./pages/main/Main"));
 const Footer = lazy(() => import("./components/footer/Footer"));
 
+const ProtectedRoute = ({ children, userData, userStatus }) => {
+  if (userStatus === "loading") {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "50vh",
+        }}
+      >
+        Загрузка...
+      </div>
+    );
+  }
+
+  if (userStatus !== "succeeded" || !userData) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+};
+
 function App() {
   const [openMenu, setOpenMenu] = useState(false);
   const [openAuthMenu, setOpenAuthMenu] = useState(false);
   const [userData, setUserData] = useState(null);
   const dispatch = useDispatch();
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(fetchMe());
@@ -33,18 +63,20 @@ function App() {
   const user = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (user.status === "succeeded" && user.user) {
+    if (user.status === "succeeded" && user.user?.data) {
       setUserData(user.user.data);
     }
+  }, [user.status, user.user]);
 
-    // if (
-    //   user.status !== "succeeded" &&
-    //   !user.user &&
-    //   location.pathname.startsWith("/account")
-    // ) {
-    //   return <Navigate to="/" replace />;
-    // }
-  }, [user]);
+  useEffect(() => {
+    if (
+      (user.status === "failed" || user.status === "idle") &&
+      !user.user &&
+      location.pathname.startsWith("/account")
+    ) {
+      navigate("/", { replace: true });
+    }
+  }, [user.status, user.user, location.pathname, navigate]);
 
   const scrollToBlock = (id) => {
     const element = document.getElementById(id);
@@ -58,7 +90,7 @@ function App() {
   return (
     <ThemeProvider>
       <div className="App">
-        <Suspense>
+        <Suspense fallback={<div>Загрузка...</div>}>
           <div className="wrapper">
             <div className="header__container">
               <Header
@@ -83,52 +115,65 @@ function App() {
                     />
                   }
                 />
-                {user.status === "succeeded" && userData !== null && (
-                  <>
-                    <Route
-                      path="/account/loan_applications"
-                      element={
-                        <LoanApplication
-                          setOpenMenu={setOpenMenu}
-                          openMenu={openMenu}
-                          userData={userData}
-                        />
-                      }
-                    />
-                    <Route
-                      path="/account/credits"
-                      element={
-                        <Credits
-                          setOpenMenu={setOpenMenu}
-                          openMenu={openMenu}
-                        />
-                      }
-                    />
-                    <Route
-                      path="/account/rating"
-                      element={
-                        <Rating setOpenMenu={setOpenMenu} openMenu={openMenu} />
-                      }
-                    />
-                    <Route
-                      path="/account/profile"
-                      element={
-                        <Profile
-                          setOpenMenu={setOpenMenu}
-                          openMenu={openMenu}
-                        />
-                      }
-                    />
-                  </>
-                )}
 
+                {/* Защищенные роуты */}
+                <Route
+                  path="/account/loan_applications"
+                  element={
+                    <ProtectedRoute
+                      userData={userData}
+                      userStatus={user.status}
+                    >
+                      <LoanApplication
+                        setOpenMenu={setOpenMenu}
+                        openMenu={openMenu}
+                        userData={userData}
+                      />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/account/credits"
+                  element={
+                    <ProtectedRoute
+                      userData={userData}
+                      userStatus={user.status}
+                    >
+                      <Credits setOpenMenu={setOpenMenu} openMenu={openMenu} />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/account/rating"
+                  element={
+                    <ProtectedRoute
+                      userData={userData}
+                      userStatus={user.status}
+                    >
+                      <Rating setOpenMenu={setOpenMenu} openMenu={openMenu} />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/account/profile"
+                  element={
+                    <ProtectedRoute
+                      userData={userData}
+                      userStatus={user.status}
+                    >
+                      <Profile setOpenMenu={setOpenMenu} openMenu={openMenu} />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* Публичные роуты */}
                 <Route path="/privacy-policy" element={<Policy />} />
                 <Route
                   path="/polzovatelskoe-soglashenie"
                   element={<UserAgreement />}
                 />
 
-                {/* Files */}
+                {/* Файлы */}
                 <Route
                   path="/soglasie-na-obrabotku-personalnyh-dannyh"
                   element={
