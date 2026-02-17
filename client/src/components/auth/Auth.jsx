@@ -107,11 +107,17 @@ const Auth = ({ setOpenAuthMenu }) => {
     }
   };
 
-  const handleResendCode = () => {
-    if (!resendDisabled) {
-      console.log("Повторная отправка кода на", phone);
+  const handleResendCode = async () => {
+    if (resendDisabled) return;
+
+    const clearPhone = phone.replace(/\D/g, "");
+    const result = await dispatch(initiateAuth(clearPhone));
+
+    if (result.meta.requestStatus === "fulfilled") {
       setResendDisabled(true);
       setResendTimer(60);
+      setCode(["", "", "", ""]);
+      setHasError(false);
     }
   };
 
@@ -152,24 +158,24 @@ const Auth = ({ setOpenAuthMenu }) => {
     }
   };
 
-  const startPolling = () => {
+  const startPolling = (reqId) => {
     const interval = setInterval(async () => {
-      const res = await dispatch(checkStatus(mobileAuth.auth_req_id));
+      const res = await dispatch(checkStatus(reqId));
 
       if (res.payload?.status === "success") {
         clearInterval(interval);
-
         await axios.get(
-          `${process.env.REACT_APP_SERVERF_API}/auth/complete?auth_req_id=${mobileAuth.auth_req_id}`,
+          `${process.env.REACT_APP_SERVERF_API}/auth/complete?auth_req_id=${reqId}`,
           { withCredentials: true }
         );
-
         await dispatch(fetchMe());
-
         setOpenAuthMenu(false);
       }
 
-      if (res.payload?.status === "failed") {
+      if (
+        res.payload?.status === "failed" ||
+        res.payload?.status === "expired"
+      ) {
         clearInterval(interval);
         setHasError(true);
       }
@@ -178,20 +184,17 @@ const Auth = ({ setOpenAuthMenu }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!code.every((d) => d !== "")) return;
 
-    const isComplete = code.every((digit) => digit !== "");
-    if (!isComplete) return;
-
-    const smsCode = code.join("");
-
-    const result = await dispatch(verifyCode({ auth_req_id, code: smsCode }));
-
+    const result = await dispatch(
+      verifyCode({ auth_req_id, code: code.join("") })
+    );
     if (result.meta.requestStatus === "rejected") {
       setHasError(true);
       return;
     }
 
-    startPolling();
+    startPolling(auth_req_id);
   };
 
   const isCodeComplete = code.every((digit) => digit !== "");
@@ -217,8 +220,8 @@ const Auth = ({ setOpenAuthMenu }) => {
                 <h2>Введите номер телефона</h2>
 
                 <p>
-                  Введите номер мобильного телефона для получения одноразового
-                  кода доступа.
+                  Введите номер мобильного телефона для использования сервиса
+                  ОКСА.
                 </p>
               </div>
 
@@ -240,11 +243,11 @@ const Auth = ({ setOpenAuthMenu }) => {
                       disabled={!isPhoneComplete}
                       onClick={onSendSms}
                     >
-                      Получить код
+                      Войти
                     </button>
 
                     <p>
-                      Нажимая на кнопку «Получить код», Вы даете{" "}
+                      Нажимая на кнопку «Войти», Вы даете{" "}
                       <Link
                         to={`${process.env.REACT_APP_ADMIN_IMAGES}${data.consent_to_the_processing_of_personal_data_by_telecom_operators.url}`}
                         target="_blank"
