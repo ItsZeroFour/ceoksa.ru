@@ -1,7 +1,9 @@
 import { useCallback, useRef } from "react";
 import { useDispatch } from "react-redux";
-import axios from "axios";
-import { checkStatus } from "../redux/slices/auth/mobileAuthSlice";
+import {
+  checkStatus,
+  finalizeAuth,
+} from "../redux/slices/auth/mobileAuthSlice";
 import { fetchMe } from "../redux/slices/auth/authSlice";
 
 export const useAuthPolling = ({ onSuccess, onError }) => {
@@ -17,24 +19,21 @@ export const useAuthPolling = ({ onSuccess, onError }) => {
       intervalRef.current = setInterval(async () => {
         try {
           const res = await dispatch(checkStatus(authReqId));
+          const status = res.payload?.status;
 
-          if (res.payload?.status === "success") {
+          if (status === "success") {
             clearInterval(intervalRef.current);
             intervalRef.current = null;
 
-            await axios.get(
-              `${process.env.REACT_APP_SERVERF_API}/auth/complete?auth_req_id=${authReqId}`,
-              { withCredentials: true },
-            );
-
+            await dispatch(finalizeAuth(authReqId));
             await dispatch(fetchMe());
             onSuccess?.();
           }
 
-          if (res.payload?.status === "failed") {
+          if (status === "failed" || status === "expired") {
             clearInterval(intervalRef.current);
             intervalRef.current = null;
-            onError?.();
+            onError?.(status);
           }
         } catch (error) {
           clearInterval(intervalRef.current);
@@ -43,7 +42,7 @@ export const useAuthPolling = ({ onSuccess, onError }) => {
         }
       }, 2000);
     },
-    [dispatch, onSuccess, onError],
+    [dispatch, onSuccess, onError]
   );
 
   const stopPolling = useCallback(() => {

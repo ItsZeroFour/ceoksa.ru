@@ -65,9 +65,11 @@ const Credit = ({ setOpenAuthMenu }) => {
   };
 
   const handleContinue = () => {
-    if (salary.salaryValue && !salary.salaryError) {
-      setOpenAuthMenu(true);
+    if (!salary.salaryValue || !!salary.salaryError) {
+      salary.handleSalaryBlur();
+      return;
     }
+    setOpenAuthMenu(true);
   };
 
   const isContinueDisabled = !salary.salaryValue || !!salary.salaryError;
@@ -147,7 +149,6 @@ const Credit = ({ setOpenAuthMenu }) => {
               <CreditFormButtons
                 screenWidth={screenWidth}
                 onContinue={handleContinue}
-                isDisabled={isContinueDisabled}
               />
             </form>
 

@@ -1,5 +1,4 @@
 import fs from "fs";
-// import qs from "qs";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 import jwt from "jsonwebtoken";
@@ -25,16 +24,19 @@ const getPublicKeyFromJwks = () => {
     const jwksPath = path.join(__dirname, "../jwks.json");
     const jwks = JSON.parse(fs.readFileSync(jwksPath, "utf8"));
     const key = jwks.keys.find((key) => key.use === "sig");
-
-    if (!key) {
-      throw new Error("No signing key found in JWKS");
-    }
-
+    if (!key) throw new Error("No signing key found in JWKS");
     return jwkToPem(key);
   } catch (err) {
     console.error("Error reading JWKS file:", err.message);
     return null;
   }
+};
+
+const validateBearerToken = (req, expectedToken) => {
+  const authHeader = req.headers["authorization"] || "";
+  const [scheme, token] = authHeader.split(" ");
+  if (scheme?.toLowerCase() !== "bearer" || !token) return false;
+  return token === expectedToken;
 };
 
 export const initiateAuth = async (req, res) => {
@@ -67,13 +69,11 @@ export const initiateAuth = async (req, res) => {
         request: requestJWT,
       },
       {
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       }
     );
 
-    const { auth_req_id, expires_in } = response.data;
+    const { auth_req_id, expires_in, hhe_uri } = response.data;
 
     await AuthTransaction.create({
       auth_req_id,
@@ -88,14 +88,14 @@ export const initiateAuth = async (req, res) => {
       success: true,
       auth_req_id,
       expires_in,
-      message: "Ожидайте SMS с кодом подтверждения",
+      hhe_uri: hhe_uri || null,
+      message: "Ожидайте PUSH-уведомления или SMS с кодом подтверждения",
     });
   } catch (error) {
     console.error(
       "Ошибка инициации аутентификации:",
       error.response?.data || error.message
     );
-
     res.status(error.response?.status || 500).json({
       error: error.response?.data?.error || "server_error",
       message:
@@ -106,12 +106,35 @@ export const initiateAuth = async (req, res) => {
 
 export const handleSmsOtp = async (req, res) => {
   try {
-    const { auth_req_id, smsotp_endpoint, send, correlation_id } = req.body;
+    const { auth_req_id, smsotp_endpoint, send } = req.body;
 
     if (!auth_req_id || !smsotp_endpoint || !send) {
       return res.status(400).json({
         error: "invalid_request",
         message: "Отсутствуют обязательные параметры",
+      });
+    }
+
+    const transaction = await AuthTransaction.findOne({ auth_req_id });
+
+    if (!transaction) {
+      return res.status(404).json({
+        error: "not_found",
+        message: "Транзакция не найдена или истекла",
+      });
+    }
+
+    if (
+      transaction.client_notification_token &&
+      !validateBearerToken(req, transaction.client_notification_token)
+    ) {
+      console.warn(
+        "handleSmsOtp: неверный client_notification_token для",
+        auth_req_id
+      );
+      return res.status(401).json({
+        error: "unauthorized",
+        message: "Неверный Authorization token",
       });
     }
 
@@ -157,7 +180,7 @@ export const verifySmsCode = async (req, res) => {
     if (transaction.status !== "sms_sent") {
       return res.status(400).json({
         error: "invalid_state",
-        message: "SMS код еще не отправлен или уже использован",
+        message: "SMS код ещё не отправлен или уже использован",
       });
     }
 
@@ -177,10 +200,8 @@ export const verifySmsCode = async (req, res) => {
     });
 
     const response = await axios.post(transaction.smsotp_endpoint, payload, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      validateStatus: () => true, // Принимаем любой статус
+      headers: { "Content-Type": "application/json" },
+      validateStatus: () => true,
     });
 
     if (response.status === 200) {
@@ -190,7 +211,6 @@ export const verifySmsCode = async (req, res) => {
       });
     } else {
       console.error("Неверный код:", response.data);
-
       res.status(400).json({
         error: "invalid_code",
         message: response.data?.error_description || "Неверный код",
@@ -202,7 +222,6 @@ export const verifySmsCode = async (req, res) => {
       "Ошибка верификации кода:",
       error.response?.data || error.message
     );
-
     res.status(500).json({
       error: "server_error",
       message: error.response?.data?.error_description || error.message,
@@ -212,16 +231,8 @@ export const verifySmsCode = async (req, res) => {
 
 export const handleNotification = async (req, res) => {
   try {
-    const {
-      auth_req_id,
-      id_token,
-      access_token,
-      token_type,
-      expires_in,
-      correlation_id,
-      error,
-      error_description,
-    } = req.body;
+    const { auth_req_id, id_token, access_token, error, error_description } =
+      req.body;
 
     if (!auth_req_id) {
       return res.status(400).json({
@@ -240,22 +251,30 @@ export const handleNotification = async (req, res) => {
       });
     }
 
+    if (
+      transaction.client_notification_token &&
+      !validateBearerToken(req, transaction.client_notification_token)
+    ) {
+      console.warn(
+        "handleNotification: неверный client_notification_token для",
+        auth_req_id
+      );
+      return res.status(401).json({
+        error: "unauthorized",
+        message: "Неверный Authorization token",
+      });
+    }
+
     if (error) {
       console.warn("Аутентификация не удалась:", {
         auth_req_id,
         error,
         error_description,
       });
-
       await AuthTransaction.findOneAndUpdate(
         { auth_req_id },
-        {
-          status: "failed",
-          error,
-          error_description,
-        }
+        { status: "failed", error, error_description }
       );
-
       return res.status(204).end();
     }
 
@@ -266,14 +285,28 @@ export const handleNotification = async (req, res) => {
       });
     }
 
-    const publicKey = getPublicKeyFromJwks();
-    if (!publicKey) {
-      throw new Error("Не удалось загрузить публичный ключ");
+    let decoded;
+    try {
+      decoded = await verifyIdToken(id_token);
+    } catch (verifyError) {
+      console.error(
+        "handleNotification: ошибка верификации id_token для",
+        auth_req_id,
+        ":",
+        verifyError.message
+      );
+      await AuthTransaction.findOneAndUpdate(
+        { auth_req_id },
+        {
+          status: "failed",
+          error: "token_verification_failed",
+          error_description: verifyError.message,
+        }
+      );
+      return res.status(204).end();
     }
 
-    const decoded = await verifyIdToken(id_token);
-
-    const user = await User.findOneAndUpdate(
+    await User.findOneAndUpdate(
       { phone: transaction.phone },
       {
         $set: {
@@ -287,10 +320,7 @@ export const handleNotification = async (req, res) => {
           total_debt: 0,
         },
       },
-      {
-        upsert: true,
-        new: true,
-      }
+      { upsert: true, new: true }
     );
 
     await AuthTransaction.findOneAndUpdate(
@@ -303,28 +333,13 @@ export const handleNotification = async (req, res) => {
       }
     );
 
-    const appToken = jwt.sign(
-      {
-        userId: user._id,
-        phone: user.phone,
-      },
-      process.env.APP_SECRET,
-      {
-        expiresIn: "7d",
-      }
+    console.log(
+      `handleNotification: успешная аутентификация для ${transaction.phone}, sub=${decoded.sub}`
     );
-
-    res.cookie("app_token", appToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "Lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
 
     res.status(204).end();
   } catch (error) {
     console.error("Ошибка обработки notification:", error);
-
     res.status(500).json({
       error: "server_error",
       message: error.message,
@@ -345,6 +360,18 @@ export const checkAuthStatus = async (req, res) => {
       });
     }
 
+    if (
+      transaction.expires_at &&
+      new Date() > transaction.expires_at &&
+      transaction.status === "pending"
+    ) {
+      await AuthTransaction.findOneAndUpdate(
+        { auth_req_id },
+        { status: "expired" }
+      );
+      return res.json({ status: "expired", phone: transaction.phone });
+    }
+
     const response = {
       status: transaction.status,
       phone: transaction.phone,
@@ -352,7 +379,6 @@ export const checkAuthStatus = async (req, res) => {
 
     if (transaction.status === "success") {
       const user = await User.findOne({ mts_sub: transaction.sub });
-
       if (user) {
         response.user = {
           id: user._id,
@@ -380,11 +406,66 @@ export const checkAuthStatus = async (req, res) => {
   }
 };
 
+export const finalizeAuth = async (req, res) => {
+  try {
+    const { auth_req_id } = req.params;
+
+    const transaction = await AuthTransaction.findOne({
+      auth_req_id,
+      status: "success",
+    });
+
+    if (!transaction) {
+      return res.status(404).json({
+        error: "not_found",
+        message: "Успешная транзакция не найдена",
+      });
+    }
+
+    const user = await User.findOne({ mts_sub: transaction.sub });
+
+    if (!user) {
+      return res.status(404).json({
+        error: "not_found",
+        message: "Пользователь не найден",
+      });
+    }
+
+    const appToken = jwt.sign(
+      { userId: user._id, phone: user.phone },
+      process.env.APP_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.cookie("app_token", appToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.json({
+      success: true,
+      user: {
+        id: user._id,
+        phone: user.phone,
+        fullName: user.fullName,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    console.error("Ошибка финализации аутентификации:", error);
+    res.status(500).json({
+      error: "server_error",
+      message: error.message,
+    });
+  }
+};
+
 export const getJwks = (req, res) => {
   try {
     const jwksPath = path.join(__dirname, "../jwks.json");
     const jwks = fs.readFileSync(jwksPath, "utf8");
-
     res.setHeader("Content-Type", "application/json");
     res.send(jwks);
   } catch (err) {

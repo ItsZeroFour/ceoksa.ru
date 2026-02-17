@@ -14,10 +14,7 @@ const PhoneAuthStep = ({
     <>
       <div className={styles.auth__text}>
         <h2>Введите номер телефона</h2>
-        <p>
-          Введите номер мобильного телефона для получения одноразового кода
-          доступа.
-        </p>
+        <p>Введите номер мобильного телефона для использования сервиса ОКСА.</p>
       </div>
 
       <form>
@@ -38,11 +35,11 @@ const PhoneAuthStep = ({
               disabled={!isPhoneComplete}
               onClick={onSubmit}
             >
-              Получить код
+              Войти
             </button>
 
             <p>
-              Нажимая на кнопку «Получить код», Вы даете{" "}
+              Нажимая на кнопку «Войти», Вы даете{" "}
               <Link
                 to={`${process.env.REACT_APP_ADMIN_IMAGES}${filesData.consent_to_the_processing_of_personal_data_by_telecom_operators.url}`}
                 target="_blank"

@@ -25,7 +25,7 @@ const Credit = () => {
 
   const dispatch = useDispatch();
   const { data: filesData, status: filesStatus } = useSelector(
-    (state) => state.files,
+    (state) => state.files
   );
 
   const creditAmount = useCreditAmount({
@@ -61,17 +61,11 @@ const Credit = () => {
   };
 
   const handleSubmit = () => {
-    if (!isSubmitDisabled) {
-      console.log("Отправка формы", {
-        amount: creditAmount.amountValue,
-        term: selectedTerm,
-        target: selectedTarget,
-        salary: salary.salaryValue,
-      });
+    if (!salary.salaryValue || !!salary.salaryError) {
+      salary.handleSalaryBlur();
+      return;
     }
   };
-
-  const isSubmitDisabled = !salary.salaryValue || !!salary.salaryError;
 
   return (
     <section className={style.credit} id="credit">
@@ -94,7 +88,7 @@ const Credit = () => {
               onDecrement={creditAmount.decrement}
               selectedTerm={selectedTerm}
               onTermSelect={handleTermSelect}
-              termOptions={TERMS} // передаём как проп
+              termOptions={TERMS}
               termRef={termRef}
               openDropdown={openDropdown}
               onToggleDropdown={() => toggleDropdown("term")}
@@ -104,7 +98,7 @@ const Credit = () => {
             <CreditTargetSection
               selectedTarget={selectedTarget}
               onTargetSelect={handleTargetSelect}
-              targetOptions={TARGETS} // передаём как проп
+              targetOptions={TARGETS}
               targetRef={targetRef}
               openDropdown={openDropdown}
               onToggleDropdown={() => toggleDropdown("target")}
@@ -125,7 +119,6 @@ const Credit = () => {
 
         {filesStatus === "succeeded" && (
           <CreditFooter
-            isDisabled={isSubmitDisabled}
             filesData={filesData}
             onSubmit={handleSubmit}
             styles={style}

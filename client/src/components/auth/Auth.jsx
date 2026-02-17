@@ -24,7 +24,7 @@ const Auth = ({ setOpenAuthMenu }) => {
   const dispatch = useDispatch();
 
   const { data: filesData, status: filesStatus } = useSelector(
-    (state) => state.files,
+    (state) => state.files
   );
   const { auth_req_id } = useSelector((state) => state.mobileAuth);
 
@@ -52,9 +52,13 @@ const Auth = ({ setOpenAuthMenu }) => {
   };
 
   const handleResendCode = async () => {
-    if (!resendTimer.isDisabled) {
-      const clearPhone = phoneInput.getCleanPhone();
-      await dispatch(initiateAuth(clearPhone));
+    if (resendTimer.isDisabled) return;
+
+    const clearPhone = phoneInput.getCleanPhone();
+    const result = await dispatch(initiateAuth(clearPhone));
+
+    if (result.meta.requestStatus === "fulfilled") {
+      codeInput.reset();
       resendTimer.start();
     }
   };
