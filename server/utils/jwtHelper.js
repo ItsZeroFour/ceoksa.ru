@@ -35,7 +35,7 @@ export const generateRequestJWT = (params) => {
     notificationUri,
     clientNotificationToken,
     correlationId,
-    acrValues = "2",
+    acrValues = "3 2",
   } = params;
 
   const privateKey = fs.readFileSync(PRIVATE_KEY_PATH, "utf8");
