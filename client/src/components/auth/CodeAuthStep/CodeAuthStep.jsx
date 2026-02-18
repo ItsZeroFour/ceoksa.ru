@@ -37,6 +37,7 @@ const CodeAuthStep = ({
               onKeyDown={(e) => onKeyDown(index, e)}
               onPaste={onPaste}
               ref={(el) => (inputRefs.current[index] = el)}
+              autoComplete={index === 0 ? "one-time-code" : "off"}
               className={`${styles.auth__code_input} ${
                 hasError ? styles.error : ""
               }`}

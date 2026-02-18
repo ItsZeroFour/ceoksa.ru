@@ -9,10 +9,11 @@ import { ReactComponent as Profile } from "../../assets/icons/left_panel/profile
 import { ReactComponent as Business } from "../../assets/icons/left_panel/business.svg";
 import { ReactComponent as Angle } from "../../assets/icons/left_panel/angle.svg";
 import { ReactComponent as SignOut } from "../../assets/icons/left_panel/signout.svg";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.svg";
 import logoDark from "../../assets/logo-dark.svg";
 import { useTheme } from "../../hooks/useTheme";
+import axios from "../../utils/axios";
 
 const personalItems = [
   { icon: <List />, text: "Заявка на кредит", path: "/loan_applications" },
@@ -25,6 +26,7 @@ const businessItems = [];
 
 const MobileLeftPanel = ({ setOpenMenu, openMenu }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isPersonalOpen, setIsPersonalOpen] = useState(true);
   const [isBusinessOpen, setIsBusinessOpen] = useState(false);
 
@@ -206,7 +208,12 @@ const MobileLeftPanel = ({ setOpenMenu, openMenu }) => {
 
                 <button
                   className={style.mobile_left_panel__signout}
-                  onClick={() => setOpenMenu(false)}
+                  onClick={async () => {
+                    await axios.post("/logout", {}, { withCredentials: true });
+                    setOpenMenu(false);
+                    navigate("/");
+                    window.location.reload();
+                  }}
                 >
                   <SignOut />
                   Выйти

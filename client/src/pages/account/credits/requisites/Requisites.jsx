@@ -6,7 +6,7 @@ import {
   updateUser,
   clearError,
 } from "../../../../redux/slices/user/updateUserSlice";
-import axios from 'axios'
+import axios from "axios";
 
 const Requisites = ({ setShowRequisites, showRequisites }) => {
   const dispatch = useDispatch();
@@ -26,7 +26,6 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
     bank_KPP: "",
     have_an_account: false,
   });
-
 
   useEffect(() => {
     if (user.status === "succeeded" && user.user.data?.requisites) {
@@ -58,14 +57,54 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
     });
   };
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+  const fetchBankByBic = async (bic) => {
+    setIsValidatingBic(true);
+    setBicError("");
 
-    if (e.target.name === "BIC") {
+    const bankData = await validateBIC(bic);
+
+    if (bankData) {
+      setFormData((prev) => ({
+        ...prev,
+        bank_name: bankData.name || "",
+        corporate_account: bankData.correspondent_account || "",
+        bank_INN: bankData.inn || "",
+        bank_KPP: bankData.kpp || "",
+      }));
+    } else {
+      setBicError("Банк не найден. Проверьте БИК.");
+      setFormData((prev) => ({
+        ...prev,
+        bank_name: "",
+        corporate_account: "",
+        bank_INN: "",
+        bank_KPP: "",
+      }));
+    }
+
+    setIsValidatingBic(false);
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "BIC") {
       setBicError("");
+
+      if (/^\d{9}$/.test(value)) {
+        fetchBankByBic(value);
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          BIC: value,
+          bank_name: "",
+          corporate_account: "",
+          bank_INN: "",
+          bank_KPP: "",
+        }));
+      }
     }
   };
 
@@ -78,37 +117,27 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
-  
+
       const data = response.data;
-      
+
       if (data.success && data.bank) {
         return data.bank;
       }
     } catch (error) {
       if (error.response) {
-        console.error('Ошибка:', error.response.data.message);
+        console.error("Ошибка:", error.response.data.message);
       } else if (error.request) {
-        console.error('Нет ответа от сервера');
+        console.error("Нет ответа от сервера");
       }
     }
   };
 
   const handleBicBlur = async () => {
-    if (!formData.BIC) return;
-
-    const bankData = await validateBIC(formData.BIC);
-    
-    if (bankData) {
-      setFormData({
-        ...formData,
-        bank_name: bankData.name || formData.bank_name,
-        corporate_account: bankData.correspondent_account || formData.corporate_account,
-        bank_INN: bankData.inn || formData.bank_INN,
-        bank_KPP: bankData.kpp || formData.bank_KPP,
-      });
-    }
+    if (!formData.BIC || !/^\d{9}$/.test(formData.BIC)) return;
+    if (formData.bank_name) return;
+    await fetchBankByBic(formData.BIC);
   };
 
   const handleSave = async () => {
@@ -118,7 +147,7 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
     }
 
     const bankData = await validateBIC(formData.BIC);
-    
+
     if (!bankData) {
       alert("Невозможно сохранить реквизиты: банк не найден. Проверьте БИК.");
       return;
@@ -129,7 +158,7 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
       await dispatch(
         updateUser({
           requisites: formData,
-        })
+        }),
       ).unwrap();
 
       setShowRequisites(false);
@@ -182,7 +211,7 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
               id="recipient"
               name="recipient"
               placeholder="Имя Фамилия Отчество (при наличии)"
-              value={formData.recipient}
+              value={user.user.data.fullName || formData.recipient}
               onChange={handleChange}
             />
           </div>
@@ -206,9 +235,7 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
               </span>
             )}
             {bicError && (
-              <span style={{ color: "red", fontSize: "12px" }}>
-                {bicError}
-              </span>
+              <span style={{ color: "red", fontSize: "12px" }}>{bicError}</span>
             )}
           </div>
 
@@ -221,7 +248,7 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
               placeholder="Наименование Банка"
               value={formData.bank_name}
               onChange={handleChange}
-              readOnly={isValidatingBic}
+              disabled
             />
           </div>
 
@@ -234,7 +261,7 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
               placeholder="Корреспондентский счёт"
               value={formData.corporate_account}
               onChange={handleChange}
-              readOnly={isValidatingBic}
+              disabled
             />
           </div>
 
@@ -247,7 +274,7 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
               placeholder="ИНН Банка"
               value={formData.bank_INN}
               onChange={handleChange}
-              readOnly={isValidatingBic}
+              disabled
             />
           </div>
 
@@ -260,13 +287,13 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
               placeholder="КПП Банка"
               value={formData.bank_KPP}
               onChange={handleChange}
-              readOnly={isValidatingBic}
+              disabled
             />
           </div>
 
-          <button 
-            type="button" 
-            onClick={handleSave} 
+          <button
+            type="button"
+            onClick={handleSave}
             disabled={loading || isValidatingBic || !!bicError}
           >
             {loading ? "Сохранение..." : "Сохранить"}

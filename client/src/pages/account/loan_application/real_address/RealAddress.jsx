@@ -103,7 +103,7 @@ const RealAddress = () => {
               )}
             </div>
 
-            <div
+            {/* <div
               className={
                 hasError("apartment")
                   ? `${style.real_address__form__item} ${style.error}`
@@ -127,7 +127,7 @@ const RealAddress = () => {
               {hasError("apartment") && (
                 <span className={style.error_text}>{errors.apartment}</span>
               )}
-            </div>
+            </div> */}
           </form>
         </div>
       </div>
