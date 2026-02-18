@@ -1,10 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const CreditFooter = ({ isDisabled, filesData, onSubmit, styles }) => {
+const CreditFooter = ({ filesData, onSubmit, styles }) => {
   return (
     <div className={styles.credit__bottom}>
-      <button disabled={isDisabled} onClick={onSubmit} type="button">
+      <button onClick={onSubmit} type="button">
         Направить в банки
       </button>
       <p>
