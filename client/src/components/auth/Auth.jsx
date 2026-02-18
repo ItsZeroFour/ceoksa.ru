@@ -45,22 +45,7 @@ const Auth = ({ setOpenAuthMenu }) => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (flow === "push" && auth_req_id) {
-      authPolling.startPolling(auth_req_id);
-    }
-  }, [flow, auth_req_id]);
-
-  useEffect(() => {
-    if (hhe_uri) {
-      window.location.href = hhe_uri;
-    }
-  }, [hhe_uri]);
-
-  useEffect(() => {
-    if (flow === "push") {
-      setCurrentStep("push_wait");
-    }
-    if (flow === "sms") {
+    if (flow === "sms" && currentStep === "push_wait") {
       setCurrentStep("code");
     }
   }, [flow]);
@@ -71,6 +56,16 @@ const Auth = ({ setOpenAuthMenu }) => {
 
     if (result.meta.requestStatus === "fulfilled") {
       resendTimer.start();
+
+      const { hhe_uri, auth_req_id } = result.payload;
+
+      if (hhe_uri) {
+        window.location.href = hhe_uri;
+        return;
+      }
+
+      setCurrentStep("push_wait");
+      authPolling.startPolling(auth_req_id);
     }
   };
 
