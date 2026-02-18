@@ -426,8 +426,12 @@ export const finalizeAuth = async (req, res) => {
 
     res.cookie("app_token", appToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Lax",
+      secure: true,
+      sameSite: "None",
+      path: "/",
+      domain: "ceoksa.ru", 
+      // secure: process.env.NODE_ENV === "production",
+      // sameSite: "Lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
