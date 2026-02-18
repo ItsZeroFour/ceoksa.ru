@@ -26,8 +26,16 @@ export const useAuthPolling = ({ onSuccess, onError }) => {
             intervalRef.current = null;
 
             await dispatch(finalizeAuth(authReqId));
-            await dispatch(fetchMe());
-            onSuccess?.();
+
+            await new Promise((resolve) => setTimeout(resolve, 300));
+
+            const me = await dispatch(fetchMe());
+
+            if (me.meta.requestStatus === "fulfilled") {
+              onSuccess?.();
+            } else {
+              throw new Error("fetchMe failed after finalize");
+            }
           }
 
           if (status === "failed" || status === "expired") {
