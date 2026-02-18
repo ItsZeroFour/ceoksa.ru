@@ -38,10 +38,14 @@ app.use(
   cors({
     origin: ["https://ceoksa.ru", "http://localhost:3000"],
     credentials: true,
-  }),
+  })
 );
 app.use(helmet());
-app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
+app.use(
+  helmet.crossOriginResourcePolicy({
+    policy: "same-site",
+  })
+);
 app.use(morgan("common"));
 app.use(bodyParser.json({ limit: "20mb" }));
 // app.use(bodyParser.json({ type: "application/jose" }));
@@ -51,7 +55,7 @@ app.use(
     limit: "20mb",
     extended: true,
     parameterLimit: 1000000,
-  }),
+  })
 );
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // app.use(
@@ -103,9 +107,10 @@ app.use("/validate", ValidateBICRoutes);
 app.post("/logout", (req, res) => {
   res.clearCookie("app_token", {
     httpOnly: true,
-    // secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    secure: true,
+    sameSite: "None",
     path: "/",
+    domain: "ceoksa.ru",
   });
 
   res.json({ success: true, message: "Вышли из системы" });
