@@ -88,19 +88,24 @@ const mobileAuthSlice = createSlice({
       .addCase(initiateAuth.fulfilled, (state, action) => {
         state.auth_req_id = action.payload.auth_req_id;
         state.hhe_uri = action.payload.hhe_uri || null;
-        state.flow = action.payload.hhe_uri ? "push" : "sms";
         state.status = "pending";
+        state.flow = action.payload.hhe_uri ? "seamless" : "push";
+
+        console.log(action.payload.hhe_uri);
+      })
+      .addCase(checkStatus.fulfilled, (state, action) => {
+        const newStatus = action.payload.status;
+        if (newStatus === "sms_sent") {
+          state.flow = "sms";
+        }
+        state.status = newStatus;
+        if (newStatus === "success") {
+          state.user = action.payload.user || null;
+        }
       })
 
       .addCase(verifyCode.fulfilled, (state) => {
         state.status = "verifying";
-      })
-
-      .addCase(checkStatus.fulfilled, (state, action) => {
-        state.status = action.payload.status;
-        if (action.payload.status === "success") {
-          state.user = action.payload.user || null;
-        }
       })
 
       .addCase(finalizeAuth.fulfilled, (state, action) => {
