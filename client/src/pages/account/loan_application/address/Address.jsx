@@ -119,7 +119,7 @@ const Address = ({ setIsChecked, isChecked }) => {
               />
             </div>
 
-            <div className={style.address__item__text}>
+            {/* <div className={style.address__item__text}>
               <InputField
                 label="Квартира"
                 placeholder="Номер квартиры"
@@ -130,7 +130,7 @@ const Address = ({ setIsChecked, isChecked }) => {
                 icon={Location}
                 ref={apartmentRef}
               />
-            </div>
+            </div> */}
 
             <div className={style.address__item__text}>
               <InputField

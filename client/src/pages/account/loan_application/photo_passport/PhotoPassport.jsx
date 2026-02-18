@@ -96,12 +96,12 @@ const PhotoPassport = () => {
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      alert("Пожалуйста, загрузите изображение");
+      // alert("Пожалуйста, загрузите изображение");
       return;
     }
 
     if (file.size > 10 * 1024 * 1024) {
-      alert("Размер файла не должен превышать 10MB");
+      // alert("Размер файла не должен превышать 10MB");
       return;
     }
 
@@ -119,7 +119,7 @@ const PhotoPassport = () => {
       console.log(`Файл для "${key}" успешно загружен`);
     } catch (error) {
       console.error("Ошибка загрузки фото:", error);
-      alert("Ошибка при загрузке фотографии");
+      // alert("Ошибка при загрузке фотографии");
       setCurrentUploadKey(null);
       setIsUploadingHere(false);
     }

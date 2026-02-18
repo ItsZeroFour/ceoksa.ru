@@ -2,6 +2,10 @@ import React from "react";
 import gosuslugi from "../../../assets/gosuslugi.png";
 
 const CreditFormButtons = ({ screenWidth, onContinue }) => {
+  const handleMouseDown = (e) => {
+    e.preventDefault();
+  };
+
   const GosuslugiButton = () => (
     <button className="credit__main__form__auth" disabled type="button">
       <img src={gosuslugi} alt="Госуслуги" />
@@ -13,6 +17,7 @@ const CreditFormButtons = ({ screenWidth, onContinue }) => {
     <button
       type="button"
       className="credit__buttons__continue"
+      onMouseDown={handleMouseDown}
       onClick={onContinue}
     >
       Продолжить

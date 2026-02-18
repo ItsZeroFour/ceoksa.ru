@@ -17,7 +17,7 @@ import { getJwks } from "./controllers/MobileControllers.js";
 import cookieParser from "cookie-parser";
 import AuthRoutes from "./routes/authRoutes.js";
 import UserRoutes from "./routes/userRoutes.js";
-import ValidateBICRoutes from './routes/validateBICRoutes.js'
+import ValidateBICRoutes from "./routes/validateBICRoutes.js";
 
 /* ROUTES */
 const app = express();
@@ -37,7 +37,7 @@ app.use(
   cors({
     origin: ["https://ceoksa.ru", "http://localhost:3000"],
     credentials: true,
-  })
+  }),
 );
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
@@ -48,7 +48,7 @@ app.use(
     limit: "20mb",
     extended: true,
     parameterLimit: 1000000,
-  })
+  }),
 );
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(
@@ -96,6 +96,17 @@ app.get("/.well-known/jwks.json", getJwks);
 app.use("/auth", AuthRoutes);
 app.use("/user", UserRoutes);
 app.use("/validate", ValidateBICRoutes);
+
+app.post("/logout", (req, res) => {
+  res.clearCookie("app_token", {
+    httpOnly: true,
+    // secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    path: "/",
+  });
+
+  res.json({ success: true, message: "Вышли из системы" });
+});
 
 /* START FUNCTION */
 async function start() {

@@ -99,12 +99,12 @@ const Top = () => {
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      alert("Пожалуйста, загрузите изображение");
+      // alert("Пожалуйста, загрузите изображение");
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      alert("Размер файла не должен превышать 5MB");
+      // alert("Размер файла не должен превышать 5MB");
       return;
     }
 
@@ -121,7 +121,7 @@ const Top = () => {
       await dispatch(uploadPhoto(file)).unwrap();
     } catch (error) {
       console.error("Ошибка загрузки фото:", error);
-      alert("Ошибка при загрузке фотографии");
+      // alert("Ошибка при загрузке фотографии");
       setIsUploadingHere(false);
     }
   };
