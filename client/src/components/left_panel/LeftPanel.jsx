@@ -29,8 +29,6 @@ const LeftPanel = () => {
 
   const isActive = (path) => location.pathname === `/account${path}`;
 
-  console.log(location.pathname);
-
   return (
     <section className={style.left_panel}>
       <div className={style.left__panel__wrapper}>
