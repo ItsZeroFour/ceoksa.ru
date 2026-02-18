@@ -19,6 +19,11 @@ export const authComplete = async (req, res) => {
       { expiresIn: "7d" }
     );
 
+    console.log(
+      "authComplete ================================================",
+      auth_req_id
+    );
+
     res.cookie("app_token", appToken, {
       httpOnly: true,
       secure: false,
@@ -38,6 +43,11 @@ export const authComplete = async (req, res) => {
 export const authMe = async (req, res) => {
   try {
     const user = await User.findById(req.userId);
+
+    console.log(
+      "AUTH ME ================================================",
+      user
+    );
 
     if (!user) {
       return res.status(404).json({
