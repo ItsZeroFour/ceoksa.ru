@@ -31,7 +31,6 @@ const MONGO_URI = process.env.MONGO_URI;
 
 /* MIDDLEWARES */
 app.use(express.urlencoded({ extended: true }));
-// app.use(cookieSession({ name: "sess", keys: [CONFIG.SESSION_KEY] }));
 app.use(cookieParser());
 app.use(express.json({ limit: "50mb" }));
 app.use(
@@ -44,8 +43,6 @@ app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(morgan("common"));
 app.use(bodyParser.json({ limit: "20mb" }));
-// app.use(bodyParser.json({ type: "application/jose" }));
-// app.use(bodyParser.text({ type: "application/jose" }));
 app.use(
   bodyParser.urlencoded({
     limit: "20mb",
@@ -54,12 +51,12 @@ app.use(
   })
 );
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-// app.use(
-//   cors({
-//     origin: "https://ceoksa.ru",
-//     credentials: true,
-//   })
-// );
+app.use(
+  cors({
+     origin: "https://ceoksa.ru",
+     credentials: true,
+   })
+ );
 
 /**
  * @description Загрузка изображений в папку uploads
