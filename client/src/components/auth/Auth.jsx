@@ -48,7 +48,7 @@ const Auth = ({ setOpenAuthMenu }) => {
     if (flow === "push" && auth_req_id) {
       authPolling.startPolling(auth_req_id);
     }
-  }, [flow, auth_req_id, authPolling]);
+  }, [flow, auth_req_id]);
 
   useEffect(() => {
     if (hhe_uri) {
@@ -56,12 +56,20 @@ const Auth = ({ setOpenAuthMenu }) => {
     }
   }, [hhe_uri]);
 
+  useEffect(() => {
+    if (flow === "push") {
+      setCurrentStep("push_wait");
+    }
+    if (flow === "sms") {
+      setCurrentStep("code");
+    }
+  }, [flow]);
+
   const handleSendSms = async () => {
     const clearPhone = phoneInput.getCleanPhone();
     const result = await dispatch(initiateAuth(clearPhone));
 
     if (result.meta.requestStatus === "fulfilled") {
-      setCurrentStep("code");
       resendTimer.start();
     }
   };
@@ -118,7 +126,7 @@ const Auth = ({ setOpenAuthMenu }) => {
 
           <p>Авторизация</p>
 
-          {currentStep === "phone" ? (
+          {currentStep === "phone" && (
             <PhoneAuthStep
               phoneInputRef={phoneInput.phoneInputRef}
               isPhoneComplete={phoneInput.isComplete}
@@ -127,7 +135,30 @@ const Auth = ({ setOpenAuthMenu }) => {
               filesStatus={filesStatus}
               styles={style}
             />
-          ) : (
+          )}
+
+          {currentStep === "push_wait" && (
+            <div className={style.auth__push_wait}>
+              <div className={style.auth__text}>
+                <h2>Подтвердите вход</h2>
+                <p>
+                  На номер {phoneInput.phone} отправлено PUSH-уведомление.
+                  <br />
+                  Нажмите «Принять» в уведомлении на телефоне.
+                </p>
+              </div>
+
+              <button
+                className={style.auth__code__back}
+                type="button"
+                onClick={handleBackToPhone}
+              >
+                Вернуться ко входу
+              </button>
+            </div>
+          )}
+
+          {currentStep === "code" && (
             <CodeAuthStep
               phone={phoneInput.phone}
               code={codeInput.code}
