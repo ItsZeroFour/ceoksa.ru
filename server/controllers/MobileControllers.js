@@ -19,19 +19,6 @@ const MTS_ENDPOINT = process.env.MTS_ENDPOINT;
 const CLIENT_ID = process.env.CLIENT_ID;
 const BASE_URL = process.env.BASE_URL || "https://ceoksa.ru/api";
 
-const getPublicKeyFromJwks = () => {
-  try {
-    const jwksPath = path.join(__dirname, "../jwks.json");
-    const jwks = JSON.parse(fs.readFileSync(jwksPath, "utf8"));
-    const key = jwks.keys.find((key) => key.use === "sig");
-    if (!key) throw new Error("No signing key found in JWKS");
-    return jwkToPem(key);
-  } catch (err) {
-    console.error("Error reading JWKS file:", err.message);
-    return null;
-  }
-};
-
 const validateBearerToken = (req, expectedToken) => {
   const authHeader = req.headers["authorization"] || "";
   const [scheme, token] = authHeader.split(" ");
