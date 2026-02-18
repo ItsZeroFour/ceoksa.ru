@@ -98,6 +98,8 @@ export const verifyIdToken = async (idToken) => {
   const publicKeyPem = await getMtsPublicKey();
   return jwt.verify(idToken, publicKeyPem, {
     algorithms: ["RS256"],
+    issuer: MTS_AUDIENCE,
+    audience: CLIENT_ID,     
   });
 };
 
