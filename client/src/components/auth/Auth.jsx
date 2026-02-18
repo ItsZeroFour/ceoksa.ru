@@ -26,7 +26,10 @@ const Auth = ({ setOpenAuthMenu }) => {
   const { data: filesData, status: filesStatus } = useSelector(
     (state) => state.files
   );
-  const { auth_req_id } = useSelector((state) => state.mobileAuth);
+
+  const { auth_req_id, hhe_uri, flow } = useSelector(
+    (state) => state.mobileAuth
+  );
 
   const phoneInput = usePhoneInput();
   const codeInput = useCodeInput(4);
@@ -40,6 +43,18 @@ const Auth = ({ setOpenAuthMenu }) => {
   useEffect(() => {
     dispatch(fetchFiles("fajly?populate=*"));
   }, [dispatch]);
+
+  useEffect(() => {
+    if (flow === "push" && auth_req_id) {
+      authPolling.startPolling(auth_req_id);
+    }
+  }, [flow, auth_req_id, authPolling]);
+
+  useEffect(() => {
+    if (hhe_uri) {
+      window.location.href = hhe_uri;
+    }
+  }, [hhe_uri]);
 
   const handleSendSms = async () => {
     const clearPhone = phoneInput.getCleanPhone();
