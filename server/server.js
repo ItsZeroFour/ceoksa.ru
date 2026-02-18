@@ -107,10 +107,8 @@ app.use("/validate", ValidateBICRoutes);
 app.post("/logout", (req, res) => {
   res.clearCookie("app_token", {
     httpOnly: true,
-    secure: true,
-    sameSite: "None",
+    sameSite: "strict",
     path: "/",
-    domain: "ceoksa.ru",
   });
 
   res.json({ success: true, message: "Вышли из системы" });
