@@ -35,7 +35,8 @@ export const checkStatus = createAsyncThunk(
   async (auth_req_id, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `${API}/mobile/auth/status/${auth_req_id}`
+        `${API}/mobile/auth/status/${auth_req_id}`,
+        { withCredentials: true }
       );
       return response.data;
     } catch (err) {
