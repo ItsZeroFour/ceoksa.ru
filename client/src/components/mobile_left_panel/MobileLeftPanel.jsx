@@ -19,7 +19,7 @@ const personalItems = [
   { icon: <List />, text: "Заявка на кредит", path: "/loan_applications" },
   { icon: <Money />, text: "Кредиты", path: "/credits" },
   { icon: <Rate />, text: "Кредитный рейтинг", path: "#" },
-  { icon: <Profile />, text: "Профиль", path: "#" },
+  { icon: <Profile />, text: "Профиль", path: "/profile" },
 ];
 
 const businessItems = [];

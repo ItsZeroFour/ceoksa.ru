@@ -19,11 +19,6 @@ export const authComplete = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    console.log(
-      "authComplete ================================================",
-      auth_req_id
-    );
-
     res.cookie("app_token", appToken, {
       httpOnly: true,
       secure: false,
@@ -31,7 +26,7 @@ export const authComplete = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.redirect("https://ceoksa.ru");
+    res.redirect("https://ceoksa.ru/account/loan_applications");
   } catch (err) {
     console.log(err);
     res.status(500).json({
@@ -43,11 +38,6 @@ export const authComplete = async (req, res) => {
 export const authMe = async (req, res) => {
   try {
     const user = await User.findById(req.userId);
-
-    console.log(
-      "AUTH ME ================================================",
-      user
-    );
 
     if (!user) {
       return res.status(404).json({

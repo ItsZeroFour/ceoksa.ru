@@ -7,7 +7,7 @@ import { ReactComponent as SNILS } from "../../../../assets/icons/profile/snils.
 import { ReactComponent as INN } from "../../../../assets/icons/profile/inn.svg";
 import gosuslugi from "../../../../assets/gosuslugi.png";
 
-const Documents = () => {
+const Documents = (user) => {
   return (
     <div className={style.documents}>
       <div className={style.documents__wrapper}>
@@ -22,11 +22,11 @@ const Documents = () => {
 
               <div className={style.documents__item__text}>
                 <p>Паспорт</p>
-                <p>1234 567890</p>
+                <p>{user?.user?.passport?.series_number}</p>
               </div>
             </div>
 
-            <img src={gosuslugi} alt="Госуслуги" />
+            {/* <img src={gosuslugi} alt="Госуслуги" /> */}
           </li>
 
           <li>
@@ -37,7 +37,7 @@ const Documents = () => {
 
               <div className={style.documents__item__text}>
                 <p>Водительское уд-ние</p>
-                <p>1234 567890</p>
+                <p>0000 000000</p>
               </div>
             </div>
 
@@ -52,7 +52,7 @@ const Documents = () => {
 
               <div className={style.documents__item__text}>
                 <p>Заграничный паспорт</p>
-                <p>75 4000000</p>
+                <p>0 0000000</p>
               </div>
             </div>
 
@@ -67,7 +67,7 @@ const Documents = () => {
 
               <div className={style.documents__item__text}>
                 <p>СНИЛС</p>
-                <p>169-123-123 11</p>
+                <p>000-000-000 00</p>
               </div>
             </div>
 
@@ -82,7 +82,7 @@ const Documents = () => {
 
               <div className={style.documents__item__text}>
                 <p>ИНН</p>
-                <p>40 00 12432973</p>
+                <p>00 00 00000000</p>
               </div>
             </div>
 

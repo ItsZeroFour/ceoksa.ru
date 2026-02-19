@@ -117,7 +117,7 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
           headers: {
             "Content-Type": "application/json",
           },
-        },
+        }
       );
 
       const data = response.data;
@@ -158,7 +158,7 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
       await dispatch(
         updateUser({
           requisites: formData,
-        }),
+        })
       ).unwrap();
 
       setShowRequisites(false);
@@ -201,6 +201,7 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
               placeholder="Укажите ваш номер счета"
               value={formData.account_number}
               onChange={handleChange}
+              disabled={isChecked}
             />
           </div>
 
@@ -213,6 +214,7 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
               placeholder="Имя Фамилия Отчество (при наличии)"
               value={user.user.data.fullName || formData.recipient}
               onChange={handleChange}
+              disabled={isChecked}
             />
           </div>
 
@@ -228,6 +230,7 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
               onBlur={handleBicBlur}
               maxLength={9}
               style={bicError ? { borderColor: "red" } : {}}
+              disabled={isChecked}
             />
             {isValidatingBic && (
               <span style={{ color: "#666", fontSize: "12px" }}>

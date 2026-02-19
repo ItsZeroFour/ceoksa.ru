@@ -5,7 +5,7 @@ import { ReactComponent as Location } from "../../../../assets/icons/profile/loc
 import { ReactComponent as Edit } from "../../../../assets/icons/account/edit.svg";
 import { useScreenWidth } from "../../../../hooks/useScreenWidth";
 
-const Addresses = () => {
+const Addresses = ({ user }) => {
   const screenWidth = useScreenWidth();
 
   const addressPlaceholder =
@@ -27,7 +27,7 @@ const Addresses = () => {
 
               <div className={style.addresses__item__text}>
                 <p>Адрес регистрации</p>
-                <p>г. Москва, ул. Академика Пилюгина, д. 14, кв. 72</p>
+                <p>{user?.address?.street}</p>
               </div>
             </div>
 
@@ -46,8 +46,10 @@ const Addresses = () => {
                   type="text"
                   id="address"
                   placeholder={addressPlaceholder}
+                  readOnly={true}
+                  value={user?.real_address?.street}
                 />
-                <Edit />
+                {/* <Edit /> */}
               </div>
             </div>
 

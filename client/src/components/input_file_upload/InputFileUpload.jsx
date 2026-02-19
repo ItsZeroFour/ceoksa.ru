@@ -14,7 +14,13 @@ import { ReactComponent as Photo } from "../../assets/icons/account/photo.svg";
 import useDisableScroll from "../../hooks/useDisableScroll";
 // import { useScreenWidth } from "../../hooks/useScreenWidth";
 
-const InputFileUpload = ({ fileType, onFileSelect, id, fileName }) => {
+const InputFileUpload = ({
+  fileType,
+  onFileSelect,
+  id,
+  fileName,
+  disabled,
+}) => {
   // const webcamRef = useRef(null);
   // const [isModalOpen, setIsModalOpen] = useState(false);
   // const [facingMode, setFacingMode] = useState("environment");
@@ -28,27 +34,27 @@ const InputFileUpload = ({ fileType, onFileSelect, id, fileName }) => {
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-  
+
     if (file.size > 10 * 1024 * 1024) {
       alert("Фото слишком большое. Максимум — 10 МБ.");
       if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
-  
+
     if (!file.type.match(/^image\/(jpeg|png|jpg)$/)) {
       alert("Разрешены только JPG и PNG.");
       if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
-  
+
     const randomString = Math.random().toString(36).substring(2, 12);
     const extension = file.type === "image/jpeg" ? "jpg" : "png";
     const newFileName = `photo-${randomString}.${extension}`;
-  
+
     const renamedFile = new File([file], newFileName, { type: file.type });
-  
+
     onFileSelect?.(renamedFile);
-  
+
     setCurrentFileName(newFileName);
   };
 
@@ -191,6 +197,7 @@ const InputFileUpload = ({ fileType, onFileSelect, id, fileName }) => {
         accept="image/*"
         capture="environment"
         onChange={handleFileChange}
+        disabled={disabled || false}
       />
 
       <div className={style.input_file_upload}>

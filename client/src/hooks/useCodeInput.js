@@ -7,6 +7,25 @@ export const useCodeInput = (length = 4) => {
 
   const handleChange = useCallback(
     (index, value) => {
+      if (value.length > 1) {
+        const digits = value.replace(/\D/g, "").split("").slice(0, length);
+        if (!digits.length) return;
+
+        setCode((prev) => {
+          const newCode = [...prev];
+          digits.forEach((d, i) => {
+            if (index + i < length) newCode[index + i] = d;
+          });
+          return newCode;
+        });
+
+        setHasError(false);
+
+        const focusIndex = Math.min(index + digits.length - 1, length - 1);
+        inputRefs.current[focusIndex]?.focus();
+        return;
+      }
+
       if (!/^\d?$/.test(value)) return;
 
       setCode((prev) => {
@@ -21,7 +40,7 @@ export const useCodeInput = (length = 4) => {
         inputRefs.current[index + 1]?.focus();
       }
     },
-    [length],
+    [length]
   );
 
   const handleKeyDown = useCallback(
@@ -30,7 +49,7 @@ export const useCodeInput = (length = 4) => {
         inputRefs.current[index - 1]?.focus();
       }
     },
-    [code],
+    [code]
   );
 
   const handlePaste = useCallback(
@@ -53,7 +72,7 @@ export const useCodeInput = (length = 4) => {
         inputRefs.current[focusIndex]?.focus();
       }
     },
-    [length],
+    [length]
   );
 
   const isComplete = code.every((digit) => digit !== "");

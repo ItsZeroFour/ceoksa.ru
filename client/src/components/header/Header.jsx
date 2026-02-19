@@ -20,8 +20,6 @@ const Header = ({
 
   const { theme } = useTheme();
 
-  console.log(userData, userStatus);
-
   const getInitials = () => {
     if (!userData.fullName) return "ФИ";
     const names = userData.fullName.trim().split(" ");
@@ -62,24 +60,22 @@ const Header = ({
                 className={style.header__profile}
               >
                 <div className={style.header__profile__name__avatar}>
-                  {userData.profilePhoto ? (
-                    <img
-                      src={`${process.env.REACT_APP_SERVERF_API}${userData.profilePhoto}`}
-                      alt="Фото профиля"
-                    />
-                  ) : (
-                    <p>{getInitials()}</p>
-                  )}
+                  <p>{getInitials()}</p>
                 </div>
 
                 <div className={style.header__profile__name}>
-                  <p>Профиль</p>
                   <h3>
                     {userData?.fullName
-                      ? userData.fullName.length > 20
-                        ? `${userData.fullName.slice(0, 20)}...`
-                        : userData.fullName
-                      : "Фамилия Имя Отчество"}
+                      ? (() => {
+                          const firstName =
+                            userData.fullName.split(" ")[1] ||
+                            userData.fullName;
+
+                          return firstName.length > 20
+                            ? `${firstName.slice(0, 20)}...`
+                            : firstName;
+                        })()
+                      : "Имя"}
                   </h3>
                 </div>
               </Link>

@@ -230,6 +230,16 @@
     left: 95%;
   }
 
+  p {
+    font-size: 16px;
+    font-weight: 500;
+    margin-top: 5px;
+
+    @media (max-width: 480px) {
+      font-size: 14px;
+    }
+  }
+
   input {
     margin-top: 5px;
     padding: 3px 0;

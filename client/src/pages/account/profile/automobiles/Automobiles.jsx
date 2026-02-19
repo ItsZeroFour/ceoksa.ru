@@ -18,7 +18,7 @@ const Automobiles = () => {
 
               <div className={style.automobiles__item__text}>
                 <p>Наименование машины</p>
-                <p>А 234 МП 77</p>
+                <p>A 000 AA 00</p>
               </div>
             </div>
 
@@ -33,7 +33,7 @@ const Automobiles = () => {
 
               <div className={style.automobiles__item__text}>
                 <p>Наименование машины</p>
-                <p>А 234 МП 77</p>
+                <p>A 000 AA 00</p>
               </div>
             </div>
 
