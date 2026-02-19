@@ -8,7 +8,7 @@ import Addresses from "./addresses/Addresses";
 import Rekvisits from "./rekvisits/Rekvisits";
 import Accept from "./accept/Accept";
 
-const Profile = ({ setOpenMenu, openMenu }) => {
+const Profile = ({ setOpenMenu, openMenu, user }) => {
   return (
     <div className="profile">
       <div className="container">
@@ -17,11 +17,11 @@ const Profile = ({ setOpenMenu, openMenu }) => {
           <MobileLeftPanel setOpenMenu={setOpenMenu} openMenu={openMenu} />
 
           <div className="profile__main">
-            <Top />
-            <Documents />
+            <Top user={user} />
+            <Documents user={user} />
             <Automobiles />
-            <Addresses />
-            <Rekvisits />
+            <Addresses user={user} />
+            <Rekvisits user={user} />
             <Accept />
           </div>
         </div>

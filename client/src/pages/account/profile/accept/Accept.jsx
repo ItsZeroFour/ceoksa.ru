@@ -71,8 +71,6 @@ const Accept = () => {
     dispatch(fetchFiles("fajly?populate=*"));
   }, [dispatch]);
 
-  console.log(data);
-
   return (
     <div className={style.accept}>
       {status === "succeeded" && !error && (

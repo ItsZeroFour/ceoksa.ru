@@ -20,8 +20,6 @@ const Header = ({
 
   const { theme } = useTheme();
 
-  console.log(userData, userStatus);
-
   const getInitials = () => {
     if (!userData.fullName) return "ФИ";
     const names = userData.fullName.trim().split(" ");
@@ -62,12 +60,10 @@ const Header = ({
                 className={style.header__profile}
               >
                 <div className={style.header__profile__name__avatar}>
-                  <img src={signin} alt="Войти" />
+                  <p>{getInitials()}</p>
                 </div>
 
                 <div className={style.header__profile__name}>
-                  {/* <p>Профиль</p> */}
-
                   <h3>
                     {userData?.fullName
                       ? (() => {

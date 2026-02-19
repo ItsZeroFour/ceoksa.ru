@@ -4,7 +4,7 @@ import { ReactComponent as Card } from "../../../../assets/icons/profile/card.sv
 import { ReactComponent as Edit } from "../../../../assets/icons/account/edit.svg";
 import { useScreenWidth } from "../../../../hooks/useScreenWidth";
 
-const Rekvisits = () => {
+const Rekvisits = ({ user }) => {
   const screenWidth = useScreenWidth();
 
   const placeholder =
@@ -38,8 +38,10 @@ const Rekvisits = () => {
                   id="bik"
                   onInput={handleNumbersOnly}
                   placeholder={placeholder}
+                  readOnly={true}
+                  value={user.requisites.account_number}
                 />
-                <Edit />
+                {/* <Edit /> */}
               </div>
             </div>
           </li>

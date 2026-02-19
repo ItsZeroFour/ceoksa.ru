@@ -161,7 +161,11 @@ function App() {
                       userData={userData}
                       userStatus={user.status}
                     >
-                      <Profile setOpenMenu={setOpenMenu} openMenu={openMenu} />
+                      <Profile
+                        setOpenMenu={setOpenMenu}
+                        openMenu={openMenu}
+                        user={userData}
+                      />
                     </ProtectedRoute>
                   }
                 />
