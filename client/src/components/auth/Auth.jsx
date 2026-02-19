@@ -142,14 +142,6 @@ const Auth = ({ setOpenAuthMenu }) => {
                   Нажмите «Принять» в уведомлении на телефоне.
                 </p>
               </div>
-
-              <button
-                className={style.auth__code__back}
-                type="button"
-                onClick={handleBackToPhone}
-              >
-                Вернуться ко входу
-              </button>
             </div>
           )}
 

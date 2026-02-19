@@ -109,7 +109,7 @@ const Address = ({ setIsChecked, isChecked }) => {
             <div className={style.address__item__text}>
               <InputField
                 label="Населённый пункт, улица, дом"
-                placeholder="Например: г. Москва, ул. Ленина, д. 10"
+                placeholder="Например: г. Москва, ул. Ленина, д. 10, кв. 12"
                 id="street-address"
                 type="text"
                 name="street"

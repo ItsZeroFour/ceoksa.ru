@@ -16,7 +16,6 @@ const RealAddress = () => {
   const user = useSelector((state) => state.auth);
   const isInitialized = useRef(false);
 
-  // Инициализируем с данными из Redux, если они есть
   const initialValues = {
     street: user?.user?.data?.real_address?.street || "",
     apartment: user?.user?.data?.real_address?.apartment || "",
@@ -35,7 +34,6 @@ const RealAddress = () => {
 
   const screenWidth = useScreenWidth();
 
-  // Используем хук для отложенного обновления
   const debouncedUpdate = useDebouncedUpdate((data) => {
     dispatch(clearError());
     dispatch(
@@ -45,15 +43,12 @@ const RealAddress = () => {
     );
   }, 3000);
 
-  // Отслеживаем изменения values и сохраняем их
   useEffect(() => {
-    // Пропускаем первый рендер (инициализацию)
     if (!isInitialized.current) {
       isInitialized.current = true;
       return;
     }
 
-    // Сохраняем только если есть изменения
     if (values.street || values.apartment) {
       debouncedUpdate({
         street: values.street,
@@ -65,7 +60,7 @@ const RealAddress = () => {
   const cityPlaceholder =
     screenWidth < 780
       ? "Нас. пункт, улица, дом"
-      : "Необходимо указать Населённый пункт, улицу, дом";
+      : "Необходимо указать Населённый пункт, улицу, дом, квартиру";
 
   const homePlaceholder =
     screenWidth < 780 ? "Номер квартиры" : "Необходимо указать номер";
@@ -90,7 +85,9 @@ const RealAddress = () => {
                   : style.real_address__form__item
               }
             >
-              <label htmlFor="street">Населённый пункт, улица, дом</label>
+              <label htmlFor="street">
+                Населённый пункт, улица, дом, квартира
+              </label>
               <input
                 type="text"
                 id="street"
