@@ -34,9 +34,6 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
   const isAuthenticated = user?.isAuth ?? false;
   const authStatus = user?.status;
 
-  const skipDebounceCount = useRef(0);
-  const draftSavedRef = useRef(false);
-
   const loanApplication = user?.user?.data?.loan_application;
   const draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
 
@@ -86,7 +83,6 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
     dispatch(fetchCredit("kredit?populate=*"));
   }, [dispatch]);
 
-  // Подтягиваем данные профиля в форму после загрузки
   useEffect(() => {
     if (authStatus !== "succeeded") return;
     if (!user.user?.data?.loan_application) return;
@@ -100,9 +96,6 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
     if (savedTarget) setSelectedTarget(savedTarget);
 
     if (loan.salary) salary.setSalaryValue(loan.salary);
-
-    // Эти setState-ы вызовут debounced-эффект — пропускаем их
-    skipDebounceCount.current += 3;
   }, [authStatus]);
 
   // Сохраняем черновик в localStorage пока не авторизован
@@ -128,30 +121,9 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
     salary.salaryValue,
   ]);
 
-  // При авторизации — сохраняем черновик в профиль
-  useEffect(() => {
-    if (!isAuthenticated) return;
-    if (draftSavedRef.current) return;
-
-    const savedDraft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
-    if (!savedDraft) return;
-
-    draftSavedRef.current = true;
-    skipDebounceCount.current += 1;
-
-    dispatch(clearError());
-    dispatch(updateUser({ loan_application: savedDraft }));
-    localStorage.removeItem(DRAFT_KEY);
-  }, [isAuthenticated]);
-
   // Debounced сохранение для авторизованных
   useEffect(() => {
     if (!isAuthenticated) return;
-
-    if (skipDebounceCount.current > 0) {
-      skipDebounceCount.current--;
-      return;
-    }
 
     debouncedUpdate({
       sum: creditAmount.amountValue,
