@@ -205,7 +205,9 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
             />
           </div>
 
-          <div className={style.requisites__form__block}>
+          <div
+            className={`${style.requisites__form__block} ${style.requisites__form__block__special}`}
+          >
             <label htmlFor="recipient">Получатель</label>
             <input
               type="text"
@@ -242,7 +244,9 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
             )}
           </div>
 
-          <div className={style.requisites__form__block}>
+          <div
+            className={`${style.requisites__form__block} ${style.requisites__form__block__special}`}
+          >
             <label htmlFor="bank_name">Наименования Банка</label>
             <input
               type="text"
@@ -255,7 +259,9 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
             />
           </div>
 
-          <div className={style.requisites__form__block}>
+          <div
+            className={`${style.requisites__form__block} ${style.requisites__form__block__special}`}
+          >
             <label htmlFor="corporate_account">Кор. счёт</label>
             <input
               type="text"
@@ -268,7 +274,9 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
             />
           </div>
 
-          <div className={style.requisites__form__block}>
+          <div
+            className={`${style.requisites__form__block} ${style.requisites__form__block__special}`}
+          >
             <label htmlFor="bank_INN">ИНН Банка</label>
             <input
               type="text"
@@ -281,7 +289,9 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
             />
           </div>
 
-          <div className={style.requisites__form__block}>
+          <div
+            className={`${style.requisites__form__block} ${style.requisites__form__block__special}`}
+          >
             <label htmlFor="bank_KPP">КПП Банка</label>
             <input
               type="text"

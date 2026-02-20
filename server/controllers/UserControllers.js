@@ -48,3 +48,29 @@ export const updateUser = async (req, res) => {
     });
   }
 };
+
+export const deleteUser = async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Пользователь не авторизован",
+      });
+    }
+
+    User.findByIdAndDelete(userId);
+
+    return res.status(200).json({
+      message: "Пользователь успешно удален"
+    })
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Ошибка сервера при удалении пользователя",
+      error: error.message,
+    });
+  }
+};
