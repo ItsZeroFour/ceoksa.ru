@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import style from "./auth.module.scss";
@@ -24,8 +24,6 @@ const Auth = ({ setOpenAuthMenu }) => {
   const dispatch = useDispatch();
 
   const isSubmittingRef = useRef(false);
-  const currentStepRef = useRef(currentStep);
-  currentStepRef.current = currentStep;
 
   const { data: filesData, status: filesStatus } = useSelector(
     (state) => state.files
@@ -35,10 +33,8 @@ const Auth = ({ setOpenAuthMenu }) => {
     (state) => state.mobileAuth
   );
 
-  const auth_req_id_ref = useRef(auth_req_id);
-  auth_req_id_ref.current = auth_req_id;
-
   const phoneInput = usePhoneInput();
+  const codeInput = useCodeInput(4);
   const resendTimer = useResendTimer(140);
 
   const authPolling = useAuthPolling({
@@ -49,32 +45,6 @@ const Auth = ({ setOpenAuthMenu }) => {
     },
     onError: () => codeInput.setError(),
   });
-
-  const submitVerify = useCallback(
-    async (smsCode) => {
-      if (currentStepRef.current !== "code") return;
-      if (isSubmittingRef.current) return;
-      if (!smsCode || smsCode.length !== 4 || !/^\d{4}$/.test(smsCode)) return;
-
-      isSubmittingRef.current = true;
-
-      const result = await dispatch(
-        verifyCode({ auth_req_id: auth_req_id_ref.current, code: smsCode })
-      );
-
-      isSubmittingRef.current = false;
-
-      if (result.meta.requestStatus === "rejected") {
-        codeInput.setError();
-        return;
-      }
-
-      authPolling.startPolling(auth_req_id_ref.current);
-    },
-    [dispatch, authPolling]
-  );
-
-  const codeInput = useCodeInput(4, submitVerify);
 
   useEffect(() => {
     dispatch(fetchFiles("fajly?populate=*"));
@@ -121,9 +91,25 @@ const Auth = ({ setOpenAuthMenu }) => {
     }
   };
 
-  const handleSubmitCode = () => {
+  const handleSubmitCode = async () => {
+    if (isSubmittingRef.current) return;
+
     const smsCode = codeInput.getCode();
-    submitVerify(smsCode);
+
+    if (!smsCode || smsCode.length !== 4) return;
+
+    isSubmittingRef.current = true;
+
+    const result = await dispatch(verifyCode({ auth_req_id, code: smsCode }));
+
+    isSubmittingRef.current = false;
+
+    if (result.meta.requestStatus === "rejected") {
+      codeInput.setError();
+      return;
+    }
+
+    authPolling.startPolling(auth_req_id);
   };
 
   const handleBackToPhone = () => {
