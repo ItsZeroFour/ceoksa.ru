@@ -31,7 +31,7 @@ const Addresses = ({ user }) => {
               </div>
             </div>
 
-            <img src={gosuslugi} alt="Госуслуги" />
+            {/* <img src={gosuslugi} alt="Госуслуги" /> */}
           </li>
 
           <li>
@@ -45,15 +45,23 @@ const Addresses = ({ user }) => {
                 <input
                   type="text"
                   id="address"
-                  placeholder={user?.real_address?.street || "-"}
+                  placeholder={
+                    user.address_doesnt_match
+                      ? user?.real_address?.street
+                      : user?.address?.street || "-"
+                  }
                   readOnly={true}
-                  value={user?.real_address?.street}
+                  value={
+                    user.address_doesnt_match
+                      ? user?.real_address?.street
+                      : user?.address?.street || "-"
+                  }
                 />
                 {/* <Edit /> */}
               </div>
             </div>
 
-            <img src={gosuslugi} alt="Госуслуги" />
+            {/* <img src={gosuslugi} alt="Госуслуги" /> */}
           </li>
         </ul>
       </div>

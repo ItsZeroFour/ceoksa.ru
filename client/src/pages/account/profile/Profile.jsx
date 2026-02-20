@@ -19,7 +19,7 @@ const Profile = ({ setOpenMenu, openMenu, user }) => {
           <div className="profile__main">
             <Top user={user} />
             <Documents user={user} />
-            <Automobiles />
+            {/* <Automobiles /> */}
             <Addresses user={user} />
             <Rekvisits user={user} />
             <Accept />

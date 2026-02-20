@@ -23,19 +23,31 @@ import {
   TARGETS,
   CREDIT_LIMITS,
 } from "../../../constants/creditConstants";
+import { useNavigate } from "react-router-dom";
+
+const DRAFT_KEY = "credit_form_draft";
 
 const Credit = ({ setOpenAuthMenu }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const user = useSelector((state) => state.auth);
   const isAuthenticated = user?.isAuth ?? false;
+  const prevIsAuth = useRef(isAuthenticated);
 
   const loanApplication = user?.user?.data?.loan_application;
 
-  const initialSum = loanApplication?.sum ?? 500000;
+  const draft = !isAuthenticated
+    ? JSON.parse(localStorage.getItem(DRAFT_KEY) || "null")
+    : null;
+
+  const initialSum = loanApplication?.sum ?? draft?.sum ?? 500000;
   const initialTerm =
-    TERMS.find((t) => t.value === loanApplication?.date) ?? TERMS[5];
+    TERMS.find((t) => t.value === (loanApplication?.date ?? draft?.date)) ??
+    TERMS[5];
   const initialTarget =
-    TARGETS.find((t) => t.value === loanApplication?.target) ?? TARGETS[0];
+    TARGETS.find(
+      (t) => t.value === (loanApplication?.target ?? draft?.target)
+    ) ?? TARGETS[0];
 
   const [selectedTerm, setSelectedTerm] = useState(initialTerm);
   const [selectedTarget, setSelectedTarget] = useState(initialTarget);
@@ -55,7 +67,7 @@ const Credit = ({ setOpenAuthMenu }) => {
   });
 
   const salary = useSalaryValidation({
-    initialValue: loanApplication?.salary ?? "",
+    initialValue: loanApplication?.salary ?? draft?.salary ?? "",
     minSalary: CREDIT_LIMITS.MIN_SALARY,
     maxSalary: CREDIT_LIMITS.MAX_AMOUNT,
     debounceDelay: 300,
@@ -89,12 +101,39 @@ const Credit = ({ setOpenAuthMenu }) => {
     }
   }, [user.status]);
 
-  console.log({
-    sum: creditAmount.numericAmount,
-    date: selectedTerm.value,
-    target: selectedTarget.value,
-    salary: salary.salaryValue,
-  });
+  useEffect(() => {
+    if (isAuthenticated) return;
+
+    localStorage.setItem(
+      DRAFT_KEY,
+      JSON.stringify({
+        sum: creditAmount.amountValue,
+        date: selectedTerm.value,
+        target: selectedTarget.value,
+        salary: salary.salaryValue,
+      })
+    );
+  }, [
+    isAuthenticated,
+    creditAmount.amountValue,
+    selectedTerm,
+    selectedTarget,
+    salary.salaryValue,
+  ]);
+
+  useEffect(() => {
+    const justLoggedIn = !prevIsAuth.current && isAuthenticated;
+    prevIsAuth.current = isAuthenticated;
+
+    if (!justLoggedIn) return;
+
+    const savedDraft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
+    if (!savedDraft) return;
+
+    dispatch(clearError());
+    dispatch(updateUser({ loan_application: savedDraft }));
+    localStorage.removeItem(DRAFT_KEY);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -137,6 +176,8 @@ const Credit = ({ setOpenAuthMenu }) => {
         target: selectedTarget.value,
         salary: salary.salaryValue,
       });
+
+      navigate("/account/loan_applications");
     } else {
       setOpenAuthMenu(true);
     }

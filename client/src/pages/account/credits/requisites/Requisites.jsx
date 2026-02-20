@@ -202,6 +202,7 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
               value={formData.account_number}
               onChange={handleChange}
               disabled={isChecked}
+              inputMode="numeric"
             />
           </div>
 
@@ -233,6 +234,7 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
               maxLength={9}
               style={bicError ? { borderColor: "red" } : {}}
               disabled={isChecked}
+              inputMode="numeric"
             />
             {isValidatingBic && (
               <span style={{ color: "#666", fontSize: "12px" }}>
