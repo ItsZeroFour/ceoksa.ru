@@ -33,6 +33,7 @@ export const saveDraft = (data) => {
 const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const user = useSelector((state) => state.auth);
   const isAuthenticated = user?.isAuth ?? false;
   const authStatus = user?.status;
@@ -41,9 +42,11 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
   const draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
 
   const initialSum = loanApplication?.sum ?? draft?.sum ?? 500000;
+
   const initialTerm =
     TERMS.find((t) => t.value === (loanApplication?.date ?? draft?.date)) ??
     TERMS[5];
+
   const initialTarget =
     TARGETS.find(
       (t) => t.value === (loanApplication?.target ?? draft?.target)
@@ -51,10 +54,10 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
 
   const [selectedTerm, setSelectedTerm] = useState(initialTerm);
   const [selectedTarget, setSelectedTarget] = useState(initialTarget);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   const termRef = useRef(null);
   const targetRef = useRef(null);
-  const skipNextUpdateRef = useRef(false);
 
   const screenWidth = useScreenWidth();
   const { data, status } = useSelector((state) => state.credit);
@@ -95,26 +98,24 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (authStatus !== "succeeded") return;
-    if (!user.user?.data?.loan_application) return;
+    if (!isAuthenticated) return;
+    if (isHydrated) return;
 
-    if (localStorage.getItem(DRAFT_KEY)) return;
+    const savedDraft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
 
-    const loan = user.user.data.loan_application;
+    if (savedDraft) {
+      dispatch(clearError());
+      dispatch(updateUser({ loan_application: savedDraft }));
+      localStorage.removeItem(DRAFT_KEY);
+    }
 
-    const savedTerm = TERMS.find((t) => t.value === loan.date);
-    if (savedTerm) setSelectedTerm(savedTerm);
-
-    const savedTarget = TARGETS.find((t) => t.value === loan.target);
-    if (savedTarget) setSelectedTarget(savedTarget);
-
-    if (loan.salary) salary.setSalaryValue(loan.salary);
-  }, [authStatus]);
+    setIsHydrated(true);
+  }, [isAuthenticated, isHydrated, dispatch]);
 
   useEffect(() => {
     if (isAuthenticated) return;
 
-    localStorage.setItem(DRAFT_KEY, JSON.stringify(getCurrentFormData()));
+    saveDraft(getCurrentFormData());
   }, [
     isAuthenticated,
     creditAmount.amountValue,
@@ -125,32 +126,34 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
 
   useEffect(() => {
     if (!isAuthenticated) return;
-
-    const savedDraft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
-    if (!savedDraft) return;
-
-    skipNextUpdateRef.current = true;
-    dispatch(clearError());
-    dispatch(updateUser({ loan_application: savedDraft }));
-    localStorage.removeItem(DRAFT_KEY);
-  }, [isAuthenticated]);
-
-  useEffect(() => {
-    if (!isAuthenticated) return;
-
-    if (skipNextUpdateRef.current) {
-      skipNextUpdateRef.current = false;
-      return;
-    }
+    if (!isHydrated) return;
 
     debouncedUpdate(getCurrentFormData());
   }, [
     isAuthenticated,
+    isHydrated,
     creditAmount.amountValue,
     selectedTerm,
     selectedTarget,
     salary.salaryValue,
   ]);
+
+  useEffect(() => {
+    if (authStatus !== "succeeded") return;
+    if (!loanApplication) return;
+
+    if (draft) return;
+
+    const savedTerm = TERMS.find((t) => t.value === loanApplication.date);
+    if (savedTerm) setSelectedTerm(savedTerm);
+
+    const savedTarget = TARGETS.find((t) => t.value === loanApplication.target);
+    if (savedTarget) setSelectedTarget(savedTarget);
+
+    if (loanApplication.salary) {
+      salary.setSalaryValue(loanApplication.salary);
+    }
+  }, [authStatus]);
 
   const handleTermSelect = (term) => {
     setSelectedTerm(term);
@@ -163,13 +166,12 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
   };
 
   const handleContinue = () => {
-    if (!salary.salaryValue || !!salary.salaryError) {
+    if (!salary.salaryValue || salary.salaryError) {
       salary.handleSalaryBlur();
       return;
     }
 
     if (isAuthenticated) {
-      dispatch(clearError());
       debouncedUpdate(getCurrentFormData());
       navigate("/account/loan_applications");
     } else {

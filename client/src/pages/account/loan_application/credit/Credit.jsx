@@ -35,9 +35,12 @@ const Credit = () => {
 
   const [selectedTerm, setSelectedTerm] = useState(initialTerm);
   const [selectedTarget, setSelectedTarget] = useState(initialTarget);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   const termRef = useRef(null);
   const targetRef = useRef(null);
+
+  const userChangedRef = useRef(false);
 
   const { data: filesData, status: filesStatus } = useSelector(
     (state) => state.files
@@ -51,6 +54,7 @@ const Credit = () => {
   });
 
   const salary = useSalaryValidation({
+    initialValue: loanApplication?.salary ?? "",
     minSalary: CREDIT_LIMITS.MIN_SALARY,
     maxSalary: CREDIT_LIMITS.MAX_AMOUNT,
     debounceDelay: 300,
@@ -70,23 +74,32 @@ const Credit = () => {
     dispatch(fetchFiles("fajly?populate=*"));
   }, [dispatch]);
 
-  // Синхронизация сохранённых данных после загрузки пользователя
   useEffect(() => {
-    if (user.status === "succeeded" && user.user?.data?.loan_application) {
-      const loan = user.user.data.loan_application;
-
-      const savedTerm = TERMS.find((t) => t.value === loan.date);
-      if (savedTerm) setSelectedTerm(savedTerm);
-
-      const savedTarget = TARGETS.find((t) => t.value === loan.target);
-      if (savedTarget) setSelectedTarget(savedTarget);
-
-      if (loan.salary) salary.setSalaryValue(loan.salary);
+    if (user.status !== "succeeded") return;
+    if (!loanApplication) {
+      setIsHydrated(true);
+      return;
     }
-  }, [user.status]);
 
-  // Авто-сохранение при изменении любого поля
+    if (userChangedRef.current) return;
+
+    const savedTerm = TERMS.find((t) => t.value === loanApplication.date);
+    if (savedTerm) setSelectedTerm(savedTerm);
+
+    const savedTarget = TARGETS.find((t) => t.value === loanApplication.target);
+    if (savedTarget) setSelectedTarget(savedTarget);
+
+    if (loanApplication.salary) {
+      salary.setSalaryValue(loanApplication.salary);
+    }
+
+    setIsHydrated(true);
+  }, [user.status, loanApplication]);
+
   useEffect(() => {
+    if (!isHydrated) return;
+    if (!userChangedRef.current) return;
+
     debouncedUpdate({
       sum: creditAmount.amountValue,
       date: selectedTerm.value,
@@ -94,6 +107,7 @@ const Credit = () => {
       salary: salary.salaryValue,
     });
   }, [
+    isHydrated,
     creditAmount.amountValue,
     selectedTerm,
     selectedTarget,
@@ -101,17 +115,39 @@ const Credit = () => {
   ]);
 
   const handleTermSelect = (term) => {
+    userChangedRef.current = true;
     setSelectedTerm(term);
     setOpenDropdown(null);
   };
 
   const handleTargetSelect = (target) => {
+    userChangedRef.current = true;
     setSelectedTarget(target);
     setOpenDropdown(null);
   };
 
+  const handleSalaryChange = (e) => {
+    userChangedRef.current = true;
+    salary.handleSalaryChange(e);
+  };
+
+  const handleAmountChange = (e) => {
+    userChangedRef.current = true;
+    creditAmount.handleAmountChange(e);
+  };
+
+  const handleIncrement = () => {
+    userChangedRef.current = true;
+    creditAmount.increment();
+  };
+
+  const handleDecrement = () => {
+    userChangedRef.current = true;
+    creditAmount.decrement();
+  };
+
   const handleSubmit = () => {
-    if (!salary.salaryValue || !!salary.salaryError) {
+    if (!salary.salaryValue || salary.salaryError) {
       salary.handleSalaryBlur();
       return;
     }
@@ -143,11 +179,11 @@ const Credit = () => {
           >
             <CreditAmountSection
               value={creditAmount.displayAmount}
-              onChange={creditAmount.handleAmountChange}
+              onChange={handleAmountChange}
               onFocus={creditAmount.handleAmountFocus}
               onBlur={creditAmount.handleAmountBlur}
-              onIncrement={creditAmount.increment}
-              onDecrement={creditAmount.decrement}
+              onIncrement={handleIncrement}
+              onDecrement={handleDecrement}
               selectedTerm={selectedTerm}
               onTermSelect={handleTermSelect}
               termOptions={TERMS}
@@ -170,7 +206,7 @@ const Credit = () => {
             <CreditSalaryInput
               value={salary.displaySalary}
               error={salary.salaryError}
-              onChange={salary.handleSalaryChange}
+              onChange={handleSalaryChange}
               onFocus={salary.handleSalaryFocus}
               onBlur={salary.handleSalaryBlur}
               onKeyDown={salary.handleKeyDown}

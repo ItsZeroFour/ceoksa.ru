@@ -15,7 +15,6 @@ import Cookies from "./components/cookies/Cookies";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMe } from "./redux/slices/auth/authSlice";
 import ScrollToTop from "./components/ScrollToTop/ScrollToTop";
-import { updateUser, clearError } from "./redux/slices/user/updateUserSlice";
 
 const Header = lazy(() => import("./components/header/Header"));
 const Main = lazy(() => import("./pages/main/Main"));
@@ -44,14 +43,10 @@ const ProtectedRoute = ({ children, userData, userStatus }) => {
   return children;
 };
 
-const DRAFT_KEY = "credit_form_draft";
-
 function App() {
   const [openMenu, setOpenMenu] = useState(false);
   const [openAuthMenu, setOpenAuthMenu] = useState(false);
   const dispatch = useDispatch();
-
-  const prevIsAuthRef = useRef(null);
 
   useEffect(() => {
     dispatch(fetchMe());
@@ -59,8 +54,6 @@ function App() {
 
   const user = useSelector((state) => state.auth);
   const userData = user.user?.data ?? null;
-  const isAuthenticated = user?.isAuth ?? false;
-  const authStatus = user?.status;
 
   const scrollToBlock = (id) => {
     const element = document.getElementById(id);
@@ -68,22 +61,6 @@ function App() {
       element.scrollIntoView({ behavior: "smooth" });
     }
   };
-
-  useEffect(() => {
-    if (authStatus === "idle" || authStatus === "loading") return;
-
-    const wasAuthenticated = prevIsAuthRef.current;
-    prevIsAuthRef.current = isAuthenticated;
-
-    if (wasAuthenticated === false && isAuthenticated === true) {
-      const savedDraft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
-
-      if (savedDraft) {
-        dispatch(clearError());
-        dispatch(updateUser({ loan_application: savedDraft }));
-      }
-    }
-  }, [isAuthenticated, authStatus, dispatch]);
 
   useDisableScroll(openMenu);
 
