@@ -121,10 +121,11 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
 
     dispatch(clearError());
     dispatch(updateUser({ loan_application: savedDraft }));
-    localStorage.removeItem(DRAFT_KEY);
+    // localStorage.removeItem(DRAFT_KEY);
   }, [isAuthenticated]);
 
   useEffect(() => {
+    console.log("isAuthenticated:", isAuthenticated);
     if (isAuthenticated) return;
 
     localStorage.setItem(DRAFT_KEY, JSON.stringify(getCurrentFormData()));
