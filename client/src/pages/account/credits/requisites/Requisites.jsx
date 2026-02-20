@@ -216,7 +216,7 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
               placeholder="Имя Фамилия Отчество (при наличии)"
               value={user.user.data.fullName || formData.recipient}
               onChange={handleChange}
-              disabled={isChecked}
+              disabled
             />
           </div>
 
