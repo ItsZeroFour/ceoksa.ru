@@ -91,6 +91,7 @@ function App() {
                     <Main
                       scrollToBlock={scrollToBlock}
                       setOpenAuthMenu={setOpenAuthMenu}
+                      openAuthMenu={openAuthMenu}
                     />
                   }
                 />

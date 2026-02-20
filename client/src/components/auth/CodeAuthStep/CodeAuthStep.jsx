@@ -23,7 +23,7 @@ const CodeAuthStep = ({
         <p>На номер {phone} отправлен SMS-код подтверждения</p>
       </div>
 
-      <form onSubmit={onSubmit}>
+      <form onSubmit={(e) => e.preventDefault()}>
         <div className={styles.auth__code}>
           {code.map((digit, index) => (
             <input
@@ -48,7 +48,7 @@ const CodeAuthStep = ({
 
         {hasError && <p className={styles.auth__code__error}>Неверный код</p>}
 
-        <button type="submit" disabled={!isComplete}>
+        <button type="button" disabled={!isComplete} onClick={onSubmit}>
           Отправить
         </button>
       </form>

@@ -27,17 +27,17 @@ import { useNavigate } from "react-router-dom";
 
 const DRAFT_KEY = "credit_form_draft";
 
-const Credit = ({ setOpenAuthMenu }) => {
+const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth);
   const isAuthenticated = user?.isAuth ?? false;
-  const authLoaded = user?.status === "succeeded" || user?.status === "failed";
-  const prevIsAuth = useRef(null);
-  const skipNextDebounce = useRef(false);
+  const authStatus = user?.status;
+
+  const skipDebounceCount = useRef(0);
+  const draftSavedRef = useRef(false);
 
   const loanApplication = user?.user?.data?.loan_application;
-
   const draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
 
   const initialSum = loanApplication?.sum ?? draft?.sum ?? 500000;
@@ -56,7 +56,6 @@ const Credit = ({ setOpenAuthMenu }) => {
   const targetRef = useRef(null);
 
   const screenWidth = useScreenWidth();
-
   const { data, status } = useSelector((state) => state.credit);
 
   const creditAmount = useCreditAmount({
@@ -87,44 +86,29 @@ const Credit = ({ setOpenAuthMenu }) => {
     dispatch(fetchCredit("kredit?populate=*"));
   }, [dispatch]);
 
+  // Подтягиваем данные профиля в форму после загрузки
   useEffect(() => {
-    if (user.status === "succeeded" && user.user?.data?.loan_application) {
-      const loan = user.user.data.loan_application;
+    if (authStatus !== "succeeded") return;
+    if (!user.user?.data?.loan_application) return;
 
-      const savedTerm = TERMS.find((t) => t.value === loan.date);
-      if (savedTerm) setSelectedTerm(savedTerm);
+    const loan = user.user.data.loan_application;
 
-      const savedTarget = TARGETS.find((t) => t.value === loan.target);
-      if (savedTarget) setSelectedTarget(savedTarget);
+    const savedTerm = TERMS.find((t) => t.value === loan.date);
+    if (savedTerm) setSelectedTerm(savedTerm);
 
-      if (loan.salary) salary.setSalaryValue(loan.salary);
-    }
-  }, [user.status]);
+    const savedTarget = TARGETS.find((t) => t.value === loan.target);
+    if (savedTarget) setSelectedTarget(savedTarget);
 
+    if (loan.salary) salary.setSalaryValue(loan.salary);
+
+    // Эти setState-ы вызовут debounced-эффект — пропускаем их
+    skipDebounceCount.current += 3;
+  }, [authStatus]);
+
+  // Сохраняем черновик в localStorage пока не авторизован
   useEffect(() => {
-    if (!authLoaded) return;
-
-    if (prevIsAuth.current === null) {
-      prevIsAuth.current = isAuthenticated;
-      return;
-    }
-
-    const justLoggedIn = !prevIsAuth.current && isAuthenticated;
-    prevIsAuth.current = isAuthenticated;
-
-    if (!justLoggedIn) return;
-
-    const savedDraft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
-    if (!savedDraft) return;
-
-    skipNextDebounce.current = true;
-    dispatch(clearError());
-    dispatch(updateUser({ loan_application: savedDraft }));
-    localStorage.removeItem(DRAFT_KEY);
-  }, [authLoaded, isAuthenticated]);
-
-  useEffect(() => {
-    if (!authLoaded || isAuthenticated) return;
+    if (isAuthenticated) return;
+    if (authStatus === "idle" || authStatus === "loading") return;
 
     localStorage.setItem(
       DRAFT_KEY,
@@ -136,19 +120,36 @@ const Credit = ({ setOpenAuthMenu }) => {
       })
     );
   }, [
-    authLoaded,
     isAuthenticated,
+    authStatus,
     creditAmount.amountValue,
     selectedTerm,
     selectedTarget,
     salary.salaryValue,
   ]);
 
+  // При авторизации — сохраняем черновик в профиль
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    if (draftSavedRef.current) return;
+
+    const savedDraft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
+    if (!savedDraft) return;
+
+    draftSavedRef.current = true;
+    skipDebounceCount.current += 1;
+
+    dispatch(clearError());
+    dispatch(updateUser({ loan_application: savedDraft }));
+    localStorage.removeItem(DRAFT_KEY);
+  }, [isAuthenticated]);
+
+  // Debounced сохранение для авторизованных
   useEffect(() => {
     if (!isAuthenticated) return;
 
-    if (skipNextDebounce.current) {
-      skipNextDebounce.current = false;
+    if (skipDebounceCount.current > 0) {
+      skipDebounceCount.current--;
       return;
     }
 
@@ -190,7 +191,6 @@ const Credit = ({ setOpenAuthMenu }) => {
         target: selectedTarget.value,
         salary: salary.salaryValue,
       });
-
       navigate("/account/loan_applications");
     } else {
       setOpenAuthMenu(true);
