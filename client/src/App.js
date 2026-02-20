@@ -20,6 +20,7 @@ import ADS from "./pages/account/files/ADS";
 import Cookies from "./components/cookies/Cookies";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMe } from "./redux/slices/auth/authSlice";
+import ScrollToTop from "./components/ScrollToTop/ScrollToTop";
 
 const Header = lazy(() => import("./components/header/Header"));
 const Main = lazy(() => import("./pages/main/Main"));
@@ -105,6 +106,8 @@ function App() {
             {openAuthMenu && <Auth setOpenAuthMenu={setOpenAuthMenu} />}
 
             <main>
+              <ScrollToTop />
+
               <Routes>
                 <Route
                   path="/"

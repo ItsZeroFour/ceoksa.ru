@@ -39,6 +39,7 @@ const Auth = ({ setOpenAuthMenu }) => {
   const authPolling = useAuthPolling({
     onSuccess: () => {
       setOpenAuthMenu(false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
       navigate("/account/loan_applications");
     },
     onError: () => codeInput.setError(),
