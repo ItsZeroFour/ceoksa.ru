@@ -27,7 +27,7 @@ const Addresses = ({ user }) => {
 
               <div className={style.addresses__item__text}>
                 <p>Адрес регистрации</p>
-                <p>{user?.address?.street}</p>
+                <p>{user?.address?.street || "-"}</p>
               </div>
             </div>
 
@@ -45,7 +45,7 @@ const Addresses = ({ user }) => {
                 <input
                   type="text"
                   id="address"
-                  placeholder={addressPlaceholder}
+                  placeholder={user?.real_address?.street || "-"}
                   readOnly={true}
                   value={user?.real_address?.street}
                 />

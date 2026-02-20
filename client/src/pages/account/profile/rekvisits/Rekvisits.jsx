@@ -39,7 +39,7 @@ const Rekvisits = ({ user }) => {
                   onInput={handleNumbersOnly}
                   placeholder={placeholder}
                   readOnly={true}
-                  value={user.requisites.account_number}
+                  value={user?.requisites?.account_number || "0000000000000000"}
                 />
                 {/* <Edit /> */}
               </div>

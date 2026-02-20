@@ -27,7 +27,7 @@ import {
 const Credit = ({ setOpenAuthMenu }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth);
-  const isAuthenticated = user?.isAuthenticated ?? false;
+  const isAuthenticated = user?.isAuth ?? false;
 
   const loanApplication = user?.user?.data?.loan_application;
 

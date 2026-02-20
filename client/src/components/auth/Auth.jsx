@@ -34,7 +34,7 @@ const Auth = ({ setOpenAuthMenu }) => {
 
   const phoneInput = usePhoneInput();
   const codeInput = useCodeInput(4);
-  const resendTimer = useResendTimer(60);
+  const resendTimer = useResendTimer(140);
 
   const authPolling = useAuthPolling({
     onSuccess: () => {
