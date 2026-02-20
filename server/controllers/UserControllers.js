@@ -60,11 +60,11 @@ export const deleteUser = async (req, res) => {
       });
     }
 
-    User.findByIdAndDelete(userId);
+    await User.findByIdAndDelete(userId);
 
     return res.status(200).json({
-      message: "Пользователь успешно удален"
-    })
+      message: "Пользователь успешно удален",
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({
