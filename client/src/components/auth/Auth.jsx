@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import style from "./auth.module.scss";
@@ -21,8 +21,9 @@ const Auth = ({ setOpenAuthMenu }) => {
   const { theme } = useTheme();
   const [currentStep, setCurrentStep] = useState("phone");
   const navigate = useNavigate();
-
   const dispatch = useDispatch();
+
+  const isSubmittingRef = useRef(false);
 
   const { data: filesData, status: filesStatus } = useSelector(
     (state) => state.files
@@ -54,6 +55,37 @@ const Auth = ({ setOpenAuthMenu }) => {
       setCurrentStep("code");
     }
   }, [flow]);
+
+  useEffect(() => {
+    if (!codeInput.isComplete || currentStep !== "code") return;
+    if (isSubmittingRef.current) return;
+
+    isSubmittingRef.current = true;
+    const smsCode = codeInput.code.join("");
+
+    dispatch(verifyCode({ auth_req_id, code: smsCode })).then((result) => {
+      isSubmittingRef.current = false;
+      if (result.meta.requestStatus === "rejected") {
+        codeInput.setError();
+        return;
+      }
+      authPolling.startPolling(auth_req_id);
+    });
+  }, [codeInput.isComplete, currentStep]);
+
+  useEffect(() => {
+    if (!codeInput.isComplete || currentStep !== "code") return;
+
+    const smsCode = codeInput.code.join("");
+
+    dispatch(verifyCode({ auth_req_id, code: smsCode })).then((result) => {
+      if (result.meta.requestStatus === "rejected") {
+        codeInput.setError();
+        return;
+      }
+      authPolling.startPolling(auth_req_id);
+    });
+  }, [codeInput.isComplete, currentStep]);
 
   const handleSendSms = async () => {
     const clearPhone = phoneInput.getCleanPhone();
@@ -88,10 +120,9 @@ const Auth = ({ setOpenAuthMenu }) => {
 
   const handleSubmitCode = async (e) => {
     e.preventDefault();
+    if (!codeInput.isComplete) return;
 
-    if (!codeInput.getIsComplete()) return;
-
-    const smsCode = codeInput.getCode();
+    const smsCode = codeInput.code.join("");
     const result = await dispatch(verifyCode({ auth_req_id, code: smsCode }));
 
     if (result.meta.requestStatus === "rejected") {
