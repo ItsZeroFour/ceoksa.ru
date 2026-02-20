@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { ReactComponent as File } from "../../../../assets/icons/profile/file.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchFiles } from "../../../../redux/slices/strapi/FilesSlide";
+import axios from "../../../../utils/axios";
 
 // const files = [
 //   {
@@ -70,6 +71,20 @@ const Accept = () => {
   useEffect(() => {
     dispatch(fetchFiles("fajly?populate=*"));
   }, [dispatch]);
+
+  const deleteUser = async () => {
+    try {
+      const response = await axios.delete("/user/delete");
+
+      console.log(response);
+
+      if (response.status === 200) {
+        return window.location.reload();
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <div className={style.accept}>
@@ -163,7 +178,7 @@ const Accept = () => {
         </div>
       )}
 
-      <button>Удалить профиль и данные</button>
+      <button onClick={deleteUser}>Удалить профиль и данные</button>
     </div>
   );
 };
