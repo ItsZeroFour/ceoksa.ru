@@ -89,18 +89,25 @@ const Credit = ({ setOpenAuthMenu }) => {
     }
   }, [user.status]);
 
+  console.log({
+    sum: creditAmount.numericAmount,
+    date: selectedTerm.value,
+    target: selectedTarget.value,
+    salary: salary.salaryValue,
+  });
+
   useEffect(() => {
     if (!isAuthenticated) return;
 
     debouncedUpdate({
-      sum: creditAmount.numericAmount,
+      sum: creditAmount.amountValue,
       date: selectedTerm.value,
       target: selectedTarget.value,
       salary: salary.salaryValue,
     });
   }, [
     isAuthenticated,
-    creditAmount.numericAmount,
+    creditAmount.amountValue,
     selectedTerm,
     selectedTarget,
     salary.salaryValue,
@@ -124,16 +131,12 @@ const Credit = ({ setOpenAuthMenu }) => {
 
     if (isAuthenticated) {
       dispatch(clearError());
-      dispatch(
-        updateUser({
-          loan_application: {
-            sum: creditAmount.numericAmount,
-            date: selectedTerm.value,
-            target: selectedTarget.value,
-            salary: salary.salaryNumeric,
-          },
-        })
-      );
+      debouncedUpdate({
+        sum: creditAmount.amountValue,
+        date: selectedTerm.value,
+        target: selectedTarget.value,
+        salary: salary.salaryValue,
+      });
     } else {
       setOpenAuthMenu(true);
     }
