@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState, useEffect } from "react";
+import { lazy, Suspense, useState, useEffect, useRef } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import LoanApplication from "./pages/account/loan_application/LoanApplication";
 import useDisableScroll from "./hooks/useDisableScroll";
@@ -51,14 +51,16 @@ function App() {
   const [openAuthMenu, setOpenAuthMenu] = useState(false);
   const dispatch = useDispatch();
 
+  const prevIsAuthRef = useRef(null);
+
   useEffect(() => {
     dispatch(fetchMe());
   }, [dispatch]);
 
   const user = useSelector((state) => state.auth);
   const userData = user.user?.data ?? null;
-
   const isAuthenticated = user?.isAuth ?? false;
+  const authStatus = user?.status;
 
   const scrollToBlock = (id) => {
     const element = document.getElementById(id);
@@ -68,15 +70,21 @@ function App() {
   };
 
   useEffect(() => {
-    if (!isAuthenticated) return;
+    if (authStatus === "idle" || authStatus === "loading") return;
 
-    const savedDraft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
-    if (!savedDraft) return;
+    const wasAuthenticated = prevIsAuthRef.current;
+    prevIsAuthRef.current = isAuthenticated;
 
-    dispatch(clearError());
-    dispatch(updateUser({ loan_application: savedDraft }));
-    localStorage.removeItem(DRAFT_KEY);
-  }, [isAuthenticated]);
+    if (wasAuthenticated === false && isAuthenticated === true) {
+      const savedDraft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
+
+      if (savedDraft) {
+        dispatch(clearError());
+        dispatch(updateUser({ loan_application: savedDraft }));
+        localStorage.removeItem(DRAFT_KEY);
+      }
+    }
+  }, [isAuthenticated, authStatus, dispatch]);
 
   useDisableScroll(openMenu);
 

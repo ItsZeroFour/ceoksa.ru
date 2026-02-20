@@ -57,18 +57,21 @@ const Auth = ({ setOpenAuthMenu }) => {
     }
   }, [flow]);
 
-  // Единственный путь к отправке — useEffect после рендера.
-  // Срабатывает и при iOS автозаполнении, и при ручном вводе последней цифры.
+  // СТАЛО:
   useEffect(() => {
     if (currentStep !== "code") return;
     if (!codeInput.isComplete) return;
     if (isSubmittingRef.current) return;
 
-    const submitCode = async () => {
+    const timer = setTimeout(async () => {
+      if (isSubmittingRef.current) return;
+
+      const smsCode = codeInput.getCode(); // ✅
+
+      if (smsCode.length !== 4 || !/^\d{4}$/.test(smsCode)) return;
+
       isSubmittingRef.current = true;
 
-      // Читаем код из актуального стейта — useEffect гарантирует что он свежий
-      const smsCode = codeInput.code.join("");
       const result = await dispatch(verifyCode({ auth_req_id, code: smsCode }));
 
       isSubmittingRef.current = false;
@@ -79,12 +82,11 @@ const Auth = ({ setOpenAuthMenu }) => {
       }
 
       authPolling.startPolling(auth_req_id);
-    };
+    }, 0);
 
-    submitCode();
+    return () => clearTimeout(timer);
   }, [codeInput.isComplete, currentStep]);
 
-  // Сброс флага при смене шага (например после handleBackToPhone)
   useEffect(() => {
     isSubmittingRef.current = false;
   }, [currentStep]);
@@ -120,14 +122,12 @@ const Auth = ({ setOpenAuthMenu }) => {
     }
   };
 
-  // Ручная кнопка "Отправить" — просто триггерит тот же useEffect через isComplete
-  // Но на случай если isComplete уже true (повторный клик), дублируем логику
   const handleSubmitCode = async () => {
     if (!codeInput.isComplete) return;
     if (isSubmittingRef.current) return;
 
     isSubmittingRef.current = true;
-    const smsCode = codeInput.code.join("");
+    const smsCode = codeInput.getCode();
     const result = await dispatch(verifyCode({ auth_req_id, code: smsCode }));
 
     isSubmittingRef.current = false;
