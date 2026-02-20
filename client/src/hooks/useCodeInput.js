@@ -1,31 +1,10 @@
 import { useState, useRef, useCallback } from "react";
 
-export const useCodeInput = (length = 4, onComplete) => {
+export const useCodeInput = (length = 4) => {
   const [code, setCode] = useState(Array(length).fill(""));
   const [hasError, setHasError] = useState(false);
   const inputRefs = useRef([]);
   const codeRef = useRef(Array(length).fill(""));
-  const onCompleteRef = useRef(onComplete);
-  const completedRef = useRef(false);
-
-  onCompleteRef.current = onComplete;
-
-  const checkAndTriggerComplete = useCallback(
-    (newCode) => {
-      const isFull = newCode.every((d) => d !== "");
-      if (isFull && !completedRef.current) {
-        completedRef.current = true;
-
-        setTimeout(() => {
-          const currentCode = codeRef.current.join("");
-          if (currentCode.length === length && /^\d+$/.test(currentCode)) {
-            onCompleteRef.current?.(currentCode);
-          }
-        }, 50);
-      }
-    },
-    [length]
-  );
 
   const updateCode = useCallback((updater) => {
     setCode((prev) => {
@@ -41,9 +20,8 @@ export const useCodeInput = (length = 4, onComplete) => {
         const digits = value.replace(/\D/g, "").split("").slice(0, length);
         if (!digits.length) return;
 
-        let newCode;
         updateCode((prev) => {
-          newCode = [...prev];
+          const newCode = [...prev];
           digits.forEach((d, i) => {
             if (index + i < length) newCode[index + i] = d;
           });
@@ -54,8 +32,6 @@ export const useCodeInput = (length = 4, onComplete) => {
 
         const focusIndex = Math.min(index + digits.length - 1, length - 1);
         inputRefs.current[focusIndex]?.focus();
-
-        setTimeout(() => checkAndTriggerComplete(codeRef.current), 0);
         return;
       }
 
@@ -72,10 +48,8 @@ export const useCodeInput = (length = 4, onComplete) => {
       if (value && index < length - 1) {
         inputRefs.current[index + 1]?.focus();
       }
-
-      setTimeout(() => checkAndTriggerComplete(codeRef.current), 0);
     },
-    [length, updateCode, checkAndTriggerComplete]
+    [length, updateCode]
   );
 
   const handleKeyDown = useCallback(
@@ -106,38 +80,30 @@ export const useCodeInput = (length = 4, onComplete) => {
 
         const focusIndex = Math.min(pasted.length - 1, length - 1);
         inputRefs.current[focusIndex]?.focus();
-
-        setTimeout(() => checkAndTriggerComplete(codeRef.current), 0);
       }
     },
-    [length, updateCode, checkAndTriggerComplete]
+    [length, updateCode]
   );
 
   const isComplete = code.every((digit) => digit !== "");
+
+  const getCode = useCallback(() => codeRef.current.join(""), []);
 
   const getIsComplete = useCallback(
     () => codeRef.current.every((d) => d !== ""),
     []
   );
 
-  const getCode = useCallback(() => codeRef.current.join(""), []);
-
   const reset = useCallback(() => {
     const empty = Array(length).fill("");
     codeRef.current = empty;
-    completedRef.current = false;
     setCode(empty);
     setHasError(false);
     inputRefs.current[0]?.focus();
   }, [length]);
 
-  const setError = useCallback(() => {
-    setHasError(true);
-  }, []);
-
-  const clearError = useCallback(() => {
-    setHasError(false);
-  }, []);
+  const setError = useCallback(() => setHasError(true), []);
+  const clearError = useCallback(() => setHasError(false), []);
 
   return {
     code,
