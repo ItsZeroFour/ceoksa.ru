@@ -25,3 +25,5 @@ export const CREDIT_LIMITS = {
   STEP: 1000,
   MIN_SALARY: 10000,
 };
+
+export const DRAFT_KEY = "credit_form_draft";

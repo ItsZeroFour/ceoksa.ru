@@ -22,10 +22,9 @@ import {
   TERMS,
   TARGETS,
   CREDIT_LIMITS,
+  DRAFT_KEY,
 } from "../../../constants/creditConstants";
 import { useNavigate } from "react-router-dom";
-
-export const DRAFT_KEY = "credit_form_draft";
 
 export const saveDraft = (data) => {
   localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
@@ -137,19 +136,6 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
     salary.salaryValue,
   ]);
 
-  useEffect(() => {
-    if (!isAuthenticated) return;
-    if (pendingDraftSaveRef.current) return;
-
-    debouncedUpdate(getCurrentFormData());
-  }, [
-    isAuthenticated,
-    creditAmount.amountValue,
-    selectedTerm,
-    selectedTarget,
-    salary.salaryValue,
-  ]);
-
   const handleTermSelect = (term) => {
     setSelectedTerm(term);
     setOpenDropdown(null);
@@ -172,7 +158,6 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
       navigate("/account/loan_applications");
     } else {
       saveDraft(getCurrentFormData());
-      pendingDraftSaveRef.current = true;
       setOpenAuthMenu(true);
     }
   };
