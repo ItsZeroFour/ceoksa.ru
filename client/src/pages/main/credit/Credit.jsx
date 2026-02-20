@@ -25,7 +25,12 @@ import {
 } from "../../../constants/creditConstants";
 import { useNavigate } from "react-router-dom";
 
-const DRAFT_KEY = "credit_form_draft";
+export const DRAFT_KEY = "credit_form_draft";
+
+// Утилита для явного сохранения черновика
+export const saveDraft = (data) => {
+  localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
+};
 
 const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
   const dispatch = useDispatch();
@@ -79,10 +84,19 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
     dispatch(updateUser({ loan_application: data }));
   }, 1000);
 
+  // Хелпер для получения текущих значений формы
+  const getCurrentFormData = () => ({
+    sum: creditAmount.amountValue,
+    date: selectedTerm.value,
+    target: selectedTarget.value,
+    salary: salary.salaryValue,
+  });
+
   useEffect(() => {
     dispatch(fetchCredit("kredit?populate=*"));
   }, [dispatch]);
 
+  // Синхронизация UI с данными из БД после загрузки авторизованного пользователя
   useEffect(() => {
     if (authStatus !== "succeeded") return;
     if (!user.user?.data?.loan_application) return;
@@ -99,38 +113,24 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
   }, [authStatus]);
 
   // Сохраняем черновик в localStorage пока не авторизован
+  // ФИКС: убрали guard по authStatus — он мешал сохранению в момент открытия модалки
   useEffect(() => {
     if (isAuthenticated) return;
-    if (authStatus === "idle" || authStatus === "loading") return;
 
-    localStorage.setItem(
-      DRAFT_KEY,
-      JSON.stringify({
-        sum: creditAmount.amountValue,
-        date: selectedTerm.value,
-        target: selectedTarget.value,
-        salary: salary.salaryValue,
-      })
-    );
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(getCurrentFormData()));
   }, [
     isAuthenticated,
-    authStatus,
     creditAmount.amountValue,
     selectedTerm,
     selectedTarget,
     salary.salaryValue,
   ]);
 
-  // Debounced сохранение для авторизованных
+  // Debounced сохранение на сервер для авторизованных
   useEffect(() => {
     if (!isAuthenticated) return;
 
-    debouncedUpdate({
-      sum: creditAmount.amountValue,
-      date: selectedTerm.value,
-      target: selectedTarget.value,
-      salary: salary.salaryValue,
-    });
+    debouncedUpdate(getCurrentFormData());
   }, [
     isAuthenticated,
     creditAmount.amountValue,
@@ -157,14 +157,12 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
 
     if (isAuthenticated) {
       dispatch(clearError());
-      debouncedUpdate({
-        sum: creditAmount.amountValue,
-        date: selectedTerm.value,
-        target: selectedTarget.value,
-        salary: salary.salaryValue,
-      });
+      debouncedUpdate(getCurrentFormData());
       navigate("/account/loan_applications");
     } else {
+      // ФИКС: явно сохраняем актуальные данные прямо перед открытием модалки,
+      // не полагаясь только на useEffect (который мог не успеть выполниться)
+      saveDraft(getCurrentFormData());
       setOpenAuthMenu(true);
     }
   };
