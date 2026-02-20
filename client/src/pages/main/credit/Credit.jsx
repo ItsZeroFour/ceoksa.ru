@@ -111,20 +111,6 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
   }, [authStatus]);
 
   useEffect(() => {
-    if (!isAuthenticated) return;
-    if (!pendingDraftSaveRef.current) return;
-
-    const savedDraft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
-    if (!savedDraft) return;
-
-    pendingDraftSaveRef.current = false;
-
-    dispatch(clearError());
-    dispatch(updateUser({ loan_application: savedDraft }));
-    // localStorage.removeItem(DRAFT_KEY);
-  }, [isAuthenticated]);
-
-  useEffect(() => {
     console.log("isAuthenticated:", isAuthenticated);
     if (isAuthenticated) return;
 

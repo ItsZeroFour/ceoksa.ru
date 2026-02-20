@@ -81,7 +81,6 @@ function App() {
       if (savedDraft) {
         dispatch(clearError());
         dispatch(updateUser({ loan_application: savedDraft }));
-        localStorage.removeItem(DRAFT_KEY);
       }
     }
   }, [isAuthenticated, authStatus, dispatch]);

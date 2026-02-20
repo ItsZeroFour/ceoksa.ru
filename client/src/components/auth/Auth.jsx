@@ -45,6 +45,9 @@ const Auth = ({ setOpenAuthMenu }) => {
   const authPolling = useAuthPolling({
     onSuccess: () => {
       const draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
+
+      console.log(draft, { loan_application: draft });
+
       if (draft) {
         dispatch(clearError());
         dispatch(updateUser({ loan_application: draft }));
