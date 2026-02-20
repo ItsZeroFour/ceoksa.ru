@@ -63,7 +63,7 @@ const Header = ({
                   <p>{getInitials()}</p>
                 </div>
 
-                <div className={style.header__profile__name}>
+                {/* <div className={style.header__profile__name}>
                   <h3>
                     {userData?.fullName
                       ? (() => {
@@ -77,7 +77,7 @@ const Header = ({
                         })()
                       : "Имя"}
                   </h3>
-                </div>
+                </div> */}
               </Link>
             ) : (
               <button

@@ -1,11 +1,5 @@
 import { lazy, Suspense, useState, useEffect } from "react";
-import {
-  Navigate,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import LoanApplication from "./pages/account/loan_application/LoanApplication";
 import useDisableScroll from "./hooks/useDisableScroll";
 import Credits from "./pages/account/credits/Credits";
@@ -27,7 +21,7 @@ const Main = lazy(() => import("./pages/main/Main"));
 const Footer = lazy(() => import("./components/footer/Footer"));
 
 const ProtectedRoute = ({ children, userData, userStatus }) => {
-  if (userStatus === "loading") {
+  if (userStatus === "idle" || userStatus === "loading") {
     return (
       <div
         style={{
@@ -52,32 +46,14 @@ const ProtectedRoute = ({ children, userData, userStatus }) => {
 function App() {
   const [openMenu, setOpenMenu] = useState(false);
   const [openAuthMenu, setOpenAuthMenu] = useState(false);
-  const [userData, setUserData] = useState(null);
   const dispatch = useDispatch();
-  const location = useLocation();
-  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(fetchMe());
   }, [dispatch]);
 
   const user = useSelector((state) => state.auth);
-
-  useEffect(() => {
-    if (user.status === "succeeded" && user.user?.data) {
-      setUserData(user.user.data);
-    }
-  }, [user.status, user.user]);
-
-  useEffect(() => {
-    if (
-      (user.status === "failed" || user.status === "idle") &&
-      !user.user &&
-      location.pathname.startsWith("/account")
-    ) {
-      navigate("/", { replace: true });
-    }
-  }, [user.status, user.user, location.pathname, navigate]);
+  const userData = user.user?.data ?? null;
 
   const scrollToBlock = (id) => {
     const element = document.getElementById(id);
@@ -119,7 +95,6 @@ function App() {
                   }
                 />
 
-                {/* Защищенные роуты */}
                 <Route
                   path="/account/loan_applications"
                   element={
@@ -173,14 +148,12 @@ function App() {
                   }
                 />
 
-                {/* Публичные роуты */}
                 <Route path="/privacy-policy" element={<Policy />} />
                 <Route
                   path="/polzovatelskoe-soglashenie"
                   element={<UserAgreement />}
                 />
 
-                {/* Файлы */}
                 <Route
                   path="/soglasie-na-obrabotku-personalnyh-dannyh"
                   element={
@@ -200,7 +173,6 @@ function App() {
             </main>
 
             <Cookies />
-
             <Footer />
           </div>
         </Suspense>

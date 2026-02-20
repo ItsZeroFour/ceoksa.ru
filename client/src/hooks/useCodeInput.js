@@ -4,6 +4,15 @@ export const useCodeInput = (length = 4) => {
   const [code, setCode] = useState(Array(length).fill(""));
   const [hasError, setHasError] = useState(false);
   const inputRefs = useRef([]);
+  const codeRef = useRef(Array(length).fill(""));
+
+  const updateCode = useCallback((updater) => {
+    setCode((prev) => {
+      const next = typeof updater === "function" ? updater(prev) : updater;
+      codeRef.current = next;
+      return next;
+    });
+  }, []);
 
   const handleChange = useCallback(
     (index, value) => {
@@ -11,7 +20,7 @@ export const useCodeInput = (length = 4) => {
         const digits = value.replace(/\D/g, "").split("").slice(0, length);
         if (!digits.length) return;
 
-        setCode((prev) => {
+        updateCode((prev) => {
           const newCode = [...prev];
           digits.forEach((d, i) => {
             if (index + i < length) newCode[index + i] = d;
@@ -28,7 +37,7 @@ export const useCodeInput = (length = 4) => {
 
       if (!/^\d?$/.test(value)) return;
 
-      setCode((prev) => {
+      updateCode((prev) => {
         const newCode = [...prev];
         newCode[index] = value;
         return newCode;
@@ -40,7 +49,7 @@ export const useCodeInput = (length = 4) => {
         inputRefs.current[index + 1]?.focus();
       }
     },
-    [length]
+    [length, updateCode]
   );
 
   const handleKeyDown = useCallback(
@@ -65,22 +74,25 @@ export const useCodeInput = (length = 4) => {
         for (let i = 0; i < pasted.length; i++) {
           newCode[i] = pasted[i];
         }
-        setCode(newCode);
+
+        updateCode(newCode);
         setHasError(false);
 
         const focusIndex = Math.min(pasted.length - 1, length - 1);
         inputRefs.current[focusIndex]?.focus();
       }
     },
-    [length]
+    [length, updateCode]
   );
 
   const isComplete = code.every((digit) => digit !== "");
 
-  const getCode = () => code.join("");
+  const getCode = useCallback(() => codeRef.current.join(""), []);
 
   const reset = useCallback(() => {
-    setCode(Array(length).fill(""));
+    const empty = Array(length).fill("");
+    codeRef.current = empty;
+    setCode(empty);
     setHasError(false);
     inputRefs.current[0]?.focus();
   }, [length]);

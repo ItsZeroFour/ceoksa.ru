@@ -11,9 +11,11 @@ import {
   updateUser,
   clearError,
 } from "../../../../redux/slices/user/updateUserSlice";
+import useIsMobile from "../../../../hooks/useIsMobile";
 
 const PhotoWithPassport = () => {
   const dispatch = useDispatch();
+  const isMobile = useIsMobile();
   const user = useSelector((state) => state.auth);
   const {
     uploadedPath,
@@ -118,7 +120,7 @@ const PhotoWithPassport = () => {
               onFileSelect={handleFileSelect}
               id="photo-with-passport"
               fileName={getFileName()}
-              disabled={uploading}
+              disabled={!isMobile || uploading}
             />
           </li>
         </ul>

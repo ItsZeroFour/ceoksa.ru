@@ -29,7 +29,7 @@ const Documents = (user) => {
             {/* <img src={gosuslugi} alt="Госуслуги" /> */}
           </li>
 
-          <li>
+          {/* <li>
             <div className={style.documents__item__main}>
               <div className={style.documents__item__icon}>
                 <DriverLicense />
@@ -72,7 +72,7 @@ const Documents = (user) => {
             </div>
 
             <img src={gosuslugi} alt="Госуслуги" />
-          </li>
+          </li> */}
 
           <li>
             <div className={style.documents__item__main}>
@@ -86,7 +86,7 @@ const Documents = (user) => {
               </div>
             </div>
 
-            <img src={gosuslugi} alt="Госуслуги" />
+            {/* <img src={gosuslugi} alt="Госуслуги" /> */}
           </li>
         </ul>
       </div>
