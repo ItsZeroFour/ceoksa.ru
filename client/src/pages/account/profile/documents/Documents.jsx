@@ -22,7 +22,7 @@ const Documents = (user) => {
 
               <div className={style.documents__item__text}>
                 <p>Паспорт</p>
-                <p>{user?.user?.passport?.series_number}</p>
+                <p>{user?.user?.passport?.series_number || "0000 000000"}</p>
               </div>
             </div>
 

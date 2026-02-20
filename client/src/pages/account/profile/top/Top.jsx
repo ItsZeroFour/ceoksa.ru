@@ -80,7 +80,7 @@ const Top = ({ user }) => {
                 </div>
 
                 <div className={style.top__main__name__main}>
-                  <p>{user.fullName}</p>
+                  <p>{user?.fullName || "Фамилия Имя Отчество"}</p>
 
                   {/* <div className={style.top__main__name__main__data}> */}
                   {/* <div className={style.top__main__name__main__data__text}>
@@ -149,7 +149,7 @@ const Top = ({ user }) => {
                       {...getFieldProps("mail")}
                       readOnly={true}
                     /> */}
-                    <p>{user.email}</p>
+                    <p>{user.email || "example@mail.ru"}</p>
                     {/* <Edit /> */}
                     {hasError("mail") && (
                       <span className={style.error_text}>{errors.mail}</span>
@@ -164,7 +164,7 @@ const Top = ({ user }) => {
 
                   <div className={style.top__item__text}>
                     <p>Дата рождения</p>
-                    <p>{user.passport.birth}</p>
+                    <p>{user?.passport?.birth || "00.00.000"}</p>
                   </div>
                 </li>
 
