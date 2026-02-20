@@ -34,6 +34,7 @@ const Credit = ({ setOpenAuthMenu }) => {
   const isAuthenticated = user?.isAuth ?? false;
   const authLoaded = user?.status === "succeeded" || user?.status === "failed";
   const prevIsAuth = useRef(null);
+  const skipNextDebounce = useRef(false);
 
   const loanApplication = user?.user?.data?.loan_application;
 
@@ -116,6 +117,7 @@ const Credit = ({ setOpenAuthMenu }) => {
     const savedDraft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
     if (!savedDraft) return;
 
+    skipNextDebounce.current = true;
     dispatch(clearError());
     dispatch(updateUser({ loan_application: savedDraft }));
     localStorage.removeItem(DRAFT_KEY);
@@ -144,6 +146,11 @@ const Credit = ({ setOpenAuthMenu }) => {
 
   useEffect(() => {
     if (!isAuthenticated) return;
+
+    if (skipNextDebounce.current) {
+      skipNextDebounce.current = false;
+      return;
+    }
 
     debouncedUpdate({
       sum: creditAmount.amountValue,
