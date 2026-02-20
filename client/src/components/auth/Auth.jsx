@@ -89,7 +89,7 @@ const Auth = ({ setOpenAuthMenu }) => {
   const handleSubmitCode = async (e) => {
     e.preventDefault();
 
-    if (!codeInput.isComplete) return;
+    if (!codeInput.getIsComplete()) return;
 
     const smsCode = codeInput.getCode();
     const result = await dispatch(verifyCode({ auth_req_id, code: smsCode }));

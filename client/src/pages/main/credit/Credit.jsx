@@ -32,13 +32,12 @@ const Credit = ({ setOpenAuthMenu }) => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth);
   const isAuthenticated = user?.isAuth ?? false;
-  const prevIsAuth = useRef(isAuthenticated);
+  const authLoaded = user?.status === "succeeded" || user?.status === "failed";
+  const prevIsAuth = useRef(null);
 
   const loanApplication = user?.user?.data?.loan_application;
 
-  const draft = !isAuthenticated
-    ? JSON.parse(localStorage.getItem(DRAFT_KEY) || "null")
-    : null;
+  const draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
 
   const initialSum = loanApplication?.sum ?? draft?.sum ?? 500000;
   const initialTerm =
@@ -102,26 +101,13 @@ const Credit = ({ setOpenAuthMenu }) => {
   }, [user.status]);
 
   useEffect(() => {
-    if (isAuthenticated) return;
+    if (!authLoaded) return;
 
-    localStorage.setItem(
-      DRAFT_KEY,
-      JSON.stringify({
-        sum: creditAmount.amountValue,
-        date: selectedTerm.value,
-        target: selectedTarget.value,
-        salary: salary.salaryValue,
-      })
-    );
-  }, [
-    isAuthenticated,
-    creditAmount.amountValue,
-    selectedTerm,
-    selectedTarget,
-    salary.salaryValue,
-  ]);
+    if (prevIsAuth.current === null) {
+      prevIsAuth.current = isAuthenticated;
+      return;
+    }
 
-  useEffect(() => {
     const justLoggedIn = !prevIsAuth.current && isAuthenticated;
     prevIsAuth.current = isAuthenticated;
 
@@ -133,7 +119,28 @@ const Credit = ({ setOpenAuthMenu }) => {
     dispatch(clearError());
     dispatch(updateUser({ loan_application: savedDraft }));
     localStorage.removeItem(DRAFT_KEY);
-  }, [isAuthenticated]);
+  }, [authLoaded, isAuthenticated]);
+
+  useEffect(() => {
+    if (!authLoaded || isAuthenticated) return;
+
+    localStorage.setItem(
+      DRAFT_KEY,
+      JSON.stringify({
+        sum: creditAmount.amountValue,
+        date: selectedTerm.value,
+        target: selectedTarget.value,
+        salary: salary.salaryValue,
+      })
+    );
+  }, [
+    authLoaded,
+    isAuthenticated,
+    creditAmount.amountValue,
+    selectedTerm,
+    selectedTarget,
+    salary.salaryValue,
+  ]);
 
   useEffect(() => {
     if (!isAuthenticated) return;

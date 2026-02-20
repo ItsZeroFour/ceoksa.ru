@@ -87,6 +87,11 @@ export const useCodeInput = (length = 4) => {
 
   const isComplete = code.every((digit) => digit !== "");
 
+  const getIsComplete = useCallback(
+    () => codeRef.current.every((d) => d !== ""),
+    []
+  );
+
   const getCode = useCallback(() => codeRef.current.join(""), []);
 
   const reset = useCallback(() => {
@@ -106,6 +111,7 @@ export const useCodeInput = (length = 4) => {
     hasError,
     inputRefs,
     isComplete,
+    getIsComplete,
     handleChange,
     handleKeyDown,
     handlePaste,
