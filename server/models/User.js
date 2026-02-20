@@ -79,6 +79,27 @@ const UserSchema = new mongoose.Schema(
     loans: {
       sum: Number,
     },
+
+    loan_application: {
+      sum: {
+        type: Number,
+        default: 500_000,
+      },
+
+      date: {
+        type: Number,
+        default: 36,
+      },
+
+      target: {
+        type: String,
+        default: "Кредит наличными",
+      },
+
+      salary: {
+        type: Number,
+      },
+    },
   },
   {
     timestamps: true,

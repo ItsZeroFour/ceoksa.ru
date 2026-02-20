@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import style from "./auth.module.scss";
 import logo from "../../assets/logo.svg";
 import logoDark from "../../assets/logo-dark.svg";
@@ -20,6 +20,7 @@ import {
 const Auth = ({ setOpenAuthMenu }) => {
   const { theme } = useTheme();
   const [currentStep, setCurrentStep] = useState("phone");
+  const navigate = useNavigate();
 
   const dispatch = useDispatch();
 
@@ -36,7 +37,10 @@ const Auth = ({ setOpenAuthMenu }) => {
   const resendTimer = useResendTimer(60);
 
   const authPolling = useAuthPolling({
-    onSuccess: () => setOpenAuthMenu(false),
+    onSuccess: () => {
+      setOpenAuthMenu(false);
+      navigate("/account/loan_applications");
+    },
     onError: () => codeInput.setError(),
   });
 

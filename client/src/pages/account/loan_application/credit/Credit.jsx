@@ -5,7 +5,12 @@ import { useOutsideClick } from "../../../../hooks/useOutsideClick";
 import { useDropdown } from "../../../../hooks/useDropdown";
 import { useCreditAmount } from "../../../../hooks/useCreditAmount";
 import { useSalaryValidation } from "../../../../hooks/useSalaryValidation";
+import { useDebouncedUpdate } from "../../../../hooks/useDebouncedUpdate";
 import { fetchFiles } from "../../../../redux/slices/strapi/FilesSlide";
+import {
+  updateUser,
+  clearError,
+} from "../../../../redux/slices/user/updateUserSlice";
 import {
   TERMS,
   TARGETS,
@@ -17,19 +22,29 @@ import CreditSalaryInput from "../../../../components/account/CreditSalaryInput/
 import CreditFooter from "../../../../components/account/CreditFooter/CreditFooter";
 
 const Credit = () => {
-  const [selectedTerm, setSelectedTerm] = useState(TERMS[5]);
-  const [selectedTarget, setSelectedTarget] = useState(TARGETS[0]);
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth);
+
+  const loanApplication = user?.user?.data?.loan_application;
+
+  const initialSum = loanApplication?.sum ?? 500000;
+  const initialTerm =
+    TERMS.find((t) => t.value === loanApplication?.date) ?? TERMS[5];
+  const initialTarget =
+    TARGETS.find((t) => t.value === loanApplication?.target) ?? TARGETS[0];
+
+  const [selectedTerm, setSelectedTerm] = useState(initialTerm);
+  const [selectedTarget, setSelectedTarget] = useState(initialTarget);
 
   const termRef = useRef(null);
   const targetRef = useRef(null);
 
-  const dispatch = useDispatch();
   const { data: filesData, status: filesStatus } = useSelector(
     (state) => state.files
   );
 
   const creditAmount = useCreditAmount({
-    initialValue: 500000,
+    initialValue: initialSum,
     minAmount: CREDIT_LIMITS.MIN_AMOUNT,
     maxAmount: CREDIT_LIMITS.MAX_AMOUNT,
     step: CREDIT_LIMITS.STEP,
@@ -46,9 +61,44 @@ const Credit = () => {
 
   useOutsideClick([termRef, targetRef], closeDropdown);
 
+  const debouncedUpdate = useDebouncedUpdate((data) => {
+    dispatch(clearError());
+    dispatch(updateUser({ loan_application: data }));
+  }, 1000);
+
   useEffect(() => {
     dispatch(fetchFiles("fajly?populate=*"));
   }, [dispatch]);
+
+  // Синхронизация сохранённых данных после загрузки пользователя
+  useEffect(() => {
+    if (user.status === "succeeded" && user.user?.data?.loan_application) {
+      const loan = user.user.data.loan_application;
+
+      const savedTerm = TERMS.find((t) => t.value === loan.date);
+      if (savedTerm) setSelectedTerm(savedTerm);
+
+      const savedTarget = TARGETS.find((t) => t.value === loan.target);
+      if (savedTarget) setSelectedTarget(savedTarget);
+
+      if (loan.salary) salary.setSalaryValue(loan.salary);
+    }
+  }, [user.status]);
+
+  // Авто-сохранение при изменении любого поля
+  useEffect(() => {
+    debouncedUpdate({
+      sum: creditAmount.amountValue,
+      date: selectedTerm.value,
+      target: selectedTarget.value,
+      salary: salary.salaryValue,
+    });
+  }, [
+    creditAmount.amountValue,
+    selectedTerm,
+    selectedTarget,
+    salary.salaryValue,
+  ]);
 
   const handleTermSelect = (term) => {
     setSelectedTerm(term);
@@ -65,6 +115,18 @@ const Credit = () => {
       salary.handleSalaryBlur();
       return;
     }
+
+    dispatch(clearError());
+    dispatch(
+      updateUser({
+        loan_application: {
+          sum: creditAmount.amountValue,
+          date: selectedTerm.value,
+          target: selectedTarget.value,
+          salary: salary.salaryValue,
+        },
+      })
+    );
   };
 
   return (
