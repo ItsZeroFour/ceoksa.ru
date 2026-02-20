@@ -54,8 +54,7 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
 
   const termRef = useRef(null);
   const targetRef = useRef(null);
-
-  const pendingDraftSaveRef = useRef(false);
+  const skipNextUpdateRef = useRef(false);
 
   const screenWidth = useScreenWidth();
   const { data, status } = useSelector((state) => state.credit);
@@ -99,6 +98,8 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
     if (authStatus !== "succeeded") return;
     if (!user.user?.data?.loan_application) return;
 
+    if (localStorage.getItem(DRAFT_KEY)) return;
+
     const loan = user.user.data.loan_application;
 
     const savedTerm = TERMS.find((t) => t.value === loan.date);
@@ -111,10 +112,38 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
   }, [authStatus]);
 
   useEffect(() => {
-    console.log("isAuthenticated:", isAuthenticated);
     if (isAuthenticated) return;
 
     localStorage.setItem(DRAFT_KEY, JSON.stringify(getCurrentFormData()));
+  }, [
+    isAuthenticated,
+    creditAmount.amountValue,
+    selectedTerm,
+    selectedTarget,
+    salary.salaryValue,
+  ]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const savedDraft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
+    if (!savedDraft) return;
+
+    skipNextUpdateRef.current = true;
+    dispatch(clearError());
+    dispatch(updateUser({ loan_application: savedDraft }));
+    localStorage.removeItem(DRAFT_KEY);
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    if (skipNextUpdateRef.current) {
+      skipNextUpdateRef.current = false;
+      return;
+    }
+
+    debouncedUpdate(getCurrentFormData());
   }, [
     isAuthenticated,
     creditAmount.amountValue,

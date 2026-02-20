@@ -16,11 +16,6 @@ import {
   initiateAuth,
   verifyCode,
 } from "../../redux/slices/auth/mobileAuthSlice";
-import {
-  updateUser,
-  clearError,
-} from "../../redux/slices/user/updateUserSlice";
-import { DRAFT_KEY } from "../../constants/creditConstants";
 
 const Auth = ({ setOpenAuthMenu }) => {
   const { theme } = useTheme();
@@ -44,16 +39,6 @@ const Auth = ({ setOpenAuthMenu }) => {
 
   const authPolling = useAuthPolling({
     onSuccess: () => {
-      const draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
-
-      console.log(draft, { loan_application: draft });
-
-      if (draft) {
-        dispatch(clearError());
-        dispatch(updateUser({ loan_application: draft }));
-        localStorage.removeItem(DRAFT_KEY);
-      }
-
       setOpenAuthMenu(false);
       window.scrollTo({ top: 0, behavior: "smooth" });
       navigate("/account/loan_applications");
