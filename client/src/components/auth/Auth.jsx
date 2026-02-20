@@ -23,6 +23,7 @@ const Auth = ({ setOpenAuthMenu }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  // Защита от двойной отправки
   const isSubmittingRef = useRef(false);
 
   const { data: filesData, status: filesStatus } = useSelector(
@@ -56,36 +57,37 @@ const Auth = ({ setOpenAuthMenu }) => {
     }
   }, [flow]);
 
+  // Единственный путь к отправке — useEffect после рендера.
+  // Срабатывает и при iOS автозаполнении, и при ручном вводе последней цифры.
   useEffect(() => {
-    if (!codeInput.isComplete || currentStep !== "code") return;
+    if (currentStep !== "code") return;
+    if (!codeInput.isComplete) return;
     if (isSubmittingRef.current) return;
 
-    isSubmittingRef.current = true;
-    const smsCode = codeInput.code.join("");
+    const submitCode = async () => {
+      isSubmittingRef.current = true;
 
-    dispatch(verifyCode({ auth_req_id, code: smsCode })).then((result) => {
+      // Читаем код из актуального стейта — useEffect гарантирует что он свежий
+      const smsCode = codeInput.code.join("");
+      const result = await dispatch(verifyCode({ auth_req_id, code: smsCode }));
+
       isSubmittingRef.current = false;
+
       if (result.meta.requestStatus === "rejected") {
         codeInput.setError();
         return;
       }
+
       authPolling.startPolling(auth_req_id);
-    });
+    };
+
+    submitCode();
   }, [codeInput.isComplete, currentStep]);
 
+  // Сброс флага при смене шага (например после handleBackToPhone)
   useEffect(() => {
-    if (!codeInput.isComplete || currentStep !== "code") return;
-
-    const smsCode = codeInput.code.join("");
-
-    dispatch(verifyCode({ auth_req_id, code: smsCode })).then((result) => {
-      if (result.meta.requestStatus === "rejected") {
-        codeInput.setError();
-        return;
-      }
-      authPolling.startPolling(auth_req_id);
-    });
-  }, [codeInput.isComplete, currentStep]);
+    isSubmittingRef.current = false;
+  }, [currentStep]);
 
   const handleSendSms = async () => {
     const clearPhone = phoneInput.getCleanPhone();
@@ -118,12 +120,17 @@ const Auth = ({ setOpenAuthMenu }) => {
     }
   };
 
-  const handleSubmitCode = async (e) => {
-    e.preventDefault();
+  // Ручная кнопка "Отправить" — просто триггерит тот же useEffect через isComplete
+  // Но на случай если isComplete уже true (повторный клик), дублируем логику
+  const handleSubmitCode = async () => {
     if (!codeInput.isComplete) return;
+    if (isSubmittingRef.current) return;
 
+    isSubmittingRef.current = true;
     const smsCode = codeInput.code.join("");
     const result = await dispatch(verifyCode({ auth_req_id, code: smsCode }));
+
+    isSubmittingRef.current = false;
 
     if (result.meta.requestStatus === "rejected") {
       codeInput.setError();

@@ -8,11 +8,11 @@ const HowGet = lazy(() => import("./how_get/HowGet"));
 const Banks = lazy(() => import("./banks/Banks"));
 const Sequrity = lazy(() => import("./sequrity/Sequrity"));
 
-const Main = ({ scrollToBlock, setOpenAuthMenu }) => {
+const Main = ({ scrollToBlock, setOpenAuthMenu, openAuthMenu }) => {
   return (
     <div>
       <Head scrollToBlock={scrollToBlock} />
-      <Credit setOpenAuthMenu={setOpenAuthMenu} />
+      <Credit setOpenAuthMenu={setOpenAuthMenu} openAuthMenu={openAuthMenu} />
       <Advantages />
       <BestOffer scrollToBlock={scrollToBlock} />
       <Service />
