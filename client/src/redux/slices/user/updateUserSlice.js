@@ -36,6 +36,9 @@ const updateUserSlice = createSlice({
     setCurrentUser: (state, action) => {
       state.currentUser = action.payload;
     },
+    patchCurrentUser: (state, action) => {
+      state.currentUser = { ...state.currentUser, ...action.payload };
+    },
   },
   extraReducers: (builder) => {
     builder

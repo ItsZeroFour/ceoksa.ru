@@ -16,6 +16,7 @@ import {
   clearUploadError,
   resetUpload,
 } from "../../../../redux/slices/user/uploadSlice";
+import { patchUser } from "../../../../redux/slices/auth/authSlice";
 
 const Top = () => {
   const dispatch = useDispatch();
@@ -78,6 +79,10 @@ const Top = () => {
 
         return newFormData;
       });
+
+      dispatch(
+        patchUser({ data: { ...user.user.data, profilePhoto: uploadedPath } })
+      );
 
       dispatch(resetUpload());
       setIsUploadingHere(false);
