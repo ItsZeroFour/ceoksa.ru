@@ -25,6 +25,7 @@ const Top = () => {
   );
   const user = useSelector((state) => state.auth);
   const initialized = useRef(false);
+  const isUploadingHere = useRef(false);
 
   const {
     uploadedPath,
@@ -38,7 +39,6 @@ const Top = () => {
     profilePhoto: "",
   });
   const [photoPreview, setPhotoPreview] = useState(null);
-  const [isUploadingHere, setIsUploadingHere] = useState(false);
 
   const screenWidth = useScreenWidth();
 
@@ -69,7 +69,7 @@ const Top = () => {
   }, [updateSuccess, dispatch]);
 
   useEffect(() => {
-    if (uploadSuccess && uploadedPath && isUploadingHere) {
+    if (uploadSuccess && uploadedPath && isUploadingHere.current) {
       setFormData((prevData) => {
         const newFormData = {
           ...prevData,
@@ -87,9 +87,9 @@ const Top = () => {
       );
 
       dispatch(resetUpload());
-      setIsUploadingHere(false);
+      isUploadingHere.current = false;
     }
-  }, [uploadSuccess, uploadedPath, isUploadingHere, dispatch]);
+  }, [uploadSuccess, uploadedPath, dispatch]);
 
   const handleChange = (e) => {
     const newFormData = {
@@ -106,7 +106,6 @@ const Top = () => {
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      // alert("Пожалуйста, загрузите изображение");
       return;
     }
 
@@ -122,14 +121,13 @@ const Top = () => {
       };
       reader.readAsDataURL(file);
 
-      setIsUploadingHere(true);
+      isUploadingHere.current = true;
       dispatch(clearUploadError());
 
       await dispatch(uploadPhoto(file)).unwrap();
     } catch (error) {
       console.error("Ошибка загрузки фото:", error);
-      // alert("Ошибка при загрузке фотографии");
-      setIsUploadingHere(false);
+      isUploadingHere.current = false;
     }
   };
 
