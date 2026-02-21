@@ -26,6 +26,7 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
     bank_KPP: "",
     have_an_account: false,
   });
+  const [accountNumberError, setAccountNumberError] = useState("");
 
   useEffect(() => {
     if (user.status === "succeeded" && user.user.data?.requisites) {
@@ -90,6 +91,14 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
 
     setFormData((prev) => ({ ...prev, [name]: value }));
 
+    if (name === "account_number") {
+      if (value.length > 0 && value.length !== 20) {
+        setAccountNumberError("Введен неверный счет");
+      } else {
+        setAccountNumberError("");
+      }
+    }
+
     if (name === "BIC") {
       setBicError("");
 
@@ -146,6 +155,10 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
       return;
     }
 
+    if (accountNumberError) {
+      return;
+    }
+
     const bankData = await validateBIC(formData.BIC);
 
     if (!bankData) {
@@ -192,19 +205,30 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
         </div>
 
         <form>
-          <div className={style.requisites__form__block}>
-            <label htmlFor="account_number">Номер счета </label>
-            <input
-              type="text"
-              id="account_number"
-              name="account_number"
-              placeholder="Укажите ваш номер счета"
-              value={formData.account_number}
-              onChange={handleChange}
-              disabled={isChecked}
-              inputMode="numeric"
-            />
-          </div>
+          <>
+            <div
+              className={`${style.requisites__form__block} ${
+                accountNumberError ? style.account_number__error : ""
+              }`}
+            >
+              <label htmlFor="account_number">Номер счета</label>
+              <input
+                type="text"
+                id="account_number"
+                name="account_number"
+                placeholder="Укажите ваш номер счета"
+                value={formData.account_number}
+                onChange={handleChange}
+                disabled={isChecked}
+                inputMode="numeric"
+                maxLength={20}
+              />
+            </div>
+
+            <p className={style.account_number__error__text}>
+              {accountNumberError || ""}
+            </p>
+          </>
 
           <div
             className={`${style.requisites__form__block} ${style.requisites__form__block__special}`}
@@ -221,30 +245,36 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
             />
           </div>
 
-          <div className={style.requisites__form__block}>
-            <label htmlFor="BIC">БИК банка *</label>
-            <input
-              type="text"
-              id="BIC"
-              name="BIC"
-              placeholder="Укажите БИК вашего банка (9 цифр)"
-              value={formData.BIC}
-              onChange={handleChange}
-              onBlur={handleBicBlur}
-              maxLength={9}
-              style={bicError ? { borderColor: "red" } : {}}
-              disabled={isChecked}
-              inputMode="numeric"
-            />
+          <>
+            <div
+              className={`${style.requisites__form__block} ${
+                bicError ? style.account_number__error : ""
+              }`}
+            >
+              <label htmlFor="BIC">БИК банка *</label>
+              <input
+                type="text"
+                id="BIC"
+                name="BIC"
+                placeholder="Укажите БИК вашего банка (9 цифр)"
+                value={formData.BIC}
+                onChange={handleChange}
+                onBlur={handleBicBlur}
+                maxLength={9}
+                style={bicError ? { borderColor: "red" } : {}}
+                disabled={isChecked}
+                inputMode="numeric"
+              />
+            </div>
+
             {isValidatingBic && (
-              <span style={{ color: "#666", fontSize: "12px" }}>
-                Проверка БИК...
-              </span>
+              <p style={{ color: "#666", fontSize: "12px" }}>Проверка БИК...</p>
             )}
+
             {bicError && (
-              <span style={{ color: "red", fontSize: "12px" }}>{bicError}</span>
+              <p className={style.account_number__error__text}>{bicError}</p>
             )}
-          </div>
+          </>
 
           <div
             className={`${style.requisites__form__block} ${style.requisites__form__block__special}`}
