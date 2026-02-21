@@ -20,6 +20,8 @@ import {
 const Auth = ({ setOpenAuthMenu }) => {
   const { theme } = useTheme();
   const [currentStep, setCurrentStep] = useState("phone");
+  const [isAuthLoading, setIsAuthLoading] = useState(false);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -41,11 +43,15 @@ const Auth = ({ setOpenAuthMenu }) => {
   const authPolling = useAuthPolling({
     onSuccess: () => {
       isAuthSucceededRef.current = true;
+      setIsAuthLoading(false);
       setOpenAuthMenu(false);
       window.scrollTo({ top: 0, behavior: "smooth" });
       navigate("/account/loan_applications");
     },
-    onError: () => codeInput.setError(),
+    onError: () => {
+      setIsAuthLoading(false);
+      codeInput.setError();
+    },
   });
 
   useEffect(() => {
@@ -97,22 +103,23 @@ const Auth = ({ setOpenAuthMenu }) => {
   const handleSubmitCode = async () => {
     if (isSubmittingRef.current) return;
     if (isAuthSucceededRef.current) return;
-
+  
     const smsCode = codeInput.getCode();
-
     if (!smsCode || smsCode.length !== 4) return;
-
+  
     isSubmittingRef.current = true;
-
+    setIsAuthLoading(true);
+  
     const result = await dispatch(verifyCode({ auth_req_id, code: smsCode }));
-
+  
     isSubmittingRef.current = false;
-
+  
     if (result.meta.requestStatus === "rejected") {
+      setIsAuthLoading(false);
       codeInput.setError();
       return;
     }
-
+  
     authPolling.startPolling(auth_req_id);
   };
 
@@ -181,6 +188,7 @@ const Auth = ({ setOpenAuthMenu }) => {
               resendDisabled={resendTimer.isDisabled}
               resendTimer={resendTimer.timeLeft}
               styles={style}
+              isLoading={isAuthLoading}
             />
           )}
         </div>
