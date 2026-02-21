@@ -15,6 +15,7 @@ const CodeAuthStep = ({
   resendDisabled,
   resendTimer,
   styles,
+  isAuthSucceededRef,
 }) => {
   return (
     <>
@@ -48,7 +49,11 @@ const CodeAuthStep = ({
 
         {hasError && <p className={styles.auth__code__error}>Неверный код</p>}
 
-        <button type="button" disabled={!isComplete} onClick={onSubmit}>
+        <button
+          type="button"
+          disabled={!isComplete || isAuthSucceededRef}
+          onClick={onSubmit}
+        >
           Отправить
         </button>
       </form>
