@@ -181,7 +181,6 @@ const Auth = ({ setOpenAuthMenu }) => {
               resendDisabled={resendTimer.isDisabled}
               resendTimer={resendTimer.timeLeft}
               styles={style}
-              isAuthSucceededRef={isAuthSucceededRef}
             />
           )}
         </div>
