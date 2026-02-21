@@ -52,6 +52,7 @@ const Auth = ({ setOpenAuthMenu }) => {
 
   useEffect(() => {
     if (flow === "sms" && currentStep === "push_wait") {
+      authPolling.stopPolling();
       setCurrentStep("code");
     }
   }, [flow]);

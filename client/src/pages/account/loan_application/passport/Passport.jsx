@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import style from "./passport.module.scss";
 import { ReactComponent as PassportIcon } from "../../../../assets/icons/account/passport.svg";
 import InputField from "../../../../components/input_field/InputField";
@@ -16,6 +16,8 @@ import {
 const Passport = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth);
+
+  const initialized = useRef(false);
 
   const [formData, setFormData] = useState({
     series_number: "",
@@ -85,7 +87,11 @@ const Passport = () => {
   }, 3000);
 
   useEffect(() => {
-    if (user.status === "succeeded" && user.user.data?.passport) {
+    if (
+      !initialized.current &&
+      user.status === "succeeded" &&
+      user.user.data?.passport
+    ) {
       setFormData({
         series_number: user.user.data.passport.series_number || "",
         date: user.user.data.passport.date || "",
@@ -94,6 +100,7 @@ const Passport = () => {
         birth: user.user.data.passport.birth || "",
         place_of_birth: user.user.data.passport.place_of_birth || "",
       });
+      initialized.current = true;
     }
   }, [user]);
 

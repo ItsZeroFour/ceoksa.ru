@@ -42,7 +42,7 @@ const Addresses = ({ user }) => {
 
               <div className={style.addresses__form__item}>
                 <label htmlFor="address">Фактический адрес</label>
-                <input
+                {/* <input
                   type="text"
                   id="address"
                   placeholder={
@@ -56,7 +56,13 @@ const Addresses = ({ user }) => {
                       ? user?.real_address?.street
                       : user?.address?.street || "-"
                   }
-                />
+                /> */}
+
+                <p>
+                  {(user.address_doesnt_match
+                    ? user?.real_address?.street
+                    : user?.address?.street) || "-"}
+                </p>
                 {/* <Edit /> */}
               </div>
             </div>

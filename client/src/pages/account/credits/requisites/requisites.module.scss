@@ -83,7 +83,13 @@
         color: var(--color-black);
 
         @media (max-width: 768px) {
-          font-size: 15px;
+          font-size: 16px;
+        }
+
+        &::placeholder {
+          @media (max-width: 768px) {
+            font-size: 14px;
+          }
         }
       }
     }

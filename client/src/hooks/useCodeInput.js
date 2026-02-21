@@ -17,6 +17,8 @@ export const useCodeInput = (length = 4) => {
   const handleChange = useCallback(
     (index, value) => {
       if (value.length > 1) {
+        if (codeRef.current.every((d) => d !== "")) return;
+        
         const digits = value.replace(/\D/g, "").split("").slice(0, length);
         if (!digits.length) return;
 
@@ -30,8 +32,7 @@ export const useCodeInput = (length = 4) => {
 
         setHasError(false);
 
-        const focusIndex = Math.min(index + digits.length - 1, length - 1);
-        inputRefs.current[focusIndex]?.focus();
+        inputRefs.current[index]?.blur();
         return;
       }
 
