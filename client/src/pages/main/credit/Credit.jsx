@@ -172,7 +172,8 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
     }
 
     if (isAuthenticated) {
-      debouncedUpdate(getCurrentFormData());
+      dispatch(clearError());
+      dispatch(updateUser({ loan_application: getCurrentFormData() }));
       navigate("/account/loan_applications");
     } else {
       saveDraft(getCurrentFormData());

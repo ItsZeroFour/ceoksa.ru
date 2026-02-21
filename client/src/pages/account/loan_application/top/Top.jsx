@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import style from "./top.module.scss";
 import Notification from "../../../../components/notification/Notification";
 import camera from "../../../../assets/icons/account/camera.svg";
@@ -24,6 +24,7 @@ const Top = () => {
     (state) => state.updateUser
   );
   const user = useSelector((state) => state.auth);
+  const initialized = useRef(false);
 
   const {
     uploadedPath,
@@ -47,7 +48,7 @@ const Top = () => {
   }, 3000);
 
   useEffect(() => {
-    if (user.status === "succeeded" && user.user.data) {
+    if (!initialized.current && user.status === "succeeded" && user.user.data) {
       setFormData({
         fullName: user.user.data.fullName || "",
         profilePhoto: user.user.data.profilePhoto || "",
@@ -57,6 +58,7 @@ const Top = () => {
           `${process.env.REACT_APP_SERVERF_API}${user.user.data.profilePhoto}`
         );
       }
+      initialized.current = true;
     }
   }, [user]);
 

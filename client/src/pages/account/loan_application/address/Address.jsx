@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import style from "./address.module.scss";
 import { ReactComponent as Location } from "../../../../assets/icons/account/location.svg";
 import { ReactComponent as Passport } from "../../../../assets/icons/account/passport.svg";
@@ -16,6 +16,8 @@ import {
 const Address = ({ setIsChecked, isChecked }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth);
+
+  const initialized = useRef(false);
 
   const [formData, setFormData] = useState({
     street: "",
@@ -58,7 +60,7 @@ const Address = ({ setIsChecked, isChecked }) => {
   }, 3000);
 
   useEffect(() => {
-    if (user.status === "succeeded" && user.user.data) {
+    if (!initialized.current && user.status === "succeeded" && user.user.data) {
       if (user.user.data.address) {
         setFormData({
           street: user.user.data.address.street || "",
@@ -66,10 +68,10 @@ const Address = ({ setIsChecked, isChecked }) => {
           registration_date: user.user.data.address.registration_date || "",
         });
       }
-
       if (user.user.data.address_doesnt_match !== undefined) {
         setIsChecked(!user.user.data.address_doesnt_match);
       }
+      initialized.current = true;
     }
   }, [user, setIsChecked]);
 

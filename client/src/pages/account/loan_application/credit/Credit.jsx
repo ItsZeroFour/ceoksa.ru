@@ -83,6 +83,10 @@ const Credit = () => {
 
     if (userChangedRef.current) return;
 
+    if (loanApplication.sum) {
+      creditAmount.setAmountValue(loanApplication.sum);
+    }
+
     const savedTerm = TERMS.find((t) => t.value === loanApplication.date);
     if (savedTerm) setSelectedTerm(savedTerm);
 
