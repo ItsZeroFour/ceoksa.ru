@@ -24,6 +24,7 @@ const Auth = ({ setOpenAuthMenu }) => {
   const dispatch = useDispatch();
 
   const isSubmittingRef = useRef(false);
+  const isAuthSucceededRef = useRef(false);
 
   const { data: filesData, status: filesStatus } = useSelector(
     (state) => state.files
@@ -39,6 +40,7 @@ const Auth = ({ setOpenAuthMenu }) => {
 
   const authPolling = useAuthPolling({
     onSuccess: () => {
+      isAuthSucceededRef.current = true;
       setOpenAuthMenu(false);
       window.scrollTo({ top: 0, behavior: "smooth" });
       navigate("/account/loan_applications");
@@ -94,6 +96,7 @@ const Auth = ({ setOpenAuthMenu }) => {
 
   const handleSubmitCode = async () => {
     if (isSubmittingRef.current) return;
+    if (isAuthSucceededRef.current) return;
 
     const smsCode = codeInput.getCode();
 
@@ -119,6 +122,7 @@ const Auth = ({ setOpenAuthMenu }) => {
     setCurrentStep("phone");
     resendTimer.reset();
     authPolling.stopPolling();
+    isAuthSucceededRef.current = false;
   };
 
   return (

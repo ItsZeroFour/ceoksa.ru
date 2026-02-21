@@ -46,7 +46,7 @@ const Rekvisits = ({ user }) => {
   };
 
   useEffect(() => {
-    const bic = user?.requisites?.bic;
+    const bic = user?.requisites?.BIC;
 
     if (!bic) {
       setBankName("Банк не указан");
