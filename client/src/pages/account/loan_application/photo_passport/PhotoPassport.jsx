@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import style from "./photopassport.module.scss";
 import InputFileUpload from "../../../../components/input_file_upload/InputFileUpload";
 import { useDispatch, useSelector } from "react-redux";
@@ -40,8 +40,8 @@ const PhotoPassport = () => {
     previously_issued_passports_page: "",
   });
 
-  const [currentUploadKey, setCurrentUploadKey] = useState(null);
-  const [isUploadingHere, setIsUploadingHere] = useState(false);
+  const currentUploadKey = useRef(null);
+  const isUploadingHere = useRef(false);
 
   const keyMapping = {
     firstSpread: "first_page_of_the_passport",
@@ -68,8 +68,13 @@ const PhotoPassport = () => {
   }, [user]);
 
   useEffect(() => {
-    if (uploadSuccess && uploadedPath && currentUploadKey && isUploadingHere) {
-      const dbKey = keyMapping[currentUploadKey];
+    if (
+      uploadSuccess &&
+      uploadedPath &&
+      currentUploadKey.current &&
+      isUploadingHere.current
+    ) {
+      const dbKey = keyMapping[currentUploadKey.current];
 
       const newPhotoPaths = {
         ...photoPaths,
@@ -89,14 +94,12 @@ const PhotoPassport = () => {
       );
 
       dispatch(resetUpload());
-      setCurrentUploadKey(null);
-      setIsUploadingHere(false);
+      currentUploadKey.current = null;
+      isUploadingHere.current = false;
     }
   }, [
     uploadSuccess,
     uploadedPath,
-    currentUploadKey,
-    isUploadingHere,
     dispatch,
     photoPaths,
     user.user.data?.photos,
@@ -111,15 +114,14 @@ const PhotoPassport = () => {
 
     try {
       setFiles((prev) => ({ ...prev, [key]: file }));
-      setCurrentUploadKey(key);
-      setIsUploadingHere(true);
+      currentUploadKey.current = key;
+      isUploadingHere.current = true;
       dispatch(clearUploadError());
       await dispatch(uploadPhoto(file)).unwrap();
-      console.log(`Файл для "${key}" успешно загружен`);
     } catch (error) {
       console.error("Ошибка загрузки фото:", error);
-      setCurrentUploadKey(null);
-      setIsUploadingHere(false);
+      currentUploadKey.current = null;
+      isUploadingHere.current = false;
     }
   };
 
@@ -181,7 +183,9 @@ const PhotoPassport = () => {
                 onFileSelect={handleFileSelect(key)}
                 id={id}
                 fileName={getFileName(key)}
-                disabled={!isMobile || (uploading && currentUploadKey === key)}
+                disabled={
+                  !isMobile || (uploading && currentUploadKey.current === key)
+                }
               />
             </li>
           ))}
