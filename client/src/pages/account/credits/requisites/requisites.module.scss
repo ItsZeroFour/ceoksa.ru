@@ -123,3 +123,12 @@
 .requisites__form__block__special {
   opacity: 0.5;
 }
+
+.account_number__error {
+  border: 1px solid var(--color-red);
+}
+
+.account_number__error__text {
+  font-size: 13px !important;
+  color: var(--color-red);
+}
