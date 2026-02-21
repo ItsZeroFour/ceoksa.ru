@@ -18,7 +18,7 @@ export const useCodeInput = (length = 4) => {
     (index, value) => {
       if (value.length > 1) {
         if (codeRef.current.every((d) => d !== "")) return;
-        
+
         const digits = value.replace(/\D/g, "").split("").slice(0, length);
         if (!digits.length) return;
 
