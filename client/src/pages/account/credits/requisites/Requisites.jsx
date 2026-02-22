@@ -7,6 +7,7 @@ import {
   clearError,
 } from "../../../../redux/slices/user/updateUserSlice";
 import axios from "axios";
+import useDisableScroll from "../../../../hooks/useDisableScroll";
 
 const Requisites = ({ setShowRequisites, showRequisites }) => {
   const dispatch = useDispatch();
