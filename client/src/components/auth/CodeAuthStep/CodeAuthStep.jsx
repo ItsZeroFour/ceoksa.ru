@@ -32,7 +32,7 @@ const CodeAuthStep = ({
               type="text"
               inputMode="numeric"
               pattern="\d"
-              maxLength={1}
+              maxLength={index === 0 ? code.length : 1}
               value={digit}
               onChange={(e) => onCodeChange(index, e.target.value)}
               onKeyDown={(e) => onKeyDown(index, e)}
