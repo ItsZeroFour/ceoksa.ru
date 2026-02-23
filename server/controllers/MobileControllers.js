@@ -110,10 +110,7 @@ export const handleSmsOtp = async (req, res) => {
       transaction.client_notification_token &&
       !validateBearerToken(req, transaction.client_notification_token)
     ) {
-      console.warn(
-        "Неверный client_notification_token для",
-        auth_req_id
-      );
+      console.warn("Неверный client_notification_token для", auth_req_id);
       return res.status(401).json({
         error: "unauthorized",
         message: "Неверный Authorization token",
@@ -234,10 +231,7 @@ export const handleNotification = async (req, res) => {
       transaction.client_notification_token &&
       !validateBearerToken(req, transaction.client_notification_token)
     ) {
-      console.warn(
-        "Неверный client_notification_token для",
-        auth_req_id
-      );
+      console.warn("Неверный client_notification_token для", auth_req_id);
       return res.status(401).json({
         error: "unauthorized",
         message: "Неверный Authorization token",
@@ -251,9 +245,21 @@ export const handleNotification = async (req, res) => {
         error_description,
       });
 
+      const canRetry =
+        error === "access_denied" &&
+        typeof error_description === "string" &&
+        (error_description.includes("client cancelled") ||
+          error_description.includes("user_denied") ||
+          error_description.includes("cancelled"));
+
       await AuthTransaction.findOneAndUpdate(
         { auth_req_id },
-        { status: "failed", error, error_description }
+        {
+          status: "failed",
+          error,
+          error_description,
+          can_retry: canRetry,
+        }
       );
 
       return res.status(204).end();
@@ -271,10 +277,7 @@ export const handleNotification = async (req, res) => {
     try {
       decoded = await verifyIdToken(id_token);
     } catch (verifyError) {
-      console.error(
-        "Ошибка верификации id_token:",
-        verifyError.message
-      );
+      console.error("Ошибка верификации id_token:", verifyError.message);
 
       await AuthTransaction.findOneAndUpdate(
         { auth_req_id },
@@ -282,6 +285,7 @@ export const handleNotification = async (req, res) => {
           status: "failed",
           error: "token_verification_failed",
           error_description: verifyError.message,
+          can_retry: false,
         }
       );
 
@@ -372,6 +376,7 @@ export const checkAuthStatus = async (req, res) => {
     if (transaction.status === "failed") {
       response.error = transaction.error;
       response.error_description = transaction.error_description;
+      response.can_retry = transaction.can_retry || false;
     }
 
     res.json(response);
@@ -393,10 +398,7 @@ export const finalizeAuth = async (req, res) => {
     });
 
     if (!transaction) {
-      console.warn(
-        "Успешная транзакция не найдена:",
-        auth_req_id
-      );
+      console.warn("Успешная транзакция не найдена:", auth_req_id);
       return res.status(404).json({
         error: "not_found",
         message: "Успешная транзакция не найдена",

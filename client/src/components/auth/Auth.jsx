@@ -48,9 +48,18 @@ const Auth = ({ setOpenAuthMenu }) => {
       window.scrollTo({ top: 0, behavior: "smooth" });
       navigate("/account/loan_applications");
     },
-    onError: () => {
+    onSmsRequired: () => {},
+    onError: ({ status, canRetry }) => {
       setIsAuthLoading(false);
-      codeInput.setError();
+
+      if (canRetry || status === "expired") {
+        authPolling.stopPolling();
+        codeInput.reset();
+        setCurrentStep("phone");
+        phoneInput.setRetryHint(true);
+      } else {
+        codeInput.setError();
+      }
     },
   });
 
@@ -103,23 +112,23 @@ const Auth = ({ setOpenAuthMenu }) => {
   const handleSubmitCode = async () => {
     if (isSubmittingRef.current) return;
     if (isAuthSucceededRef.current) return;
-  
+
     const smsCode = codeInput.getCode();
     if (!smsCode || smsCode.length !== 4) return;
-  
+
     isSubmittingRef.current = true;
     setIsAuthLoading(true);
-  
+
     const result = await dispatch(verifyCode({ auth_req_id, code: smsCode }));
-  
+
     isSubmittingRef.current = false;
-  
+
     if (result.meta.requestStatus === "rejected") {
       setIsAuthLoading(false);
       codeInput.setError();
       return;
     }
-  
+
     authPolling.startPolling(auth_req_id);
   };
 
