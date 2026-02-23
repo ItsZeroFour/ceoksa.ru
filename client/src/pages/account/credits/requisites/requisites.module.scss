@@ -135,3 +135,13 @@
   font-size: 13px !important;
   color: var(--color-red);
 }
+
+.requisites__form__block {
+  position: relative;
+
+  svg {
+    position: absolute;
+    right: 3%;
+    top: 35%;
+  }
+}

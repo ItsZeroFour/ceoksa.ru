@@ -8,6 +8,7 @@ import {
 } from "../../../../redux/slices/user/updateUserSlice";
 import axios from "axios";
 import useDisableScroll from "../../../../hooks/useDisableScroll";
+import { ReactComponent as Edit } from "../../../../assets/icons/account/edit.svg";
 
 const Requisites = ({ setShowRequisites, showRequisites }) => {
   const dispatch = useDispatch();
@@ -224,6 +225,8 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
                 inputMode="numeric"
                 maxLength={20}
               />
+
+              <Edit />
             </div>
 
             <p className={style.account_number__error__text}>
@@ -257,7 +260,7 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
                 type="text"
                 id="BIC"
                 name="BIC"
-                placeholder="Укажите БИК вашего банка (9 цифр)"
+                placeholder="Укажите БИК вашего банка"
                 value={formData.BIC}
                 onChange={handleChange}
                 onBlur={handleBicBlur}
@@ -266,6 +269,8 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
                 disabled={isChecked}
                 inputMode="numeric"
               />
+
+              <Edit />
             </div>
 
             {isValidatingBic && (
