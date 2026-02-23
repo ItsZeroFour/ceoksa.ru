@@ -71,6 +71,8 @@ const mobileAuthSlice = createSlice({
     error: null,
     hhe_uri: null,
     flow: null,
+    canRetry: false,
+    failReason: null,
   },
   reducers: {
     resetAuth: (state) => {
@@ -81,36 +83,71 @@ const mobileAuthSlice = createSlice({
       state.error = null;
       state.hhe_uri = null;
       state.flow = null;
+      state.canRetry = false;
+      state.failReason = null;
     },
   },
   extraReducers: (builder) => {
     builder
+      .addCase(initiateAuth.pending, (state) => {
+        state.canRetry = false;
+        state.failReason = null;
+        state.error = null;
+      })
       .addCase(initiateAuth.fulfilled, (state, action) => {
         state.auth_req_id = action.payload.auth_req_id;
         state.hhe_uri = action.payload.hhe_uri || null;
         state.status = "pending";
         state.flow = action.payload.hhe_uri ? "seamless" : "push";
-
-        console.log(action.payload.hhe_uri);
+        state.canRetry = false;
+        state.failReason = null;
       })
+      .addCase(initiateAuth.rejected, (state, action) => {
+        state.error = action.payload?.message || "Ошибка инициализации";
+      })
+
       .addCase(checkStatus.fulfilled, (state, action) => {
-        const newStatus = action.payload.status;
-        if (newStatus === "sms_sent") {
+        const { status, user, error, error_description, can_retry } =
+          action.payload;
+
+        if (status === "sms_sent") {
           state.flow = "sms";
         }
-        state.status = newStatus;
-        if (newStatus === "success") {
-          state.user = action.payload.user || null;
+
+        state.status = status;
+
+        if (status === "success") {
+          state.user = user || null;
         }
+
+        if (status === "failed") {
+          state.canRetry = can_retry || false;
+          state.failReason = error || null;
+          state.error = error_description || error || "Ошибка аутентификации";
+        }
+
+        if (status === "expired") {
+          state.canRetry = true;
+          state.failReason = "expired";
+        }
+      })
+      .addCase(checkStatus.rejected, (state, action) => {
+        state.error = action.payload?.message || "Ошибка проверки статуса";
       })
 
       .addCase(verifyCode.fulfilled, (state) => {
         state.status = "verifying";
       })
+      .addCase(verifyCode.rejected, (state, action) => {
+        state.error = action.payload?.message || "Неверный код";
+      })
 
       .addCase(finalizeAuth.fulfilled, (state, action) => {
         state.status = "authenticated";
         state.user = action.payload.user;
+      })
+      .addCase(finalizeAuth.rejected, (state, action) => {
+        state.error = action.payload?.message || "Ошибка финализации";
       });
   },
 });
