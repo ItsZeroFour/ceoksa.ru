@@ -15,32 +15,30 @@ import {
 
 const Contacts = ({ userData }) => {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.auth);
+  const email = useSelector((state) => state.auth.user?.data?.email);
   const isInitialized = useRef(false);
 
-  const initialValues = {
-    mail: user?.user?.data?.email || "",
-  };
+  const initialValues = useRef({
+    mail: email || "",
+  });
+
+  const validators = useRef({
+    mail: [
+      (v) =>
+        v && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(v)
+          ? "Некорректный email"
+          : "",
+    ],
+  });
 
   const { getFieldProps, hasError, errors, values } = useValidation(
-    initialValues,
-    {
-      mail: [
-        (v) =>
-          v && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(v)
-            ? "Некорректный email"
-            : "",
-      ],
-    }
+    initialValues.current,
+    validators.current
   );
 
   const debouncedUpdate = useDebouncedUpdate((email) => {
     dispatch(clearError());
-    dispatch(
-      updateUser({
-        email: email,
-      })
-    );
+    dispatch(updateUser({ email }));
   }, 3000);
 
   useEffect(() => {
@@ -52,10 +50,11 @@ const Contacts = ({ userData }) => {
     if (values.mail && !hasError("mail")) {
       debouncedUpdate(values.mail);
     }
-  }, [values.mail, hasError, debouncedUpdate]);
+  }, [values.mail]);
 
   const { inputRef: phoneInputRef } = usePhoneMask({
     onAccept: ({ value, unmaskedValue, isValid }) => {},
+    initialValue: userData.phone || "",
   });
 
   const screenWidth = useScreenWidth();
@@ -78,23 +77,25 @@ const Contacts = ({ userData }) => {
               id="phone"
               type="tel"
               readOnly={true}
-              value={userData.phone}
               ref={phoneInputRef}
             />
           </li>
 
-          <li>
-            <InputField
-              icon={Mail}
-              label="Электронная почта"
-              placeholder={placeholder}
-              id="mail"
-              type="email"
-              {...getFieldProps("mail")}
-              hasError={hasError("mail")}
-              errorText={errors.mail}
-            />
-          </li>
+          <div>
+            <li className={hasError("mail") ? style.li_error : ""}>
+              <InputField
+                icon={Mail}
+                label="Электронная почта"
+                placeholder={placeholder}
+                id="mail"
+                type="email"
+                {...getFieldProps("mail")}
+              />
+            </li>
+            {hasError("mail") && (
+              <span className={style.input_error_text}>{errors.mail}</span>
+            )}
+          </div>
         </ul>
       </div>
     </section>
