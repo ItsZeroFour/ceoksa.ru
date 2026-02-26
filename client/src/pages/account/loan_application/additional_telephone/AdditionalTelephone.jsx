@@ -20,7 +20,7 @@ const AdditionalTelephone = ({ userData }) => {
     (state) => state.auth.user?.data?.additional_telephone
   );
 
-  console.log(additionalTelephone);
+  console.log(userData.phone);
 
   const formDataRef = useRef({
     phone: "",
@@ -60,17 +60,28 @@ const AdditionalTelephone = ({ userData }) => {
     setFormData(newFormData);
 
     if (fieldName === "phone") {
-      const err =
-        value && !/^\+7\s?\(?\d{3}\)?\s?\d{3}-?\d{2}-?\d{2}$/.test(value)
-          ? "Некорректный номер телефона"
-          : "";
+      const normalizePhone = (p) => p?.replace(/\D/g, "");
+      const isDuplicate =
+        value && normalizePhone(value) === normalizePhone(userData?.phone);
+
+      const err = !value
+        ? "Поле обязательно"
+        : isDuplicate
+        ? "Этот номер уже используется как основной"
+        : !/^\+7\s?\(?\d{3}\)?\s?\d{3}-?\d{2}-?\d{2}$/.test(value)
+        ? "Некорректный номер телефона"
+        : "";
+
       setErrors((prev) => ({ ...prev, phone: err }));
       if (!err && value) debouncedUpdate(newFormData);
     }
 
     if (fieldName === "name") {
-      const err =
-        value && value.trim().length < 5 ? "Введите корректное ФИО" : "";
+      const err = !value
+        ? "Поле обязательно"
+        : value.trim().length < 5
+        ? "Введите корректное ФИО"
+        : "";
       setErrors((prev) => ({ ...prev, name: err }));
       if (!err && value) debouncedUpdate(newFormData);
     }
