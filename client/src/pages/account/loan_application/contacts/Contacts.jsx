@@ -24,6 +24,7 @@ const Contacts = ({ userData }) => {
 
   const validators = useRef({
     mail: [
+      (v) => (!v ? "Поле обязательно" : ""),
       (v) =>
         v && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(v)
           ? "Некорректный email"
