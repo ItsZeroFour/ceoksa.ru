@@ -1,4 +1,4 @@
-.passport {
+.additional_telephone {
   margin-top: 25px;
 
   @media (max-width: 480px) {
@@ -6,10 +6,10 @@
   }
 }
 
-.passport__wrapper {
+.additional_telephone__wrapper {
   padding: 35px;
-  border-radius: 20px;
   background: var(--color-gray-secondary);
+  border-radius: 20px;
 
   h2 {
     font-weight: 600;
@@ -21,52 +21,62 @@
   }
 
   ul {
-    margin-top: 15px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
     align-items: flex-start;
+    gap: 15px;
+    margin-top: 15px;
 
     & > div {
+      flex: 1 1 calc(50% - 7.5px);
       display: flex;
       flex-direction: column;
       gap: 4px;
 
-      &:last-child {
-        grid-column: 1 / -1;
+      @media (max-width: 780px) {
+        flex: 1 1 100%;
+      }
+
+      li {
+        flex: 1 1 100%;
+      }
+
+      .input_error_text {
+        color: var(--color-red);
+        font-size: 12px;
+        font-weight: 300;
+        padding-left: 5px;
       }
     }
 
+    & > li {
+      flex: 1 1 calc(50% - 7.5px);
+
+      @media (max-width: 780px) {
+        flex: 1 1 100%;
+      }
+    }
+
+    & > *:last-child {
+      flex: 1 1 100%;
+    }
+
     li {
+      display: flex;
+      align-items: center;
+      gap: 15px;
       padding: 10px;
       background: var(--color-block-bg);
       border-radius: 14px;
       border: 1px solid var(--color-border-address);
-      display: flex;
-      align-items: center;
-      gap: 15px;
       transition: border-color 0.2s;
-
-      &.li_error {
-        border-color: var(--color-red);
-      }
 
       @media (max-width: 550px) {
         padding: 10px;
       }
-    }
 
-    @media (max-width: 780px) {
-      display: flex;
-      flex-direction: column;
-    }
-
-    &:last-child {
-      display: flex;
-
-      & > div {
-        width: 100%;
+      &.li_error {
+        border-color: var(--color-red);
       }
     }
   }
@@ -76,17 +86,26 @@
   }
 }
 
-.passport__item__icon {
+.additional_telephone__item__icon {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  background: var(--color-gray-light);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
   svg {
     color: var(--color-blue-secondary);
   }
 }
 
-.passport__item__text {
+.additional_telephone__item__text {
   display: flex;
   flex-direction: column;
   gap: 5px;
-  width: 100%;
 
   p {
     &:first-child {
@@ -102,25 +121,5 @@
         font-size: 14px;
       }
     }
-  }
-}
-
-.error_text {
-  font-size: 12px;
-  color: var(--color-red);
-  font-weight: 300;
-  padding-left: 5px;
-}
-
-.passport__item__text__container {
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  grid-template-columns: repeat(3, 1fr);
-  height: 100%;
-  gap: 12px;
-  width: 100%;
-
-  .passport__item__text {
-    width: 100%;
   }
 }

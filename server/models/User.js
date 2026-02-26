@@ -76,6 +76,15 @@ const UserSchema = new mongoose.Schema(
       photo_with_passport: String,
     },
 
+    additional_telephone: {
+      name: String,
+      phone: String,
+      owner: {
+        type: String,
+        default: "Номер родственника",
+      },
+    },
+
     loans: {
       sum: Number,
     },
