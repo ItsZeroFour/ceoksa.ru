@@ -112,6 +112,10 @@ const Passport = () => {
         if (!value) return "Поле обязательно";
         if (value.trim().length < 5) return "Минимум 5 символов";
         return "";
+      case "gender":
+        if (!value) return "Поле обязательно";
+        if (value.trim().length < 5) return "Укажите ваш пол";
+        return "";
       case "birth":
         return validateDate(value);
       case "place_of_birth":
@@ -160,6 +164,7 @@ const Passport = () => {
                   icon={PassportIcon}
                   inputMode="numeric"
                   ref={passportRef}
+                  readOnly={true}
                 />
               </div>
             </li>
@@ -180,6 +185,7 @@ const Passport = () => {
                   icon={PassportIcon}
                   inputMode="numeric"
                   ref={dateRef}
+                  readOnly={true}
                 />
               </div>
             </li>
@@ -200,6 +206,7 @@ const Passport = () => {
                   icon={PassportIcon}
                   inputMode="numeric"
                   ref={departmentRef}
+                  readOnly={true}
                 />
               </div>
             </li>
@@ -220,11 +227,33 @@ const Passport = () => {
                   value={formData.issued_by}
                   icon={PassportIcon}
                   onChange={handleChange}
+                  readOnly={true}
                 />
               </div>
             </li>
             {errors.issued_by && (
               <span className={style.error_text}>{errors.issued_by}</span>
+            )}
+          </div>
+
+          <div>
+            <li className={errors.gender ? style.li_error : ""}>
+              <div className={style.passport__item__text}>
+                <InputField
+                  label="Пол"
+                  placeholder="Пол"
+                  id="gender"
+                  type="text"
+                  name="gender"
+                  value={formData.gender}
+                  icon={PassportIcon}
+                  onChange={handleChange}
+                  readOnly={true}
+                />
+              </div>
+            </li>
+            {errors.gender && (
+              <span className={style.error_text}>{errors.gender}</span>
             )}
           </div>
         </ul>
@@ -242,6 +271,7 @@ const Passport = () => {
                   inputMode="numeric"
                   icon={Bag}
                   ref={dateInputRef}
+                  readOnly={true}
                 />
               </div>
             </li>
@@ -262,6 +292,7 @@ const Passport = () => {
                   value={formData.place_of_birth}
                   icon={Town}
                   onChange={handleChange}
+                  readOnly={true}
                 />
               </div>
             </li>

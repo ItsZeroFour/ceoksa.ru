@@ -54,6 +54,11 @@ const UserSchema = new mongoose.Schema(
       issued_by: String,
       birth: String,
       place_of_birth: String,
+      name: String,
+      middle_name: String,
+      surname: String,
+      gender: String,
+      citizenship: String,
     },
 
     address: {

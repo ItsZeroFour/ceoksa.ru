@@ -106,7 +106,7 @@ const PhotoPassport = () => {
   ]);
 
   const handleFileSelect = (key) => async (file) => {
-    if (!isMobile) return;
+    // if (!isMobile) return;
     if (!file) return;
 
     if (!file.type.startsWith("image/")) return;
@@ -183,9 +183,9 @@ const PhotoPassport = () => {
                 onFileSelect={handleFileSelect(key)}
                 id={id}
                 fileName={getFileName(key)}
-                disabled={
-                  !isMobile || (uploading && currentUploadKey.current === key)
-                }
+                // disabled={
+                //   !isMobile || (uploading && currentUploadKey.current === key)
+                // }
               />
             </li>
           ))}
