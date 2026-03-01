@@ -25,6 +25,7 @@ const Passport = () => {
     issued_by: "",
     birth: "",
     place_of_birth: "",
+    gender: "",
   });
 
   const [formData, setFormData] = useState(formDataRef.current);
@@ -79,6 +80,7 @@ const Passport = () => {
         issued_by: user.user.data.passport.issued_by || "",
         birth: user.user.data.passport.birth || "",
         place_of_birth: user.user.data.passport.place_of_birth || "",
+        gender: user.user.data.passport.gender || "",
       };
       formDataRef.current = data;
       setFormData(data);
@@ -112,6 +114,10 @@ const Passport = () => {
         if (!value) return "Поле обязательно";
         if (value.trim().length < 5) return "Минимум 5 символов";
         return "";
+      case "gender":
+        if (!value) return "Поле обязательно";
+        if (value.trim().length < 5) return "Укажите ваш пол";
+        return "";
       case "birth":
         return validateDate(value);
       case "place_of_birth":
@@ -142,6 +148,25 @@ const Passport = () => {
     handleFieldChange(e.target.name, e.target.value);
   };
 
+  const formatCapitalize = (str) =>
+    str ? str.replace(/\b\w/g, (c) => c.toUpperCase()) : "";
+
+  const formatGender = (val) => {
+    if (!val) return "";
+    const v = val.trim().toLowerCase();
+    if (v === "муж" || v === "м" || v === "male") return "Мужской";
+    if (v === "жен" || v === "ж" || v === "female") return "Женский";
+    return formatCapitalize(val);
+  };
+
+  const formatCity = (val) => {
+    if (!val) return "";
+    return val
+      .replace(/^гор\.\s*/i, "г. ")
+      .replace(/^город\s*/i, "г. ")
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+  };
+
   return (
     <section className={style.passport}>
       <div className={style.passport__wrapper}>
@@ -160,6 +185,7 @@ const Passport = () => {
                   icon={PassportIcon}
                   inputMode="numeric"
                   ref={passportRef}
+                  readOnly={true}
                 />
               </div>
             </li>
@@ -180,6 +206,7 @@ const Passport = () => {
                   icon={PassportIcon}
                   inputMode="numeric"
                   ref={dateRef}
+                  readOnly={true}
                 />
               </div>
             </li>
@@ -200,6 +227,7 @@ const Passport = () => {
                   icon={PassportIcon}
                   inputMode="numeric"
                   ref={departmentRef}
+                  readOnly={true}
                 />
               </div>
             </li>
@@ -217,14 +245,36 @@ const Passport = () => {
                   id="issued-by"
                   type="text"
                   name="issued_by"
-                  value={formData.issued_by}
+                  value={formatCapitalize(formData.issued_by)}
                   icon={PassportIcon}
                   onChange={handleChange}
+                  readOnly={true}
                 />
               </div>
             </li>
             {errors.issued_by && (
               <span className={style.error_text}>{errors.issued_by}</span>
+            )}
+          </div>
+
+          <div>
+            <li className={errors.gender ? style.li_error : ""}>
+              <div className={style.passport__item__text}>
+                <InputField
+                  label="Пол"
+                  placeholder="Пол"
+                  id="gender"
+                  type="text"
+                  name="gender"
+                  value={formatGender(formData.gender)}
+                  icon={PassportIcon}
+                  onChange={handleChange}
+                  readOnly={true}
+                />
+              </div>
+            </li>
+            {errors.gender && (
+              <span className={style.error_text}>{errors.gender}</span>
             )}
           </div>
         </ul>
@@ -242,6 +292,7 @@ const Passport = () => {
                   inputMode="numeric"
                   icon={Bag}
                   ref={dateInputRef}
+                  readOnly={true}
                 />
               </div>
             </li>
@@ -259,9 +310,10 @@ const Passport = () => {
                   id="birth-place"
                   type="text"
                   name="place_of_birth"
-                  value={formData.place_of_birth}
+                  value={formatCity(formData.place_of_birth)}
                   icon={Town}
                   onChange={handleChange}
+                  readOnly={true}
                 />
               </div>
             </li>

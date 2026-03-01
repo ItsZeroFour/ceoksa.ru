@@ -15,9 +15,11 @@ import multer from "multer";
 import MobileRoutes from "./routes/mobileRoutes.js";
 import { getJwks } from "./controllers/MobileControllers.js";
 import cookieParser from "cookie-parser";
+
 import AuthRoutes from "./routes/authRoutes.js";
 import UserRoutes from "./routes/userRoutes.js";
 import ValidateBICRoutes from "./routes/validateBICRoutes.js";
+import OcrRoutes from "./routes/ocrRoutes.js";
 
 /* ROUTES */
 const app = express();
@@ -100,6 +102,7 @@ app.get("/.well-known/jwks.json", getJwks);
 app.use("/auth", AuthRoutes);
 app.use("/user", UserRoutes);
 app.use("/validate", ValidateBICRoutes);
+app.use("/ocr", OcrRoutes);
 
 app.post("/logout", (req, res) => {
   res.clearCookie("app_token", {

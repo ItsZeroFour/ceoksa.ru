@@ -53,6 +53,25 @@ const Top = ({ user }) => {
     return names[0][0];
   };
 
+  const formatFullName = (str) =>
+    str
+      ? str
+          .split(" ")
+          .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+          .join(" ")
+      : "";
+
+  const formatCapitalize = (str) =>
+    str ? str.replace(/\b\w/g, (c) => c.toUpperCase()) : "";
+
+  const formatGender = (val) => {
+    if (!val) return "";
+    const v = val.trim().toLowerCase();
+    if (v === "муж" || v === "м" || v === "male") return "Мужской";
+    if (v === "жен" || v === "ж" || v === "female") return "Женский";
+    return formatCapitalize(val);
+  };
+
   return (
     <div className={style.top}>
       <div className={style.top__wrapper}>
@@ -80,7 +99,9 @@ const Top = ({ user }) => {
                 </div>
 
                 <div className={style.top__main__name__main}>
-                  <p>{user?.fullName || "Фамилия Имя Отчество"}</p>
+                  <p>
+                    {formatFullName(user?.fullName || "Фамилия Имя Отчество")}
+                  </p>
 
                   {/* <div className={style.top__main__name__main__data}> */}
                   {/* <div className={style.top__main__name__main__data__text}>
@@ -175,7 +196,7 @@ const Top = ({ user }) => {
 
                   <div className={style.top__item__text}>
                     <p>Пол</p>
-                    <p>Женский</p>
+                    <p>{formatGender(user.passport.gender || "")}</p>
                   </div>
                 </li>
               </ul>
