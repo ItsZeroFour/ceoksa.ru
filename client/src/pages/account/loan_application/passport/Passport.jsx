@@ -185,7 +185,7 @@ const Passport = () => {
                   icon={PassportIcon}
                   inputMode="numeric"
                   ref={passportRef}
-                  readOnly={true}
+                  // readOnly={true}
                 />
               </div>
             </li>
@@ -206,7 +206,7 @@ const Passport = () => {
                   icon={PassportIcon}
                   inputMode="numeric"
                   ref={dateRef}
-                  readOnly={true}
+                  // readOnly={true}
                 />
               </div>
             </li>
@@ -227,7 +227,7 @@ const Passport = () => {
                   icon={PassportIcon}
                   inputMode="numeric"
                   ref={departmentRef}
-                  readOnly={true}
+                  // readOnly={true}
                 />
               </div>
             </li>
@@ -248,7 +248,7 @@ const Passport = () => {
                   value={formatCapitalize(formData.issued_by)}
                   icon={PassportIcon}
                   onChange={handleChange}
-                  readOnly={true}
+                  // readOnly={true}
                 />
               </div>
             </li>
@@ -292,7 +292,7 @@ const Passport = () => {
                   inputMode="numeric"
                   icon={Bag}
                   ref={dateInputRef}
-                  readOnly={true}
+                  // readOnly={true}
                 />
               </div>
             </li>
@@ -313,7 +313,7 @@ const Passport = () => {
                   value={formatCity(formData.place_of_birth)}
                   icon={Town}
                   onChange={handleChange}
-                  readOnly={true}
+                  // readOnly={true}
                 />
               </div>
             </li>
