@@ -1,6 +1,11 @@
 .select {
   position: relative;
   width: 100%;
+  padding: 0 10px;
+
+  @media (max-width: 520px) {
+    padding: 0;
+  }
 }
 
 .select__head {
@@ -25,6 +30,16 @@
     color: var(--color-blue-secondary);
     width: 22px;
     height: 22px;
+
+    @media (max-width: 520px) {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  @media (max-width: 520px) {
+    width: 44px;
+    height: 44px;
   }
 }
 
@@ -34,6 +49,11 @@
   gap: 3px;
   padding: 16px;
   flex: 1;
+
+  @media (max-width: 520px) {
+    padding: 0;
+    padding-left: 10px;
+  }
 }
 
 .select__label {
@@ -48,12 +68,20 @@
   font-weight: 400;
   opacity: 0.4;
   color: var(--color-text-primary);
+
+  @media (max-width: 520px) {
+    font-size: 14px;
+  }
 }
 
 .select__value {
   font-size: 16px;
   font-weight: 500;
   color: var(--color-text-primary);
+
+  @media (max-width: 520px) {
+    font-size: 14px;
+  }
 }
 
 .select__angle {
