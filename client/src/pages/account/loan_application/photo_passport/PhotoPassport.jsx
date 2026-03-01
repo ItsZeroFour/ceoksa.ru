@@ -12,6 +12,7 @@ import {
   clearError,
 } from "../../../../redux/slices/user/updateUserSlice";
 import useIsMobile from "../../../../hooks/useIsMobile";
+import axios from "../../../../utils/axios";
 
 const PhotoPassport = () => {
   const dispatch = useDispatch();
@@ -39,6 +40,9 @@ const PhotoPassport = () => {
     children_availability_page: "",
     previously_issued_passports_page: "",
   });
+
+  const [ocrLoading, setOcrLoading] = useState(false);
+  const [ocrError, setOcrError] = useState(null);
 
   const currentUploadKey = useRef(null);
   const isUploadingHere = useRef(false);
@@ -74,7 +78,8 @@ const PhotoPassport = () => {
       currentUploadKey.current &&
       isUploadingHere.current
     ) {
-      const dbKey = keyMapping[currentUploadKey.current];
+      const uploadedKey = currentUploadKey.current;
+      const dbKey = keyMapping[uploadedKey];
 
       const newPhotoPaths = {
         ...photoPaths,
@@ -93,6 +98,10 @@ const PhotoPassport = () => {
         })
       );
 
+      if (uploadedKey === "firstSpread") {
+        triggerPassportOcr();
+      }
+
       dispatch(resetUpload());
       currentUploadKey.current = null;
       isUploadingHere.current = false;
@@ -105,8 +114,25 @@ const PhotoPassport = () => {
     user.user.data?.photos,
   ]);
 
+  const triggerPassportOcr = async () => {
+    try {
+      setOcrLoading(true);
+      setOcrError(null);
+
+      await axios.post(`/ocr/passport`);
+
+      console.log("[OCR] Паспорт успешно распознан");
+    } catch (error) {
+      console.error("[OCR] Ошибка распознавания паспорта:", error);
+      setOcrError(
+        error.response?.data?.message || "Ошибка распознавания паспорта"
+      );
+    } finally {
+      setOcrLoading(false);
+    }
+  };
+
   const handleFileSelect = (key) => async (file) => {
-    // if (!isMobile) return;
     if (!file) return;
 
     if (!file.type.startsWith("image/")) return;
@@ -175,6 +201,16 @@ const PhotoPassport = () => {
           </p>
         )}
 
+        {ocrLoading && (
+          <p className={style.photopassport__ocr_loading}>
+            Распознавание паспорта...
+          </p>
+        )}
+
+        {ocrError && (
+          <p className={style.photopassport__ocr_error}>{ocrError}</p>
+        )}
+
         <ul>
           {uploadFields.map(({ key, label, id }) => (
             <li key={key}>
@@ -183,9 +219,6 @@ const PhotoPassport = () => {
                 onFileSelect={handleFileSelect(key)}
                 id={id}
                 fileName={getFileName(key)}
-                // disabled={
-                //   !isMobile || (uploading && currentUploadKey.current === key)
-                // }
               />
             </li>
           ))}
