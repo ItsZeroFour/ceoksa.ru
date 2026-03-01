@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import style from "./auth.module.scss";
 import logo from "../../assets/logo.svg";
 import logoDark from "../../assets/logo-dark.svg";
@@ -20,34 +20,80 @@ import {
 const Auth = ({ setOpenAuthMenu }) => {
   const { theme } = useTheme();
   const [currentStep, setCurrentStep] = useState("phone");
+  const [isAuthLoading, setIsAuthLoading] = useState(false);
 
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const isSubmittingRef = useRef(false);
+  const isAuthSucceededRef = useRef(false);
 
   const { data: filesData, status: filesStatus } = useSelector(
     (state) => state.files
   );
-  const { auth_req_id } = useSelector((state) => state.mobileAuth);
+
+  const { auth_req_id, hhe_uri, flow } = useSelector(
+    (state) => state.mobileAuth
+  );
 
   const phoneInput = usePhoneInput();
   const codeInput = useCodeInput(4);
-  const resendTimer = useResendTimer(60);
+  const resendTimer = useResendTimer(140);
 
   const authPolling = useAuthPolling({
-    onSuccess: () => setOpenAuthMenu(false),
-    onError: () => codeInput.setError(),
+    onSuccess: () => {
+      isAuthSucceededRef.current = true;
+      setIsAuthLoading(false);
+      setOpenAuthMenu(false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      navigate("/account/loan_applications");
+    },
+    onSmsRequired: () => {},
+    onError: ({ status, canRetry }) => {
+      setIsAuthLoading(false);
+
+      if (canRetry || status === "expired") {
+        authPolling.stopPolling();
+        codeInput.reset();
+        setCurrentStep("phone");
+        phoneInput.setRetryHint(true);
+      } else {
+        codeInput.setError();
+      }
+    },
   });
 
   useEffect(() => {
     dispatch(fetchFiles("fajly?populate=*"));
   }, [dispatch]);
 
+  useEffect(() => {
+    if (flow === "sms" && currentStep === "push_wait") {
+      authPolling.stopPolling();
+      setCurrentStep("code");
+    }
+  }, [flow]);
+
+  useEffect(() => {
+    isSubmittingRef.current = false;
+  }, [currentStep]);
+
   const handleSendSms = async () => {
     const clearPhone = phoneInput.getCleanPhone();
     const result = await dispatch(initiateAuth(clearPhone));
 
     if (result.meta.requestStatus === "fulfilled") {
-      setCurrentStep("code");
       resendTimer.start();
+
+      const { hhe_uri, auth_req_id } = result.payload;
+
+      if (hhe_uri) {
+        window.location.href = hhe_uri;
+        return;
+      }
+
+      setCurrentStep("push_wait");
+      authPolling.startPolling(auth_req_id);
     }
   };
 
@@ -63,15 +109,22 @@ const Auth = ({ setOpenAuthMenu }) => {
     }
   };
 
-  const handleSubmitCode = async (e) => {
-    e.preventDefault();
-
-    if (!codeInput.isComplete) return;
+  const handleSubmitCode = async () => {
+    if (isSubmittingRef.current) return;
+    if (isAuthSucceededRef.current) return;
 
     const smsCode = codeInput.getCode();
+    if (!smsCode || smsCode.length !== 4) return;
+
+    isSubmittingRef.current = true;
+    setIsAuthLoading(true);
+
     const result = await dispatch(verifyCode({ auth_req_id, code: smsCode }));
 
+    isSubmittingRef.current = false;
+
     if (result.meta.requestStatus === "rejected") {
+      setIsAuthLoading(false);
       codeInput.setError();
       return;
     }
@@ -85,6 +138,7 @@ const Auth = ({ setOpenAuthMenu }) => {
     setCurrentStep("phone");
     resendTimer.reset();
     authPolling.stopPolling();
+    isAuthSucceededRef.current = false;
   };
 
   return (
@@ -103,7 +157,7 @@ const Auth = ({ setOpenAuthMenu }) => {
 
           <p>Авторизация</p>
 
-          {currentStep === "phone" ? (
+          {currentStep === "phone" && (
             <PhoneAuthStep
               phoneInputRef={phoneInput.phoneInputRef}
               isPhoneComplete={phoneInput.isComplete}
@@ -112,7 +166,22 @@ const Auth = ({ setOpenAuthMenu }) => {
               filesStatus={filesStatus}
               styles={style}
             />
-          ) : (
+          )}
+
+          {currentStep === "push_wait" && (
+            <div className={style.auth__push_wait}>
+              <div className={style.auth__text}>
+                <h2>Подтвердите вход</h2>
+                <p>
+                  На номер {phoneInput.phone} отправлено PUSH-уведомление.
+                  <br />
+                  Нажмите «Принять» в уведомлении на телефоне.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {currentStep === "code" && (
             <CodeAuthStep
               phone={phoneInput.phone}
               code={codeInput.code}
@@ -128,6 +197,7 @@ const Auth = ({ setOpenAuthMenu }) => {
               resendDisabled={resendTimer.isDisabled}
               resendTimer={resendTimer.timeLeft}
               styles={style}
+              isLoading={isAuthLoading}
             />
           )}
         </div>

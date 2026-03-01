@@ -15,6 +15,7 @@ const CodeAuthStep = ({
   resendDisabled,
   resendTimer,
   styles,
+  isLoading,
 }) => {
   return (
     <>
@@ -23,7 +24,7 @@ const CodeAuthStep = ({
         <p>На номер {phone} отправлен SMS-код подтверждения</p>
       </div>
 
-      <form onSubmit={onSubmit}>
+      <form onSubmit={(e) => e.preventDefault()}>
         <div className={styles.auth__code}>
           {code.map((digit, index) => (
             <input
@@ -31,7 +32,7 @@ const CodeAuthStep = ({
               type="text"
               inputMode="numeric"
               pattern="\d"
-              maxLength={1}
+              maxLength={index === 0 ? code.length : 1}
               value={digit}
               onChange={(e) => onCodeChange(index, e.target.value)}
               onKeyDown={(e) => onKeyDown(index, e)}
@@ -48,8 +49,12 @@ const CodeAuthStep = ({
 
         {hasError && <p className={styles.auth__code__error}>Неверный код</p>}
 
-        <button type="submit" disabled={!isComplete}>
-          Отправить
+        <button
+          type="button"
+          disabled={!isComplete || isLoading}
+          onClick={onSubmit}
+        >
+          {isLoading ? "Проверяем..." : "Отправить"}
         </button>
       </form>
 

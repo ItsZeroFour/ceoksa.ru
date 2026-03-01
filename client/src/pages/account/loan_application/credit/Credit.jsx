@@ -5,7 +5,12 @@ import { useOutsideClick } from "../../../../hooks/useOutsideClick";
 import { useDropdown } from "../../../../hooks/useDropdown";
 import { useCreditAmount } from "../../../../hooks/useCreditAmount";
 import { useSalaryValidation } from "../../../../hooks/useSalaryValidation";
+import { useDebouncedUpdate } from "../../../../hooks/useDebouncedUpdate";
 import { fetchFiles } from "../../../../redux/slices/strapi/FilesSlide";
+import {
+  updateUser,
+  clearError,
+} from "../../../../redux/slices/user/updateUserSlice";
 import {
   TERMS,
   TARGETS,
@@ -17,25 +22,39 @@ import CreditSalaryInput from "../../../../components/account/CreditSalaryInput/
 import CreditFooter from "../../../../components/account/CreditFooter/CreditFooter";
 
 const Credit = () => {
-  const [selectedTerm, setSelectedTerm] = useState(TERMS[5]);
-  const [selectedTarget, setSelectedTarget] = useState(TARGETS[0]);
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth);
+
+  const loanApplication = user?.user?.data?.loan_application;
+
+  const initialSum = loanApplication?.sum ?? 500000;
+  const initialTerm =
+    TERMS.find((t) => t.value === loanApplication?.date) ?? TERMS[5];
+  const initialTarget =
+    TARGETS.find((t) => t.value === loanApplication?.target) ?? TARGETS[0];
+
+  const [selectedTerm, setSelectedTerm] = useState(initialTerm);
+  const [selectedTarget, setSelectedTarget] = useState(initialTarget);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   const termRef = useRef(null);
   const targetRef = useRef(null);
 
-  const dispatch = useDispatch();
+  const userChangedRef = useRef(false);
+
   const { data: filesData, status: filesStatus } = useSelector(
     (state) => state.files
   );
 
   const creditAmount = useCreditAmount({
-    initialValue: 500000,
+    initialValue: initialSum,
     minAmount: CREDIT_LIMITS.MIN_AMOUNT,
     maxAmount: CREDIT_LIMITS.MAX_AMOUNT,
     step: CREDIT_LIMITS.STEP,
   });
 
   const salary = useSalaryValidation({
+    initialValue: loanApplication?.salary ?? "",
     minSalary: CREDIT_LIMITS.MIN_SALARY,
     maxSalary: CREDIT_LIMITS.MAX_AMOUNT,
     debounceDelay: 300,
@@ -46,25 +65,108 @@ const Credit = () => {
 
   useOutsideClick([termRef, targetRef], closeDropdown);
 
+  const debouncedUpdate = useDebouncedUpdate((data) => {
+    dispatch(clearError());
+    dispatch(updateUser({ loan_application: data }));
+  }, 1000);
+
   useEffect(() => {
     dispatch(fetchFiles("fajly?populate=*"));
   }, [dispatch]);
 
+  useEffect(() => {
+    if (user.status !== "succeeded") return;
+    if (!loanApplication) {
+      setIsHydrated(true);
+      return;
+    }
+
+    if (userChangedRef.current) return;
+
+    if (loanApplication.sum) {
+      creditAmount.setAmountValue(loanApplication.sum);
+    }
+
+    const savedTerm = TERMS.find((t) => t.value === loanApplication.date);
+    if (savedTerm) setSelectedTerm(savedTerm);
+
+    const savedTarget = TARGETS.find((t) => t.value === loanApplication.target);
+    if (savedTarget) setSelectedTarget(savedTarget);
+
+    if (loanApplication.salary) {
+      salary.setSalaryValue(loanApplication.salary);
+    }
+
+    setIsHydrated(true);
+  }, [user.status, loanApplication]);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+    if (!userChangedRef.current) return;
+
+    debouncedUpdate({
+      sum: creditAmount.amountValue,
+      date: selectedTerm.value,
+      target: selectedTarget.value,
+      salary: salary.salaryValue,
+    });
+  }, [
+    isHydrated,
+    creditAmount.amountValue,
+    selectedTerm,
+    selectedTarget,
+    salary.salaryValue,
+  ]);
+
   const handleTermSelect = (term) => {
+    userChangedRef.current = true;
     setSelectedTerm(term);
     setOpenDropdown(null);
   };
 
   const handleTargetSelect = (target) => {
+    userChangedRef.current = true;
     setSelectedTarget(target);
     setOpenDropdown(null);
   };
 
+  const handleSalaryChange = (e) => {
+    userChangedRef.current = true;
+    salary.handleSalaryChange(e);
+  };
+
+  const handleAmountChange = (e) => {
+    userChangedRef.current = true;
+    creditAmount.handleAmountChange(e);
+  };
+
+  const handleIncrement = () => {
+    userChangedRef.current = true;
+    creditAmount.increment();
+  };
+
+  const handleDecrement = () => {
+    userChangedRef.current = true;
+    creditAmount.decrement();
+  };
+
   const handleSubmit = () => {
-    if (!salary.salaryValue || !!salary.salaryError) {
+    if (!salary.salaryValue || salary.salaryError) {
       salary.handleSalaryBlur();
       return;
     }
+
+    dispatch(clearError());
+    dispatch(
+      updateUser({
+        loan_application: {
+          sum: creditAmount.amountValue,
+          date: selectedTerm.value,
+          target: selectedTarget.value,
+          salary: salary.salaryValue,
+        },
+      })
+    );
   };
 
   return (
@@ -81,11 +183,11 @@ const Credit = () => {
           >
             <CreditAmountSection
               value={creditAmount.displayAmount}
-              onChange={creditAmount.handleAmountChange}
+              onChange={handleAmountChange}
               onFocus={creditAmount.handleAmountFocus}
               onBlur={creditAmount.handleAmountBlur}
-              onIncrement={creditAmount.increment}
-              onDecrement={creditAmount.decrement}
+              onIncrement={handleIncrement}
+              onDecrement={handleDecrement}
               selectedTerm={selectedTerm}
               onTermSelect={handleTermSelect}
               termOptions={TERMS}
@@ -108,7 +210,7 @@ const Credit = () => {
             <CreditSalaryInput
               value={salary.displaySalary}
               error={salary.salaryError}
-              onChange={salary.handleSalaryChange}
+              onChange={handleSalaryChange}
               onFocus={salary.handleSalaryFocus}
               onBlur={salary.handleSalaryBlur}
               onKeyDown={salary.handleKeyDown}

@@ -19,7 +19,6 @@ const Sequrity = ({ scrollToBlock }) => {
 
   const isDataReady = Boolean(status === "succeeded" && data?.title);
 
-  console.log(data);
 
   const formatRussianPhone = (phone) => {
     const digits = phone.replace(/\D/g, "");

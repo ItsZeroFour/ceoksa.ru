@@ -54,6 +54,11 @@ const UserSchema = new mongoose.Schema(
       issued_by: String,
       birth: String,
       place_of_birth: String,
+      name: String,
+      middle_name: String,
+      surname: String,
+      gender: String,
+      citizenship: String,
     },
 
     address: {
@@ -76,8 +81,38 @@ const UserSchema = new mongoose.Schema(
       photo_with_passport: String,
     },
 
+    additional_telephone: {
+      name: String,
+      phone: String,
+      owner: {
+        type: String,
+        default: "Номер родственника",
+      },
+    },
+
     loans: {
       sum: Number,
+    },
+
+    loan_application: {
+      sum: {
+        type: Number,
+        default: 500_000,
+      },
+
+      date: {
+        type: Number,
+        default: 36,
+      },
+
+      target: {
+        type: String,
+        default: "Кредит наличными",
+      },
+
+      salary: {
+        type: Number,
+      },
     },
   },
   {

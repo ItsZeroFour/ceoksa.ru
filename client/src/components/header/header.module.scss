@@ -200,9 +200,19 @@
   gap: 10px;
 
   .header__profile__name__avatar {
+    background: var(--color-header-button-second);
+    width: 42px;
+    height: 42px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 50%;
+
     img {
-      width: 42px;
-      height: 42px;
+      width: 22px;
+      height: 22px;
       object-fit: cover;
       border-radius: 50%;
     }
@@ -211,12 +221,25 @@
       width: 42px;
       height: 42px;
       background: var(--color-header-button-second);
+      color: var(--color-white);
       text-align: center;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       border-radius: 50%;
+
+      @media (max-width: 525px) {
+        width: 36px;
+        height: 36px;
+
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 525px) {
+      width: 36px;
+      height: 36px;
     }
   }
 
@@ -229,6 +252,10 @@
     h3 {
       font-size: 16px;
       font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+      display: none;
     }
   }
 }

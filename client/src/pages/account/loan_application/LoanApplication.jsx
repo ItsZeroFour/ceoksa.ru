@@ -11,6 +11,7 @@ import MobileLeftPanel from "../../../components/mobile_left_panel/MobileLeftPan
 import Birth from "./birth/Birth";
 import PhotoPassport from "./photo_passport/PhotoPassport";
 import PhotoWithPassport from "./photo_with_passport/PhotoWithPassport";
+import AdditionalTelephone from "./additional_telephone/AdditionalTelephone";
 
 const LoanApplication = ({ setOpenMenu, openMenu, userData }) => {
   const [isChecked, setIsChecked] = useState(true);
@@ -42,6 +43,7 @@ const LoanApplication = ({ setOpenMenu, openMenu, userData }) => {
               )}
             </AnimatePresence>
             <Contacts userData={userData} />
+            <AdditionalTelephone userData={userData} />
             <PhotoPassport />
             <PhotoWithPassport />
             <Credit />

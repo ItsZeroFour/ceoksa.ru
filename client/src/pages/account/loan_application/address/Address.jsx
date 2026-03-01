@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import style from "./address.module.scss";
 import { ReactComponent as Location } from "../../../../assets/icons/account/location.svg";
 import { ReactComponent as Passport } from "../../../../assets/icons/account/passport.svg";
@@ -16,12 +16,16 @@ import {
 const Address = ({ setIsChecked, isChecked }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth);
+  const initialized = useRef(false);
 
-  const [formData, setFormData] = useState({
+  const formDataRef = useRef({
     street: "",
     apartment: "",
     registration_date: "",
   });
+
+  const [formData, setFormData] = useState(formDataRef.current);
+  const [errors, setErrors] = useState({});
 
   const registrationDateMask = {
     mask: Date,
@@ -39,48 +43,60 @@ const Address = ({ setIsChecked, isChecked }) => {
     handleFieldChange("registration_date", value);
   });
 
-  const apartmentMask = {
-    mask: "00000",
-    lazy: true,
-  };
-
-  const [apartmentRef] = useIMask(apartmentMask, (value) => {
-    handleFieldChange("apartment", value);
-  });
-
   const debouncedUpdate = useDebouncedUpdate((data) => {
     dispatch(clearError());
-    dispatch(
-      updateUser({
-        address: data,
-      })
-    );
+    dispatch(updateUser({ address: data }));
   }, 3000);
 
   useEffect(() => {
-    if (user.status === "succeeded" && user.user.data) {
+    if (!initialized.current && user.status === "succeeded" && user.user.data) {
       if (user.user.data.address) {
-        setFormData({
+        const data = {
           street: user.user.data.address.street || "",
           apartment: user.user.data.address.apartment || "",
           registration_date: user.user.data.address.registration_date || "",
-        });
+        };
+        formDataRef.current = data;
+        setFormData(data);
       }
-
       if (user.user.data.address_doesnt_match !== undefined) {
         setIsChecked(!user.user.data.address_doesnt_match);
       }
+      initialized.current = true;
     }
   }, [user, setIsChecked]);
 
-  const handleFieldChange = (fieldName, value) => {
-    const newFormData = {
-      ...formData,
-      [fieldName]: value,
-    };
+  const validate = (fieldName, value) => {
+    if (fieldName === "street") {
+      if (!value) return "Поле обязательно";
+      if (value.length < 10) return "Минимум 10 символов";
+    }
+    if (fieldName === "registration_date") {
+      if (!value) return "Поле обязательно";
+      if (value.length < 10) return "Введите полную дату";
+      const [day, month, year] = value.split(".");
+      const date = new Date(`${year}-${month}-${day}`);
+      if (isNaN(date.getTime())) return "Некорректная дата";
+    }
+    return "";
+  };
 
+  const handleFieldChange = (fieldName, value) => {
+    const newFormData = { ...formDataRef.current, [fieldName]: value };
+    formDataRef.current = newFormData;
     setFormData(newFormData);
-    debouncedUpdate(newFormData);
+
+    const err = validate(fieldName, value);
+    setErrors((prev) => ({ ...prev, [fieldName]: err }));
+
+    if (!err) {
+      const hasOtherErrors = Object.entries(errors).some(
+        ([key, val]) => key !== fieldName && val
+      );
+      if (!hasOtherErrors) {
+        debouncedUpdate(newFormData);
+      }
+    }
   };
 
   const handleChange = (e) => {
@@ -90,13 +106,8 @@ const Address = ({ setIsChecked, isChecked }) => {
   const handleCheckboxChange = () => {
     const newCheckedState = !isChecked;
     setIsChecked(newCheckedState);
-
     dispatch(clearError());
-    dispatch(
-      updateUser({
-        address_doesnt_match: !newCheckedState,
-      })
-    );
+    dispatch(updateUser({ address_doesnt_match: !newCheckedState }));
   };
 
   return (
@@ -106,43 +117,50 @@ const Address = ({ setIsChecked, isChecked }) => {
 
         <div className={style.address__container}>
           <div className={style.address__item__text__container}>
-            <div className={style.address__item__text}>
-              <InputField
-                label="Населённый пункт, улица, дом"
-                placeholder="Например: г. Москва, ул. Ленина, д. 10"
-                id="street-address"
-                type="text"
-                name="street"
-                value={formData.street}
-                icon={Location}
-                onChange={handleChange}
-              />
+            <div className={style.address__item__text__wrapper}>
+              <div
+                className={`${style.address__item__text} ${
+                  errors.street ? style.error : ""
+                }`}
+              >
+                <InputField
+                  label="Населённый пункт, улица, дом"
+                  placeholder="Например: г. Москва, ул. Ленина, д. 10, кв. 12"
+                  id="street-address"
+                  type="text"
+                  name="street"
+                  value={formData.street}
+                  icon={Location}
+                  onChange={handleChange}
+                />
+              </div>
+              {errors.street && (
+                <span className={style.error_text}>{errors.street}</span>
+              )}
             </div>
 
-            {/* <div className={style.address__item__text}>
-              <InputField
-                label="Квартира"
-                placeholder="Номер квартиры"
-                id="apartment"
-                type="text"
-                inputMode="numeric"
-                value={formData.apartment}
-                icon={Location}
-                ref={apartmentRef}
-              />
-            </div> */}
-
-            <div className={style.address__item__text}>
-              <InputField
-                label="Дата регистрации"
-                placeholder="Дата регистрации"
-                id="registration-date"
-                type="text"
-                value={formData.registration_date}
-                icon={Passport}
-                inputMode="numeric"
-                ref={registrationDateRef}
-              />
+            <div className={style.address__item__text__wrapper}>
+              <div
+                className={`${style.address__item__text} ${
+                  errors.registration_date ? style.error : ""
+                }`}
+              >
+                <InputField
+                  label="Дата регистрации"
+                  placeholder="Дата регистрации"
+                  id="registration-date"
+                  type="text"
+                  value={formData.registration_date}
+                  icon={Passport}
+                  inputMode="numeric"
+                  ref={registrationDateRef}
+                />
+              </div>
+              {errors.registration_date && (
+                <span className={style.error_text}>
+                  {errors.registration_date}
+                </span>
+              )}
             </div>
           </div>
         </div>

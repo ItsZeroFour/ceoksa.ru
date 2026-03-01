@@ -35,7 +35,8 @@ export const checkStatus = createAsyncThunk(
   async (auth_req_id, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `${API}/mobile/auth/status/${auth_req_id}`
+        `${API}/mobile/auth/status/${auth_req_id}`,
+        { withCredentials: true }
       );
       return response.data;
     } catch (err) {
@@ -70,6 +71,8 @@ const mobileAuthSlice = createSlice({
     error: null,
     hhe_uri: null,
     flow: null,
+    canRetry: false,
+    failReason: null,
   },
   reducers: {
     resetAuth: (state) => {
@@ -80,28 +83,58 @@ const mobileAuthSlice = createSlice({
       state.error = null;
       state.hhe_uri = null;
       state.flow = null;
+      state.canRetry = false;
+      state.failReason = null;
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(initiateAuth.pending, (state) => {
-        state.status = "loading";
+        state.canRetry = false;
+        state.failReason = null;
         state.error = null;
       })
       .addCase(initiateAuth.fulfilled, (state, action) => {
         state.auth_req_id = action.payload.auth_req_id;
         state.hhe_uri = action.payload.hhe_uri || null;
-        state.flow = action.payload.hhe_uri ? "seamless" : "push_or_sms";
         state.status = "pending";
+        state.flow = action.payload.hhe_uri ? "seamless" : "push";
+        state.canRetry = false;
+        state.failReason = null;
       })
       .addCase(initiateAuth.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload?.message || "Ошибка инициации";
+        state.error = action.payload?.message || "Ошибка инициализации";
       })
 
-      .addCase(verifyCode.pending, (state) => {
-        state.error = null;
+      .addCase(checkStatus.fulfilled, (state, action) => {
+        const { status, user, error, error_description, can_retry } =
+          action.payload;
+
+        if (status === "sms_sent") {
+          state.flow = "sms";
+        }
+
+        state.status = status;
+
+        if (status === "success") {
+          state.user = user || null;
+        }
+
+        if (status === "failed") {
+          state.canRetry = can_retry || false;
+          state.failReason = error || null;
+          state.error = error_description || error || "Ошибка аутентификации";
+        }
+
+        if (status === "expired") {
+          state.canRetry = true;
+          state.failReason = "expired";
+        }
       })
+      .addCase(checkStatus.rejected, (state, action) => {
+        state.error = action.payload?.message || "Ошибка проверки статуса";
+      })
+
       .addCase(verifyCode.fulfilled, (state) => {
         state.status = "verifying";
       })
@@ -109,33 +142,11 @@ const mobileAuthSlice = createSlice({
         state.error = action.payload?.message || "Неверный код";
       })
 
-      .addCase(checkStatus.fulfilled, (state, action) => {
-        const { status, user, error } = action.payload;
-
-        if (status === "sms_sent" && state.flow !== "sms") {
-          state.flow = "sms";
-        }
-
-        state.status = status;
-
-        if (status === "failed" || status === "expired") {
-          state.error = error || "Аутентификация не удалась";
-        }
-
-        if (status === "success") {
-          state.user = user || null;
-        }
-      })
-      .addCase(checkStatus.rejected, (state, action) => {
-        state.error = action.payload?.message || "Ошибка проверки статуса";
-      })
-
       .addCase(finalizeAuth.fulfilled, (state, action) => {
         state.status = "authenticated";
         state.user = action.payload.user;
       })
       .addCase(finalizeAuth.rejected, (state, action) => {
-        state.status = "failed";
         state.error = action.payload?.message || "Ошибка финализации";
       });
   },

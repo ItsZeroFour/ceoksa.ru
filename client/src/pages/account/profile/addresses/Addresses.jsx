@@ -5,7 +5,7 @@ import { ReactComponent as Location } from "../../../../assets/icons/profile/loc
 import { ReactComponent as Edit } from "../../../../assets/icons/account/edit.svg";
 import { useScreenWidth } from "../../../../hooks/useScreenWidth";
 
-const Addresses = () => {
+const Addresses = ({ user }) => {
   const screenWidth = useScreenWidth();
 
   const addressPlaceholder =
@@ -27,11 +27,11 @@ const Addresses = () => {
 
               <div className={style.addresses__item__text}>
                 <p>Адрес регистрации</p>
-                <p>г. Москва, ул. Академика Пилюгина, д. 14, кв. 72</p>
+                <p>{user?.address?.street || "-"}</p>
               </div>
             </div>
 
-            <img src={gosuslugi} alt="Госуслуги" />
+            {/* <img src={gosuslugi} alt="Госуслуги" /> */}
           </li>
 
           <li>
@@ -42,16 +42,32 @@ const Addresses = () => {
 
               <div className={style.addresses__form__item}>
                 <label htmlFor="address">Фактический адрес</label>
-                <input
+                {/* <input
                   type="text"
                   id="address"
-                  placeholder={addressPlaceholder}
-                />
-                <Edit />
+                  placeholder={
+                    user.address_doesnt_match
+                      ? user?.real_address?.street
+                      : user?.address?.street || "-"
+                  }
+                  readOnly={true}
+                  value={
+                    user.address_doesnt_match
+                      ? user?.real_address?.street
+                      : user?.address?.street || "-"
+                  }
+                /> */}
+
+                <p>
+                  {(user.address_doesnt_match
+                    ? user?.real_address?.street
+                    : user?.address?.street) || "-"}
+                </p>
+                {/* <Edit /> */}
               </div>
             </div>
 
-            <img src={gosuslugi} alt="Госуслуги" />
+            {/* <img src={gosuslugi} alt="Госуслуги" /> */}
           </li>
         </ul>
       </div>

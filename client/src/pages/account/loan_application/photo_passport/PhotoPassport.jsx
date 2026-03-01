@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import style from "./photopassport.module.scss";
 import InputFileUpload from "../../../../components/input_file_upload/InputFileUpload";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,9 +11,11 @@ import {
   updateUser,
   clearError,
 } from "../../../../redux/slices/user/updateUserSlice";
+import useIsMobile from "../../../../hooks/useIsMobile";
 
 const PhotoPassport = () => {
   const dispatch = useDispatch();
+  const isMobile = useIsMobile();
   const user = useSelector((state) => state.auth);
   const {
     uploadedPath,
@@ -38,8 +40,8 @@ const PhotoPassport = () => {
     previously_issued_passports_page: "",
   });
 
-  const [currentUploadKey, setCurrentUploadKey] = useState(null);
-  const [isUploadingHere, setIsUploadingHere] = useState(false);
+  const currentUploadKey = useRef(null);
+  const isUploadingHere = useRef(false);
 
   const keyMapping = {
     firstSpread: "first_page_of_the_passport",
@@ -66,8 +68,13 @@ const PhotoPassport = () => {
   }, [user]);
 
   useEffect(() => {
-    if (uploadSuccess && uploadedPath && currentUploadKey && isUploadingHere) {
-      const dbKey = keyMapping[currentUploadKey];
+    if (
+      uploadSuccess &&
+      uploadedPath &&
+      currentUploadKey.current &&
+      isUploadingHere.current
+    ) {
+      const dbKey = keyMapping[currentUploadKey.current];
 
       const newPhotoPaths = {
         ...photoPaths,
@@ -87,57 +94,70 @@ const PhotoPassport = () => {
       );
 
       dispatch(resetUpload());
-      setCurrentUploadKey(null);
-      setIsUploadingHere(false);
+      currentUploadKey.current = null;
+      isUploadingHere.current = false;
     }
-  }, [uploadSuccess, uploadedPath, currentUploadKey, isUploadingHere, dispatch, photoPaths, user.user.data?.photos]);
+  }, [
+    uploadSuccess,
+    uploadedPath,
+    dispatch,
+    photoPaths,
+    user.user.data?.photos,
+  ]);
 
   const handleFileSelect = (key) => async (file) => {
+    // if (!isMobile) return;
     if (!file) return;
 
-    if (!file.type.startsWith("image/")) {
-      // alert("Пожалуйста, загрузите изображение");
-      return;
-    }
-
-    if (file.size > 10 * 1024 * 1024) {
-      // alert("Размер файла не должен превышать 10MB");
-      return;
-    }
+    if (!file.type.startsWith("image/")) return;
+    if (file.size > 10 * 1024 * 1024) return;
 
     try {
-      setFiles((prev) => ({
-        ...prev,
-        [key]: file,
-      }));
-
-      setCurrentUploadKey(key);
-      setIsUploadingHere(true);
+      setFiles((prev) => ({ ...prev, [key]: file }));
+      currentUploadKey.current = key;
+      isUploadingHere.current = true;
       dispatch(clearUploadError());
       await dispatch(uploadPhoto(file)).unwrap();
-
-      console.log(`Файл для "${key}" успешно загружен`);
     } catch (error) {
       console.error("Ошибка загрузки фото:", error);
-      // alert("Ошибка при загрузке фотографии");
-      setCurrentUploadKey(null);
-      setIsUploadingHere(false);
+      currentUploadKey.current = null;
+      isUploadingHere.current = false;
     }
   };
 
   const getFileName = (key) => {
-    if (files[key]) {
-      return files[key].name;
-    }
-
+    if (files[key]) return files[key].name;
     const dbKey = keyMapping[key];
     if (photoPaths[dbKey]) {
       const pathParts = photoPaths[dbKey].split("/");
       return pathParts[pathParts.length - 1];
     }
-
     return null;
   };
+
+  const uploadFields = [
+    {
+      key: "firstSpread",
+      label: "Первый разворот паспорта",
+      id: "first-spread",
+    },
+    {
+      key: "registration",
+      label: "Страница со штампом регистрации",
+      id: "registration",
+    },
+    {
+      key: "maritalStatus",
+      label: "Страница семейного положения",
+      id: "marital-status",
+    },
+    { key: "children", label: "Страница наличия детей", id: "children" },
+    {
+      key: "previousPassports",
+      label: "Страница ранее выданных паспортах",
+      id: "previous-passports",
+    },
+  ];
 
   return (
     <section className={style.photopassport}>
@@ -149,56 +169,26 @@ const PhotoPassport = () => {
           качестве — все данные должны быть чётко читаемы.
         </p>
 
+        {!isMobile && (
+          <p className={style.photopassport__warning}>
+            Загрузка фотографий доступна только с мобильного устройства.
+          </p>
+        )}
+
         <ul>
-          <li>
-            <InputFileUpload
-              fileType="Первый разворот паспорта"
-              onFileSelect={handleFileSelect("firstSpread")}
-              id="first-spread"
-              fileName={getFileName("firstSpread")}
-              disabled={uploading && currentUploadKey === "firstSpread"}
-            />
-          </li>
-
-          <li>
-            <InputFileUpload
-              fileType="Страница со штампом регистрации"
-              onFileSelect={handleFileSelect("registration")}
-              id="registration"
-              fileName={getFileName("registration")}
-              disabled={uploading && currentUploadKey === "registration"}
-            />
-          </li>
-
-          <li>
-            <InputFileUpload
-              fileType="Страница семейного положения"
-              onFileSelect={handleFileSelect("maritalStatus")}
-              id="marital-status"
-              fileName={getFileName("maritalStatus")}
-              disabled={uploading && currentUploadKey === "maritalStatus"}
-            />
-          </li>
-
-          <li>
-            <InputFileUpload
-              fileType="Страница наличия детей"
-              onFileSelect={handleFileSelect("children")}
-              id="children"
-              fileName={getFileName("children")}
-              disabled={uploading && currentUploadKey === "children"}
-            />
-          </li>
-
-          <li>
-            <InputFileUpload
-              fileType="Страница ранее выданных паспортах"
-              onFileSelect={handleFileSelect("previousPassports")}
-              id="previous-passports"
-              fileName={getFileName("previousPassports")}
-              disabled={uploading && currentUploadKey === "previousPassports"}
-            />
-          </li>
+          {uploadFields.map(({ key, label, id }) => (
+            <li key={key}>
+              <InputFileUpload
+                fileType={label}
+                onFileSelect={handleFileSelect(key)}
+                id={id}
+                fileName={getFileName(key)}
+                // disabled={
+                //   !isMobile || (uploading && currentUploadKey.current === key)
+                // }
+              />
+            </li>
+          ))}
         </ul>
       </div>
     </section>

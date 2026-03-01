@@ -6,43 +6,78 @@ import {
 } from "../redux/slices/auth/mobileAuthSlice";
 import { fetchMe } from "../redux/slices/auth/authSlice";
 
-export const useAuthPolling = ({ onSuccess, onError }) => {
+export const useAuthPolling = ({ onSuccess, onError, onSmsRequired }) => {
   const dispatch = useDispatch();
   const intervalRef = useRef(null);
+  const isHandledRef = useRef(false);
 
   const startPolling = useCallback(
     (authReqId) => {
+      isHandledRef.current = false;
+
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
 
       intervalRef.current = setInterval(async () => {
+        if (isHandledRef.current) return;
+
         try {
           const res = await dispatch(checkStatus(authReqId));
-          const status = res.payload?.status;
+
+          if (res.meta.requestStatus === "rejected") {
+            console.warn("checkStatus rejected, продолжаем polling...");
+            return;
+          }
+
+          const { status, can_retry } = res.payload || {};
+
+          if (status === "sms_sent") {
+            onSmsRequired?.();
+            return;
+          }
 
           if (status === "success") {
+            isHandledRef.current = true;
             clearInterval(intervalRef.current);
             intervalRef.current = null;
 
-            await dispatch(finalizeAuth(authReqId));
-            await dispatch(fetchMe());
-            onSuccess?.();
+            try {
+              await dispatch(finalizeAuth(authReqId));
+              await new Promise((resolve) => setTimeout(resolve, 300));
+              const me = await dispatch(fetchMe());
+
+              if (me.meta.requestStatus === "fulfilled") {
+                onSuccess?.();
+              } else {
+                throw new Error("fetchMe failed after finalize");
+              }
+            } catch (finalizeError) {
+              console.error("Ошибка финализации:", finalizeError);
+              onError?.({ status: "finalize_error", canRetry: false });
+            }
           }
 
-          if (status === "failed" || status === "expired") {
+          if (status === "failed") {
+            isHandledRef.current = true;
             clearInterval(intervalRef.current);
             intervalRef.current = null;
-            onError?.(status);
+
+            onError?.({ status: "failed", canRetry: can_retry || false });
+          }
+
+          if (status === "expired") {
+            isHandledRef.current = true;
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+            onError?.({ status: "expired", canRetry: true });
           }
         } catch (error) {
-          clearInterval(intervalRef.current);
-          intervalRef.current = null;
-          onError?.(error);
+          console.warn("Polling error (продолжаем):", error.message);
         }
       }, 2000);
     },
-    [dispatch, onSuccess, onError]
+    [dispatch, onSuccess, onError, onSmsRequired]
   );
 
   const stopPolling = useCallback(() => {

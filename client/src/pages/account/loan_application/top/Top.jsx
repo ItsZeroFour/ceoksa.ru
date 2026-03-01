@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import style from "./top.module.scss";
 import Notification from "../../../../components/notification/Notification";
 import camera from "../../../../assets/icons/account/camera.svg";
@@ -16,27 +16,23 @@ import {
   clearUploadError,
   resetUpload,
 } from "../../../../redux/slices/user/uploadSlice";
+import { patchUser } from "../../../../redux/slices/auth/authSlice";
 
 const Top = () => {
   const dispatch = useDispatch();
-  const { currentUser, loading, error, updateSuccess } = useSelector(
-    (state) => state.updateUser
-  );
+  const { updateSuccess } = useSelector((state) => state.updateUser);
   const user = useSelector((state) => state.auth);
+  const initialized = useRef(false);
+  const isUploadingHere = useRef(false);
+  const formDataRef = useRef({ fullName: "", profilePhoto: "" });
 
-  const {
-    uploadedPath,
-    uploading,
-    error: uploadError,
-    uploadSuccess,
-  } = useSelector((state) => state.upload);
+  const { uploadedPath, uploading, uploadSuccess } = useSelector(
+    (state) => state.upload
+  );
 
-  const [formData, setFormData] = useState({
-    fullName: "",
-    profilePhoto: "",
-  });
+  const [formData, setFormData] = useState(formDataRef.current);
   const [photoPreview, setPhotoPreview] = useState(null);
-  const [isUploadingHere, setIsUploadingHere] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const screenWidth = useScreenWidth();
 
@@ -46,16 +42,19 @@ const Top = () => {
   }, 3000);
 
   useEffect(() => {
-    if (user.status === "succeeded" && user.user.data) {
-      setFormData({
+    if (!initialized.current && user.status === "succeeded" && user.user.data) {
+      const data = {
         fullName: user.user.data.fullName || "",
         profilePhoto: user.user.data.profilePhoto || "",
-      });
+      };
+      formDataRef.current = data;
+      setFormData(data);
       if (user.user.data.profilePhoto) {
         setPhotoPreview(
           `${process.env.REACT_APP_SERVERF_API}${user.user.data.profilePhoto}`
         );
       }
+      initialized.current = true;
     }
   }, [user]);
 
@@ -66,72 +65,71 @@ const Top = () => {
   }, [updateSuccess, dispatch]);
 
   useEffect(() => {
-    if (uploadSuccess && uploadedPath && isUploadingHere) {
+    if (uploadSuccess && uploadedPath && isUploadingHere.current) {
       setFormData((prevData) => {
-        const newFormData = {
-          ...prevData,
-          profilePhoto: uploadedPath,
-        };
-
+        const newFormData = { ...prevData, profilePhoto: uploadedPath };
         dispatch(clearError());
         dispatch(updateUser(newFormData));
-
         return newFormData;
       });
-
+      dispatch(
+        patchUser({ data: { ...user.user.data, profilePhoto: uploadedPath } })
+      );
       dispatch(resetUpload());
-      setIsUploadingHere(false);
+      isUploadingHere.current = false;
     }
-  }, [uploadSuccess, uploadedPath, isUploadingHere, dispatch]);
+  }, [uploadSuccess, uploadedPath, dispatch]);
+
+  const validate = (fieldName, value) => {
+    if (fieldName === "fullName") {
+      if (!value) return "Поле обязательно";
+      if (value.trim().length < 2) return "Минимум 2 символа";
+      if (value.trim().split(" ").length < 2) return "Укажите имя и фамилию";
+    }
+    return "";
+  };
 
   const handleChange = (e) => {
-    const newFormData = {
-      ...formData,
-      [e.target.name]: e.target.value,
-    };
-
+    const { name, value } = e.target;
+    const newFormData = { ...formDataRef.current, [name]: value };
+    formDataRef.current = newFormData;
     setFormData(newFormData);
-    debouncedUpdate(newFormData);
+
+    const err = validate(name, value);
+    setErrors((prev) => ({ ...prev, [name]: err }));
+
+    if (!err) {
+      debouncedUpdate(newFormData);
+    }
   };
 
   const handlePhotoUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      // alert("Пожалуйста, загрузите изображение");
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      // alert("Размер файла не должен превышать 5MB");
+    if (!file.type.startsWith("image/")) return;
+    if (file.size > 7 * 1024 * 1024) {
+      alert("Размер файла не должен превышать 7MB");
       return;
     }
 
     try {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setPhotoPreview(reader.result);
-      };
+      reader.onloadend = () => setPhotoPreview(reader.result);
       reader.readAsDataURL(file);
 
-      setIsUploadingHere(true);
+      isUploadingHere.current = true;
       dispatch(clearUploadError());
-
       await dispatch(uploadPhoto(file)).unwrap();
     } catch (error) {
       console.error("Ошибка загрузки фото:", error);
-      // alert("Ошибка при загрузке фотографии");
-      setIsUploadingHere(false);
+      isUploadingHere.current = false;
     }
   };
 
   const getInitials = () => {
     if (!formData.fullName) return "ФИ";
     const names = formData.fullName.trim().split(" ");
-    if (names.length >= 2) {
-      return names[0][0] + names[1][0];
-    }
+    if (names.length >= 2) return names[0][0] + names[1][0];
     return names[0][0];
   };
 
@@ -143,7 +141,11 @@ const Top = () => {
         <div className={style.top__main}>
           <Notification text="Чтобы направить заявку, необходимо дозаполнить ваши персональные данные" />
 
-          <div className={style.top__main__name}>
+          <div
+            className={`${style.top__main__name} ${
+              errors.fullName ? style.error : ""
+            }`}
+          >
             <div className={style.top__main__name__avatar}>
               <div className={style.top__main__name__avatar__img}>
                 {photoPreview ? (
@@ -184,6 +186,10 @@ const Top = () => {
               />
             </div>
           </div>
+
+          {errors.fullName && (
+            <span className={style.error_text}>{errors.fullName}</span>
+          )}
         </div>
       </div>
     </section>

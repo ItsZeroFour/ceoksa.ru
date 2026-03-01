@@ -23,17 +23,23 @@
   @media (max-width: 550px) {
     padding: 18px;
   }
+
+  .error_text {
+    display: block;
+    font-size: 12px;
+    color: var(--color-red);
+    font-weight: 300;
+    padding-left: 5px;
+    margin-top: 4px;
+  }
 }
 
 .real_address__item__icon {
   width: 52px;
   height: 52px;
-
   flex-shrink: 0;
-
   background: var(--color-gray-light);
   border-radius: 12px;
-
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -46,7 +52,7 @@
 
 .real_address__main {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   background: var(--color-block-bg);
   padding: 20px;
   border-radius: 14px;
@@ -54,105 +60,86 @@
 
   form {
     display: flex;
+    gap: 15px;
     margin-left: 15px;
-
-    .real_address__form__item {
-      display: flex;
-      flex-direction: column;
-      position: relative;
-
-      svg {
-        position: absolute;
-        top: 50%;
-        left: 95%;
-      }
-
-      input {
-        margin-top: 5px;
-        padding: 3px 0;
-        padding-right: 50px;
-
-        background: none;
-        color: var(--color-black);
-
-        font-weight: 500;
-        font-family: "Inter", sans-serif;
-        letter-spacing: 0%;
-
-        &::placeholder {
-          font-weight: 500;
-          font-family: "Inter", sans-serif;
-          color: var(--color-black);
-          opacity: 0.6;
-        }
-      }
-
-      label {
-        font-size: 13px;
-        opacity: 0.6;
-        font-weight: 300;
-      }
-    }
+    width: 100%;
 
     @media (max-width: 780px) {
       flex-direction: column;
-      width: 50%;
     }
-  }
-
-  @media (max-width: 780px) {
-    align-items: start;
   }
 
   @media (max-width: 480px) {
     padding: 14px;
   }
+
+  &.error {
+    border: 1px solid var(--color-red);
+  }
 }
 
-.real_address__main form {
+.real_address__form__item__wrapper {
   display: flex;
-  gap: 15px;
-  width: 100%;
-}
-
-.real_address__form__item:first-child {
+  flex-direction: column;
+  gap: 4px;
   flex: 2;
-}
 
-.real_address__form__item:last-child {
-  flex: 1;
-}
+  &:last-child {
+    flex: 1;
+  }
 
-.real_address__form__item input {
-  width: 100%;
-
-  @media (max-width: 480px) {
-    &::placeholder {
-      font-size: 13px;
-    }
+  .error_text {
+    font-size: 12px;
+    color: var(--color-red);
+    font-weight: 300;
+    padding-left: 5px;
   }
 }
 
 .real_address__form__item {
+  display: flex;
+  flex-direction: column;
+  position: relative;
   padding: 5px 10px;
   border-radius: 14px;
   border: 1px solid var(--color-border-address);
-}
+  transition: border-color 0.2s;
 
-.real_address__form__item.error {
-  border: 1px solid var(--color-red);
-  position: relative;
-
-  .error_text {
+  svg {
     position: absolute;
-    top: 105%;
-    font-size: 12px;
-    color: var(--color-red);
+    top: 50%;
+    left: 95%;
   }
 
-  &:last-child {
-    svg {
-      left: 93%;
+  input {
+    margin-top: 5px;
+    padding: 3px 0;
+    padding-right: 50px;
+    width: 100%;
+    background: none;
+    color: var(--color-black);
+    font-weight: 500;
+    font-family: "Inter", sans-serif;
+
+    &::placeholder {
+      font-weight: 500;
+      font-family: "Inter", sans-serif;
+      color: var(--color-black);
+      opacity: 0.6;
+
+      @media (max-width: 480px) {
+        font-size: 13px;
+      }
     }
+  }
+
+  label {
+    font-size: 13px;
+    opacity: 0.6;
+    font-weight: 300;
+  }
+
+  &.error {
+    border-color: var(--color-red);
   }
 }

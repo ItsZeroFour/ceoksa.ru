@@ -1,31 +1,27 @@
-// src/hooks/usePhoneMask.js
 import { useRef, useEffect, useState } from "react";
 import IMask from "imask";
 
-/**
- * Хук для привязки маски телефона к input-элементу
- * @param {Object} options
- * @param {string} [options.mask="+{7} (000) 000-00-00"] - маска по умолчанию для РФ
- * @param {boolean} [options.lazy=true]
- * @param {function} [options.onAccept] - колбэк при изменении значения
- * @returns {{inputRef: React.RefObject, phone: string, unmaskedPhone: string, isValid: boolean}}
- */
 export const usePhoneMask = ({
   mask = "+{7} (000) 000-00-00",
   lazy = true,
   onAccept,
+  initialValue = "",
 } = {}) => {
   const inputRef = useRef(null);
   const maskRef = useRef(null);
+  const onAcceptRef = useRef(onAccept);
   const [phone, setPhone] = useState("");
   const [unmaskedPhone, setUnmaskedPhone] = useState("");
   const [isValid, setIsValid] = useState(false);
 
   useEffect(() => {
+    onAcceptRef.current = onAccept;
+  }, [onAccept]);
+
+  useEffect(() => {
     if (!inputRef.current) return;
 
-    const maskOptions = { mask, lazy };
-    maskRef.current = IMask(inputRef.current, maskOptions);
+    maskRef.current = IMask(inputRef.current, { mask, lazy });
 
     const handleChange = () => {
       const value = maskRef.current.value;
@@ -36,13 +32,19 @@ export const usePhoneMask = ({
       setUnmaskedPhone(unmasked);
       setIsValid(valid);
 
-      if (onAccept) {
-        onAccept({ value, unmaskedValue: unmasked, isValid: valid });
+      if (onAcceptRef.current) {
+        onAcceptRef.current({ value, unmaskedValue: unmasked, isValid: valid });
       }
     };
 
+    // Сначала подписываемся
     maskRef.current.on("accept", handleChange);
-    handleChange();
+
+    // Потом устанавливаем значение — это триггернет accept
+    if (initialValue) {
+      maskRef.current.value = initialValue;
+      maskRef.current.updateValue();
+    }
 
     return () => {
       if (maskRef.current) {
@@ -50,12 +52,7 @@ export const usePhoneMask = ({
         maskRef.current = null;
       }
     };
-  }, [mask, lazy, onAccept]);
+  }, [mask, lazy]);
 
-  return {
-    inputRef,
-    phone,
-    unmaskedPhone,
-    isValid,
-  };
+  return { inputRef, phone, unmaskedPhone, isValid };
 };

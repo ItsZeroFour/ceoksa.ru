@@ -33,6 +33,18 @@
   justify-content: center;
   align-items: center;
 
+  img {
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 12px;
+
+    @media (max-width: 480px) {
+      width: 60px;
+      height: 60px;
+    }
+  }
+
   p {
     font-size: 26px;
     font-weight: 500;
@@ -228,6 +240,16 @@
     position: absolute;
     top: 50%;
     left: 95%;
+  }
+
+  p {
+    font-size: 16px;
+    font-weight: 500;
+    margin-top: 5px;
+
+    @media (max-width: 480px) {
+      font-size: 14px;
+    }
   }
 
   input {

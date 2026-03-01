@@ -11,9 +11,12 @@ import { ReactComponent as Man } from "../../../../assets/icons/profile/man.svg"
 import { ReactComponent as Edit } from "../../../../assets/icons/account/edit.svg";
 import { useValidation } from "../../../../hooks/useValidation";
 import { useScreenWidth } from "../../../../hooks/useScreenWidth";
+import { useSelector } from "react-redux";
 
-const Top = () => {
+const Top = ({ user }) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  console.log(user);
 
   const handleRefresh = () => {
     setIsRefreshing(true);
@@ -41,32 +44,50 @@ const Top = () => {
       ? "Укажите эл. почту"
       : "Необходимо указать электронную почту";
 
+  const getInitials = () => {
+    if (!user.fullName) return "ФИ";
+    const names = user.fullName.trim().split(" ");
+    if (names.length >= 2) {
+      return names[0][0] + names[1][0];
+    }
+    return names[0][0];
+  };
+
   return (
     <div className={style.top}>
       <div className={style.top__wrapper}>
         <h1>Профиль</h1>
 
-        <div className={style.top__main}>
-          <div className={style.top__main__name}>
-            <div className={style.top__main__name__avatar}>
-              <div className={style.top__main__name__avatar__img}>
-                <p>ФИ</p>
-              </div>
+        {user ? (
+          <>
+            <div className={style.top__main}>
+              <div className={style.top__main__name}>
+                <div className={style.top__main__name__avatar}>
+                  <div className={style.top__main__name__avatar__img}>
+                    {user.profilePhoto ? (
+                      <img
+                        src={`${process.env.REACT_APP_SERVERF_API}${user.profilePhoto}`}
+                        alt="Фото профиля"
+                      />
+                    ) : (
+                      <p>{getInitials()}</p>
+                    )}
+                  </div>
 
-              <button>
-                <img src={camera} alt="Загрузить фото" />
-              </button>
-            </div>
+                  {/* <button>
+                    <img src={camera} alt="Загрузить фото" />
+                  </button> */}
+                </div>
 
-            <div className={style.top__main__name__main}>
-              <p>Фамилия Имя Отчество</p>
+                <div className={style.top__main__name__main}>
+                  <p>{user?.fullName || "Фамилия Имя Отчество"}</p>
 
-              <div className={style.top__main__name__main__data}>
-                <div className={style.top__main__name__main__data__text}>
+                  {/* <div className={style.top__main__name__main__data}> */}
+                  {/* <div className={style.top__main__name__main__data__text}>
                   <img src={gosuslugi} alt="госуслуги" />
                   <p>Данные загружены 12 ноября 2025</p>
-                </div>
-                <motion.button
+                </div> */}
+                  {/* <motion.button
                   onClick={handleRefresh}
                   disabled={isRefreshing}
                   whileTap={{ scale: 0.95 }}
@@ -84,72 +105,85 @@ const Top = () => {
                   </motion.div>
 
                   {isRefreshing ? "Обновление..." : "Обновить данные"}
-                </motion.button>
+                </motion.button> */}
+                  {/* </div> */}
+                </div>
               </div>
+
+              <ul>
+                <li>
+                  <div className={style.top__item__icon}>
+                    <Phone />
+                  </div>
+
+                  <div className={style.top__item__text}>
+                    <p>Номер телефона</p>
+                    <p>
+                      +
+                      {user.phone.replace(
+                        /^7(\d{3})(\d{3})(\d{2})(\d{2})$/,
+                        "7 ($1) $2-$3-$4"
+                      )}
+                    </p>
+                  </div>
+                </li>
+
+                <li className={hasError("mail") ? `${style.error}` : ""}>
+                  <div className={style.top__item__icon}>
+                    <Mail />
+                  </div>
+
+                  <div
+                    className={
+                      hasError("mail")
+                        ? `${style.top__form__item} ${style.error}`
+                        : style.top__form__item
+                    }
+                  >
+                    <label htmlFor="mail">Электронная почта</label>
+                    {/* <input
+                      type="email"
+                      id="mail"
+                      placeholder={mailPlaceholder}
+                      value={user.email}
+                      {...getFieldProps("mail")}
+                      readOnly={true}
+                    /> */}
+                    <p>{user.email || "example@mail.ru"}</p>
+                    {/* <Edit /> */}
+                    {hasError("mail") && (
+                      <span className={style.error_text}>{errors.mail}</span>
+                    )}
+                  </div>
+                </li>
+
+                <li>
+                  <div className={style.top__item__icon}>
+                    <Calendar />
+                  </div>
+
+                  <div className={style.top__item__text}>
+                    <p>Дата рождения</p>
+                    <p>{user?.passport?.birth || "00.00.000"}</p>
+                  </div>
+                </li>
+
+                <li>
+                  <div className={style.top__item__icon}>
+                    <Man />
+                  </div>
+
+                  <div className={style.top__item__text}>
+                    <p>Пол</p>
+                    <p>Женский</p>
+                  </div>
+                </li>
+              </ul>
             </div>
-          </div>
-
-          <ul>
-            <li>
-              <div className={style.top__item__icon}>
-                <Phone />
-              </div>
-
-              <div className={style.top__item__text}>
-                <p>Номер телефона</p>
-                <p>+7 987 654-32-10</p>
-              </div>
-            </li>
-
-            <li className={hasError("mail") ? `${style.error}` : ""}>
-              <div className={style.top__item__icon}>
-                <Mail />
-              </div>
-
-              <div
-                className={
-                  hasError("mail")
-                    ? `${style.top__form__item} ${style.error}`
-                    : style.top__form__item
-                }
-              >
-                <label htmlFor="mail">Электронная почта</label>
-                <input
-                  type="email"
-                  id="mail"
-                  placeholder={mailPlaceholder}
-                  {...getFieldProps("mail")}
-                />
-                <Edit />
-                {hasError("mail") && (
-                  <span className={style.error_text}>{errors.mail}</span>
-                )}
-              </div>
-            </li>
-
-            <li>
-              <div className={style.top__item__icon}>
-                <Calendar />
-              </div>
-
-              <div className={style.top__item__text}>
-                <p>Дата рождения</p>
-                <p>17 октября 1998</p>
-              </div>
-            </li>
-
-            <li>
-              <div className={style.top__item__icon}>
-                <Man />
-              </div>
-
-              <div className={style.top__item__text}>
-                <p>Пол</p>
-                <p>Женский</p>
-              </div>
-            </li>
-          </ul>
-        </div>
+          </>
+        ) : (
+          <p>Загрузка профиля...</p>
+        )}
       </div>
     </div>
   );

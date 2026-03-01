@@ -12,34 +12,65 @@ import { useDropdown } from "../../../hooks/useDropdown";
 import { useScreenWidth } from "../../../hooks/useScreenWidth";
 import { useCreditAmount } from "../../../hooks/useCreditAmount";
 import { useSalaryValidation } from "../../../hooks/useSalaryValidation";
+import { useDebouncedUpdate } from "../../../hooks/useDebouncedUpdate";
 import { fetchCredit } from "../../../redux/slices/strapi/creditSlice";
+import {
+  updateUser,
+  clearError,
+} from "../../../redux/slices/user/updateUserSlice";
 import {
   TERMS,
   TARGETS,
   CREDIT_LIMITS,
+  DRAFT_KEY,
 } from "../../../constants/creditConstants";
+import { useNavigate } from "react-router-dom";
 
-const Credit = ({ setOpenAuthMenu }) => {
-  const [selectedTerm, setSelectedTerm] = useState(TERMS[5]);
-  const [selectedTarget, setSelectedTarget] = useState(TARGETS[0]);
+export const saveDraft = (data) => {
+  localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
+};
+
+const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const user = useSelector((state) => state.auth);
+  const isAuthenticated = user?.isAuth ?? false;
+  const authStatus = user?.status;
+
+  const loanApplication = user?.user?.data?.loan_application;
+  const draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
+
+  const initialSum = loanApplication?.sum ?? draft?.sum ?? 500000;
+
+  const initialTerm =
+    TERMS.find((t) => t.value === (loanApplication?.date ?? draft?.date)) ??
+    TERMS[5];
+
+  const initialTarget =
+    TARGETS.find(
+      (t) => t.value === (loanApplication?.target ?? draft?.target)
+    ) ?? TARGETS[0];
+
+  const [selectedTerm, setSelectedTerm] = useState(initialTerm);
+  const [selectedTarget, setSelectedTarget] = useState(initialTarget);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   const termRef = useRef(null);
   const targetRef = useRef(null);
 
   const screenWidth = useScreenWidth();
-  const dispatch = useDispatch();
-
   const { data, status } = useSelector((state) => state.credit);
 
-  // Хуки для управления состоянием формы
   const creditAmount = useCreditAmount({
-    initialValue: 500000,
+    initialValue: initialSum,
     minAmount: CREDIT_LIMITS.MIN_AMOUNT,
     maxAmount: CREDIT_LIMITS.MAX_AMOUNT,
     step: CREDIT_LIMITS.STEP,
   });
 
   const salary = useSalaryValidation({
+    initialValue: loanApplication?.salary ?? draft?.salary ?? "",
     minSalary: CREDIT_LIMITS.MIN_SALARY,
     maxSalary: CREDIT_LIMITS.MAX_AMOUNT,
     debounceDelay: 300,
@@ -50,9 +81,79 @@ const Credit = ({ setOpenAuthMenu }) => {
 
   useOutsideClick([termRef, targetRef], closeDropdown);
 
+  const debouncedUpdate = useDebouncedUpdate((data) => {
+    dispatch(clearError());
+    dispatch(updateUser({ loan_application: data }));
+  }, 1000);
+
+  const getCurrentFormData = () => ({
+    sum: creditAmount.amountValue,
+    date: selectedTerm.value,
+    target: selectedTarget.value,
+    salary: salary.salaryValue,
+  });
+
   useEffect(() => {
     dispatch(fetchCredit("kredit?populate=*"));
   }, [dispatch]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    if (isHydrated) return;
+
+    const savedDraft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
+
+    if (savedDraft) {
+      dispatch(clearError());
+      dispatch(updateUser({ loan_application: savedDraft }));
+      localStorage.removeItem(DRAFT_KEY);
+    }
+
+    setIsHydrated(true);
+  }, [isAuthenticated, isHydrated, dispatch]);
+
+  useEffect(() => {
+    if (isAuthenticated) return;
+
+    saveDraft(getCurrentFormData());
+  }, [
+    isAuthenticated,
+    creditAmount.amountValue,
+    selectedTerm,
+    selectedTarget,
+    salary.salaryValue,
+  ]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    if (!isHydrated) return;
+
+    debouncedUpdate(getCurrentFormData());
+  }, [
+    isAuthenticated,
+    isHydrated,
+    creditAmount.amountValue,
+    selectedTerm,
+    selectedTarget,
+    salary.salaryValue,
+  ]);
+
+  useEffect(() => {
+    if (authStatus !== "succeeded") return;
+    if (!loanApplication) return;
+
+    if (draft) return;
+
+    const savedTerm = TERMS.find((t) => t.value === loanApplication.date);
+    if (savedTerm) setSelectedTerm(savedTerm);
+
+    const savedTarget = TARGETS.find((t) => t.value === loanApplication.target);
+    if (savedTarget) setSelectedTarget(savedTarget);
+
+    if (loanApplication.salary) {
+      salary.setSalaryValue(loanApplication.salary);
+    }
+  }, [authStatus]);
 
   const handleTermSelect = (term) => {
     setSelectedTerm(term);
@@ -65,14 +166,20 @@ const Credit = ({ setOpenAuthMenu }) => {
   };
 
   const handleContinue = () => {
-    if (!salary.salaryValue || !!salary.salaryError) {
+    if (!salary.salaryValue || salary.salaryError) {
       salary.handleSalaryBlur();
       return;
     }
-    setOpenAuthMenu(true);
-  };
 
-  const isContinueDisabled = !salary.salaryValue || !!salary.salaryError;
+    if (isAuthenticated) {
+      dispatch(clearError());
+      dispatch(updateUser({ loan_application: getCurrentFormData() }));
+      navigate("/account/loan_applications");
+    } else {
+      saveDraft(getCurrentFormData());
+      setOpenAuthMenu(true);
+    }
+  };
 
   if (status === "loading" || status === "failed") {
     return (
