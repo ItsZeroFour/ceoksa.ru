@@ -5,67 +5,10 @@ import { ReactComponent as File } from "../../../../assets/icons/profile/file.sv
 import { useDispatch, useSelector } from "react-redux";
 import { fetchFiles } from "../../../../redux/slices/strapi/FilesSlide";
 import axios from "../../../../utils/axios";
+import { generateConsentPdf } from "../../../../utils/Generateconsentpdf";
 
-// const files = [
-//   {
-//     path: "/soglasie-na-obrabotku-personalnyh-dannyh",
-//     text: "Согласие на обработку персональных данных",
-//   },
-
-//   {
-//     path: "/soglasie-na-poluchenie-reklamy",
-//     text: "Согласие на получение рекламы",
-//   },
-
-//   {
-//     path: "/",
-//     text: "Политика конфиденциальности",
-//   },
-
-//   {
-//     path: "/",
-//     text: "Правила ЭДО",
-//   },
-
-//   {
-//     path: "/",
-//     text: "Заявление на присоединение к правилам платформы",
-//   },
-
-//   {
-//     path: "/",
-//     text: "Правила финансовой платформы АО “Название платформы”",
-//   },
-
-//   {
-//     path: "/",
-//     text: "Согласие на обработку ПД Финансовыми организациями-партнерами",
-//   },
-
-//   {
-//     path: "/",
-//     text: "Согласие на получение информации из БКИ Финансовыми организациями и Финансовыми организациями-партнерами",
-//   },
-
-//   {
-//     path: "/",
-//     text: "Согласие на обработку ПД Финансовыми организациями",
-//   },
-
-//   {
-//     path: "/",
-//     text: "Согласие на получение информации из БКИ для Оператора финансовой платформы",
-//   },
-
-//   {
-//     path: "/",
-//     text: "Согласие на обработку ПД Оператором финансовой платформы",
-//   },
-// ];
-
-const Accept = () => {
+const Accept = ({ user }) => {
   const dispatch = useDispatch();
-
   const { data, status, error } = useSelector((state) => state.files);
 
   useEffect(() => {
@@ -75,9 +18,7 @@ const Accept = () => {
   const deleteUser = async () => {
     try {
       const response = await axios.delete("/user/delete");
-
       console.log(response);
-
       if (response.status === 200) {
         return window.location.reload();
       }
@@ -93,7 +34,6 @@ const Accept = () => {
           <h2>Согласия</h2>
 
           <ul>
-            {/* {files.map(({ path, text }) => ( */}
             <li>
               <Link
                 to={`${process.env.REACT_APP_ADMIN_IMAGES}${data.consent_to_the_processing_of_personal_data.url}`}
@@ -102,7 +42,6 @@ const Accept = () => {
                 <div className={style.accept__item__icon}>
                   <File />
                 </div>
-
                 <p>Согласие на обработку персональных данных</p>
               </Link>
             </li>
@@ -115,7 +54,6 @@ const Accept = () => {
                 <div className={style.accept__item__icon}>
                   <File />
                 </div>
-
                 <p>Согласие на получение рекламной информации</p>
               </Link>
             </li>
@@ -128,7 +66,6 @@ const Accept = () => {
                 <div className={style.accept__item__icon}>
                   <File />
                 </div>
-
                 <p>Согласие на просмотр кредитного отчета</p>
               </Link>
             </li>
@@ -141,7 +78,6 @@ const Accept = () => {
                 <div className={style.accept__item__icon}>
                   <File />
                 </div>
-
                 <p>Условия передачи информации</p>
               </Link>
             </li>
@@ -154,7 +90,6 @@ const Accept = () => {
                 <div className={style.accept__item__icon}>
                   <File />
                 </div>
-
                 <p>Соглашение об использовании простой электронной подписи</p>
               </Link>
             </li>
@@ -167,13 +102,28 @@ const Accept = () => {
                 <div className={style.accept__item__icon}>
                   <File />
                 </div>
-
                 <p>
                   Согласие на обработку персональных данных операторами связи
                 </p>
               </Link>
             </li>
-            {/* ))} */}
+
+            {/* ── 7 ── динамически генерируемый PDF с данными пользователя ── */}
+            <li>
+              <button
+                type="button"
+                className={style.accept__file_button}
+                onClick={() => generateConsentPdf(user)}
+              >
+                <div className={style.accept__item__icon}>
+                  <File />
+                </div>
+                <p>
+                  Согласие на обработку персональных данных оператором и
+                  партнерами оператора
+                </p>
+              </button>
+            </li>
           </ul>
         </div>
       )}

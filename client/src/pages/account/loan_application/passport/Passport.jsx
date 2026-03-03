@@ -12,6 +12,7 @@ import {
   updateUser,
   clearError,
 } from "../../../../redux/slices/user/updateUserSlice";
+import CustomSelect from "../../../../components/CustomSelect/CustomSelect";
 
 const Passport = () => {
   const dispatch = useDispatch();
@@ -116,7 +117,6 @@ const Passport = () => {
         return "";
       case "gender":
         if (!value) return "Поле обязательно";
-        if (value.trim().length < 5) return "Укажите ваш пол";
         return "";
       case "birth":
         return validateDate(value);
@@ -260,16 +260,25 @@ const Passport = () => {
           <div>
             <li className={errors.gender ? style.li_error : ""}>
               <div className={style.passport__item__text}>
-                <InputField
-                  label="Пол"
-                  placeholder="Пол"
-                  id="gender"
-                  type="text"
-                  name="gender"
-                  value={formatGender(formData.gender)}
+                <CustomSelect
                   icon={PassportIcon}
-                  onChange={handleChange}
-                  readOnly={true}
+                  label="Пол"
+                  placeholder="Выберите пол"
+                  defaultValue={
+                    formData.gender
+                      ? {
+                          value: formData.gender,
+                          title: formatGender(formData.gender),
+                        }
+                      : null
+                  }
+                  options={[
+                    { value: "Мужской", title: "Мужской" },
+                    { value: "Женский", title: "Женский" },
+                  ]}
+                  onChange={(option) =>
+                    handleFieldChange("gender", option.value)
+                  }
                 />
               </div>
             </li>

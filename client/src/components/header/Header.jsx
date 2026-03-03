@@ -29,6 +29,8 @@ const Header = ({
     return names[0][0];
   };
 
+  console.log(userData);
+
   return (
     <header className={style.header}>
       <div className="container">
@@ -59,9 +61,18 @@ const Header = ({
                 to="/account/loan_applications"
                 className={style.header__profile}
               >
-                <div className={style.header__profile__name__avatar}>
-                  <p>{getInitials()}</p>
-                </div>
+                {userData.profilePhoto ? (
+                  <div className={style.header__profile__avatar}>
+                    <img
+                      src={`${process.env.REACT_APP_SERVERF_API}${userData.profilePhoto}`}
+                      alt="Фото профиля"
+                    />
+                  </div>
+                ) : (
+                  <div className={style.header__profile__name__avatar}>
+                    <p>{getInitials()}</p>
+                  </div>
+                )}
 
                 {/* <div className={style.header__profile__name}>
                   <h3>

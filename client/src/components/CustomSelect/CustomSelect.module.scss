@@ -104,10 +104,13 @@
   background: var(--color-block-bg);
   border-radius: 14px;
   border: 1px solid var(--color-border-address);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
   z-index: 10;
   overflow: hidden;
   animation: fadeIn 0.15s ease;
+
+  display: flex;
+  flex-direction: column;
 }
 
 .select__option {
@@ -117,6 +120,8 @@
   cursor: pointer;
   transition: background 0.15s;
   color: var(--color-text-primary);
+
+  width: 100%;
 
   &:not(:last-child) {
     border-bottom: 1px solid var(--color-border-address);

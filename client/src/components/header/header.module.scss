@@ -229,6 +229,8 @@
       align-items: center;
       border-radius: 50%;
 
+      text-transform: uppercase;
+
       @media (max-width: 525px) {
         width: 36px;
         height: 36px;
@@ -256,6 +258,20 @@
 
     @media (max-width: 768px) {
       display: none;
+    }
+  }
+}
+
+.header__profile__avatar {
+  img {
+    width: 42px;
+    height: 42px;
+    object-fit: cover;
+    border-radius: 50%;
+
+    @media (max-width: 525px) {
+      width: 36px;
+      height: 36px;
     }
   }
 }
