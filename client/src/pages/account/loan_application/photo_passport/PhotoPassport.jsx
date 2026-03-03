@@ -121,7 +121,7 @@ const PhotoPassport = () => {
 
       await axios.post(`/ocr/passport`);
 
-      console.log("[OCR] Паспорт успешно распознан");
+      window.location.reload();
     } catch (error) {
       console.error("[OCR] Ошибка распознавания паспорта:", error);
       setOcrError(

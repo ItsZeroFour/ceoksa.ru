@@ -8,7 +8,7 @@
 
   width: 100%;
 
-  button {
+  & > button {
     margin-top: 25px;
     background: none;
     font-weight: 400;
@@ -54,7 +54,8 @@
     li {
       width: 100%;
 
-      a {
+      a,
+      button {
         display: flex;
         align-items: center;
         height: 100px;
@@ -62,6 +63,9 @@
         background: var(--color-block-bg);
         padding: 20px;
         border-radius: 14px;
+
+        text-align: left;
+        color: var(--color-black);
 
         .accept__item__icon {
           width: 38px;

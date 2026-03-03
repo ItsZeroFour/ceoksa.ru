@@ -17,6 +17,7 @@
     "gsap": "^3.14.2",
     "imask": "^7.6.1",
     "keen-slider": "^6.8.6",
+    "pdfmake": "^0.3.5",
     "react": "^19.2.0",
     "react-circular-progressbar": "^2.2.0",
     "react-dom": "^19.2.0",

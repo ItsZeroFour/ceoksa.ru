@@ -22,7 +22,7 @@ const Profile = ({ setOpenMenu, openMenu, user }) => {
             {/* <Automobiles /> */}
             <Addresses user={user} />
             <Rekvisits user={user} />
-            <Accept />
+            <Accept user={user} />
           </div>
         </div>
       </div>
