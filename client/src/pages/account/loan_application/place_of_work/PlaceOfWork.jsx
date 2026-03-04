@@ -150,7 +150,11 @@ const PlaceOfWork = () => {
     }
   }, [placeOfWork?.start_date]);
 
-  const showExtraFields = formData.employment_type === "Работа по найму";
+  const showExtraFields =
+    formData.employment_type === "Работа по найму" ||
+    formData.employment_type === "Собственный бизнес";
+
+  const showPosition = formData.employment_type === "Работа по найму";
 
   return (
     <section className={style.place_of_work}>
@@ -185,7 +189,7 @@ const PlaceOfWork = () => {
                   <InputField
                     icon={Work}
                     label="Название организации"
-                    placeholder="Необходимо указать название организации"
+                    placeholder="Название организации"
                     id="organization_name"
                     type="text"
                     name="organization_name"
@@ -207,7 +211,7 @@ const PlaceOfWork = () => {
                   <InputField
                     icon={Work}
                     label="Начало работы"
-                    placeholder="Месяц и год"
+                    placeholder="Дата начала работы"
                     id="start_date"
                     type="text"
                     inputMode="numeric"
@@ -226,7 +230,7 @@ const PlaceOfWork = () => {
                   <InputField
                     icon={Phone}
                     label="Рабочий телефон"
-                    placeholder="Необходимо указать"
+                    placeholder="Рабочий телефон"
                     id="work_phone"
                     type="tel"
                     ref={phoneInputRef}
@@ -239,27 +243,29 @@ const PlaceOfWork = () => {
                 )}
               </div>
 
-              <div>
-                <li className={errors.position ? style.li_error : ""}>
-                  <InputField
-                    icon={Work}
-                    label="Название должности"
-                    placeholder="Необходимо указать"
-                    id="position"
-                    type="text"
-                    name="position"
-                    value={formData.position}
-                    onChange={(e) =>
-                      handleFieldChange("position", e.target.value)
-                    }
-                  />
-                </li>
-                {errors.position && (
-                  <span className={style.input_error_text}>
-                    {errors.position}
-                  </span>
-                )}
-              </div>
+              {showPosition && (
+                <div>
+                  <li className={errors.position ? style.li_error : ""}>
+                    <InputField
+                      icon={Work}
+                      label="Название должности"
+                      placeholder="Название должности"
+                      id="position"
+                      type="text"
+                      name="position"
+                      value={formData.position}
+                      onChange={(e) =>
+                        handleFieldChange("position", e.target.value)
+                      }
+                    />
+                  </li>
+                  {errors.position && (
+                    <span className={style.input_error_text}>
+                      {errors.position}
+                    </span>
+                  )}
+                </div>
+              )}
             </>
           )}
         </ul>
