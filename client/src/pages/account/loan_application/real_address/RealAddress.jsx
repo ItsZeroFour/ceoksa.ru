@@ -83,9 +83,9 @@ const RealAddress = () => {
           <form>
             <div className={style.real_address__form__item__wrapper}>
               <div className={style.real_address__form__item}>
-                <label htmlFor="street">
+                {/* <label htmlFor="street">
                   Населённый пункт, улица, дом, квартира
-                </label>
+                </label> */}
                 <input
                   type="text"
                   id="street"

@@ -9,7 +9,6 @@ const UserSchema = new mongoose.Schema(
       index: true,
     },
 
-    // MTS
     mts_sub: {
       type: String,
       unique: true,
@@ -88,6 +87,32 @@ const UserSchema = new mongoose.Schema(
         type: String,
         default: "Номер родственника",
       },
+    },
+
+    additional_data: {
+      education: String,
+      marital_status: String,
+      children: String,
+      has_property: {
+        type: Boolean,
+        default: false,
+      },
+      has_car: {
+        type: Boolean,
+        default: false,
+      },
+      car_number: String,
+    },
+
+    place_of_work: {
+      employment_type: {
+        type: String,
+        default: "Работа в найме",
+      },
+      organization_name: String,
+      start_date: String,
+      work_phone: String,
+      position: String,
     },
 
     loans: {

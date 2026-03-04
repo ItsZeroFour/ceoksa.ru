@@ -9,6 +9,7 @@ const CustomSelect = ({
   options,
   onChange,
   defaultValue,
+  showLabel = true,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState(defaultValue || null);
@@ -51,7 +52,8 @@ const CustomSelect = ({
         )}
 
         <div className={style.select__info}>
-          <span className={style.select__label}>{label}</span>
+          {showLabel && <span className={style.select__label}>{label}</span>}
+
           <span
             className={
               selected ? style.select__value : style.select__placeholder
