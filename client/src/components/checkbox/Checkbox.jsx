@@ -1,6 +1,5 @@
 import React from "react";
 import style from "./checkbox.module.scss";
-import { ReactComponent as Check } from "../../assets/icons/check.svg";
 
 const Checkbox = ({ isChecked, setIsChecked }) => {
   return (
@@ -10,8 +9,8 @@ const Checkbox = ({ isChecked, setIsChecked }) => {
         checked={isChecked}
         onChange={(e) => setIsChecked(e.target.checked)}
       />
-      <span className={style.checkmark}>
-        {isChecked && <Check className={style.check_icon} />}
+      <span className={style.track}>
+        <span className={style.thumb} />
       </span>
     </label>
   );

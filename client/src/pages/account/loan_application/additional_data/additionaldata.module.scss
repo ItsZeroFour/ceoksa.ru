@@ -1,0 +1,128 @@
+.additional_data {
+  margin-top: 25px;
+
+  @media (max-width: 480px) {
+    margin-top: 15px;
+  }
+}
+
+.additional_data__wrapper {
+  padding: 35px;
+  background: var(--color-gray-secondary);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+
+  h2 {
+    font-weight: 600;
+    font-family: "Inter", sans-serif;
+
+    @media (max-width: 480px) {
+      font-size: 19px;
+    }
+  }
+
+  @media (max-width: 550px) {
+    padding: 18px;
+  }
+}
+
+.selects_row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  li {
+    flex: 1 1 calc(33.333% - 10px);
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background: var(--color-block-bg);
+    border-radius: 14px;
+    border: 1px solid var(--color-border-address);
+    transition: border-color 0.2s;
+
+    @media (max-width: 780px) {
+      flex: 1 1 calc(50% - 7.5px);
+    }
+
+    @media (max-width: 480px) {
+      flex: 1 1 100%;
+    }
+  }
+}
+
+.property_section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  h3 {
+    font-weight: 600;
+    font-size: 16px;
+    font-family: "Inter", sans-serif;
+  }
+}
+
+.property_section__checkboxes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.property_section__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  span {
+    font-size: 15px;
+    font-weight: 500;
+  }
+}
+
+.car_field {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  & > div {
+    flex: 1 1 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    li {
+      flex: 1 1 100%;
+    }
+
+    .input_error_text {
+      color: var(--color-red);
+      font-size: 12px;
+      font-weight: 300;
+      padding-left: 5px;
+    }
+  }
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+    background: var(--color-block-bg);
+    border-radius: 14px;
+    border: 1px solid var(--color-border-address);
+    transition: border-color 0.2s;
+
+    &.li_error {
+      border-color: var(--color-red);
+    }
+  }
+}

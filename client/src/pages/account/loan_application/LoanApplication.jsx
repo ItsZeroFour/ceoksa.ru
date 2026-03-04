@@ -12,6 +12,8 @@ import Birth from "./birth/Birth";
 import PhotoPassport from "./photo_passport/PhotoPassport";
 import PhotoWithPassport from "./photo_with_passport/PhotoWithPassport";
 import AdditionalTelephone from "./additional_telephone/AdditionalTelephone";
+import PlaceOfWork from "./place_of_work/PlaceOfWork";
+import AdditionalData from "./additional_data/AdditionalData";
 
 const LoanApplication = ({ setOpenMenu, openMenu, userData }) => {
   const [isChecked, setIsChecked] = useState(true);
@@ -44,6 +46,8 @@ const LoanApplication = ({ setOpenMenu, openMenu, userData }) => {
             </AnimatePresence>
             <Contacts userData={userData} />
             <AdditionalTelephone userData={userData} />
+            <PlaceOfWork />
+            <AdditionalData />
             <PhotoPassport />
             <PhotoWithPassport />
             <Credit />

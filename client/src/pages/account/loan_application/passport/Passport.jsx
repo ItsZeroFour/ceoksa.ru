@@ -279,6 +279,7 @@ const Passport = () => {
                   onChange={(option) =>
                     handleFieldChange("gender", option.value)
                   }
+                  showLabel={false}
                 />
               </div>
             </li>

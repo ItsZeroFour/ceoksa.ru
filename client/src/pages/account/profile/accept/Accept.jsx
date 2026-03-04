@@ -7,6 +7,24 @@ import { fetchFiles } from "../../../../redux/slices/strapi/FilesSlide";
 import axios from "../../../../utils/axios";
 import { generateConsentPdf } from "../../../../utils/Generateconsentpdf";
 
+const hasPassportData = (user) => {
+  const p = user?.passport;
+  if (!p) return false;
+
+  console.log(p);
+
+  return Boolean(
+    p.series_number &&
+      p.issued_by &&
+      p.date &&
+      user.fullName &&
+      p.birth &&
+      p.department_code &&
+      p.gender &&
+      p.place_of_birth
+  );
+};
+
 const Accept = ({ user }) => {
   const dispatch = useDispatch();
   const { data, status, error } = useSelector((state) => state.files);
@@ -108,22 +126,23 @@ const Accept = ({ user }) => {
               </Link>
             </li>
 
-            {/* ── 7 ── динамически генерируемый PDF с данными пользователя ── */}
-            <li>
-              <button
-                type="button"
-                className={style.accept__file_button}
-                onClick={() => generateConsentPdf(user)}
-              >
-                <div className={style.accept__item__icon}>
-                  <File />
-                </div>
-                <p>
-                  Согласие на обработку персональных данных оператором и
-                  партнерами оператора
-                </p>
-              </button>
-            </li>
+            {hasPassportData(user) && (
+              <li>
+                <button
+                  type="button"
+                  className={style.accept__file_button}
+                  onClick={() => generateConsentPdf(user)}
+                >
+                  <div className={style.accept__item__icon}>
+                    <File />
+                  </div>
+                  <p>
+                    Согласие на обработку персональных данных оператором и
+                    партнерами оператора
+                  </p>
+                </button>
+              </li>
+            )}
           </ul>
         </div>
       )}
