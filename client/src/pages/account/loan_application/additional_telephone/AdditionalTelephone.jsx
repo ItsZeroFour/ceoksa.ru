@@ -101,10 +101,7 @@ const AdditionalTelephone = ({ userData }) => {
   });
 
   const screenWidth = useScreenWidth();
-  const placeholder =
-    screenWidth < 780
-      ? "Укажите номер телефона"
-      : "Необходимо указать номер телефона";
+  const placeholder = screenWidth < 780 ? "Номер телефона" : "Номер телефона";
 
   return (
     <section className={style.additional_telephone}>
@@ -121,6 +118,7 @@ const AdditionalTelephone = ({ userData }) => {
                 id="phone"
                 type="tel"
                 ref={phoneInputRef}
+                inputMode="numeric"
               />
             </li>
             {errors.phone && (

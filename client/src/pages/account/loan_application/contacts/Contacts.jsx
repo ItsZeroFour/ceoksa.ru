@@ -61,8 +61,8 @@ const Contacts = ({ userData }) => {
   const screenWidth = useScreenWidth();
   const placeholder =
     screenWidth < 780
-      ? "Укажите эл. почту"
-      : "Необходимо указать электронную почту";
+      ? "Эл. почта"
+      : "Электронная почта";
 
   return (
     <section className={style.contacts}>
