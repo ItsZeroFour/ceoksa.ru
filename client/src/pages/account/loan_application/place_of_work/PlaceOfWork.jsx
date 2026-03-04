@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import style from "./placeofwork.module.scss";
 import { ReactComponent as Work } from "../../../../assets/icons/account/work.svg";
-import { ReactComponent as Bag } from "../../../../assets/icons/account/bag.svg";
 import { ReactComponent as Phone } from "../../../../assets/icons/account/phone.svg";
 import InputField from "../../../../components/input_field/InputField";
 import CustomSelect from "../../../../components/CustomSelect/CustomSelect";
@@ -16,11 +15,12 @@ import {
 } from "../../../../redux/slices/user/updateUserSlice";
 
 const EMPLOYMENT_TYPES = [
-  { value: "Не работаю", title: "Не работаю" },
-  { value: "Работа по найму", title: "Работа по найму" },
-  { value: "Собственный бизнес", title: "Собственный бизнес" },
+  { value: "Работа в найме", title: "Работа в найме" },
   { value: "Самозанятый", title: "Самозанятый" },
+  { value: "ИП", title: "ИП" },
   { value: "Пенсионер", title: "Пенсионер" },
+  { value: "Студент", title: "Студент" },
+  { value: "Безработный", title: "Безработный" },
 ];
 
 const dateMask = {
@@ -151,6 +151,9 @@ const PlaceOfWork = () => {
     }
   }, [placeOfWork?.start_date]);
 
+  const showExtraFields =
+    formData.employment_type === "Работа в найме"
+
   return (
     <section className={style.place_of_work}>
       <div className={style.place_of_work__wrapper}>
@@ -177,83 +180,90 @@ const PlaceOfWork = () => {
             />
           </li>
 
-          <div>
-            <li className={errors.organization_name ? style.li_error : ""}>
-              <InputField
-                icon={Work}
-                label="Название организации"
-                placeholder="Название организации"
-                id="organization_name"
-                type="text"
-                name="organization_name"
-                value={formData.organization_name}
-                onChange={(e) =>
-                  handleFieldChange("organization_name", e.target.value)
-                }
-              />
-            </li>
-            {errors.organization_name && (
-              <span className={style.input_error_text}>
-                {errors.organization_name}
-              </span>
-            )}
-          </div>
+          {showExtraFields && (
+            <>
+              <div>
+                <li className={errors.organization_name ? style.li_error : ""}>
+                  <InputField
+                    icon={Work}
+                    label="Название организации"
+                    placeholder="Необходимо указать название организации"
+                    id="organization_name"
+                    type="text"
+                    name="organization_name"
+                    value={formData.organization_name}
+                    onChange={(e) =>
+                      handleFieldChange("organization_name", e.target.value)
+                    }
+                  />
+                </li>
+                {errors.organization_name && (
+                  <span className={style.input_error_text}>
+                    {errors.organization_name}
+                  </span>
+                )}
+              </div>
 
-          <div>
-            <li className={errors.start_date ? style.li_error : ""}>
-              <InputField
-                icon={Bag}
-                label="Начало работы"
-                placeholder="Дата начала работы"
-                id="start_date"
-                type="text"
-                inputMode="numeric"
-                ref={startDateRef}
-              />
-            </li>
-            {errors.start_date && (
-              <span className={style.input_error_text}>
-                {errors.start_date}
-              </span>
-            )}
-          </div>
+              <div>
+                <li className={errors.start_date ? style.li_error : ""}>
+                  <InputField
+                    icon={Work}
+                    label="Начало работы"
+                    placeholder="Месяц и год"
+                    id="start_date"
+                    type="text"
+                    inputMode="numeric"
+                    ref={startDateRef}
+                  />
+                </li>
+                {errors.start_date && (
+                  <span className={style.input_error_text}>
+                    {errors.start_date}
+                  </span>
+                )}
+              </div>
 
-          <div>
-            <li className={errors.work_phone ? style.li_error : ""}>
-              <InputField
-                icon={Phone}
-                label="Рабочий телефон"
-                placeholder="Рабочий телефон"
-                id="work_phone"
-                type="tel"
-                ref={phoneInputRef}
-                inputMode="numeric"
-              />
-            </li>
-            {errors.work_phone && (
-              <span className={style.input_error_text}>
-                {errors.work_phone}
-              </span>
-            )}
-          </div>
+              <div>
+                <li className={errors.work_phone ? style.li_error : ""}>
+                  <InputField
+                    icon={Phone}
+                    label="Рабочий телефон"
+                    placeholder="Необходимо указать"
+                    id="work_phone"
+                    type="tel"
+                    ref={phoneInputRef}
+                  />
+                </li>
+                {errors.work_phone && (
+                  <span className={style.input_error_text}>
+                    {errors.work_phone}
+                  </span>
+                )}
+              </div>
 
-          <div>
-            <li className={errors.position ? style.li_error : ""}>
-              <InputField
-                icon={Work}
-                label="Название должности"
-                placeholder="Название должности"
-                id="position"
-                type="text"
-                name="position"
-                value={formData.position}
-                onChange={(e) => handleFieldChange("position", e.target.value)}
-              />
-            </li>
-            {errors.position && (
-              <span className={style.input_error_text}>{errors.position}</span>
-            )}
-          </div>
+              <div>
+                <li className={errors.position ? style.li_error : ""}>
+                  <InputField
+                    icon={Work}
+                    label="Название должности"
+                    placeholder="Необходимо указать"
+                    id="position"
+                    type="text"
+                    name="position"
+                    value={formData.position}
+                    onChange={(e) =>
+                      handleFieldChange("position", e.target.value)
+                    }
+                  />
+                </li>
+                {errors.position && (
+                  <span className={style.input_error_text}>
+                    {errors.position}
+                  </span>
+                )}
+              </div>
+            </>
+          )}
         </ul>
       </div>
     </section>

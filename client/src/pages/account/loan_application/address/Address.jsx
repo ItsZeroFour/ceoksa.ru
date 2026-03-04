@@ -125,7 +125,7 @@ const Address = ({ setIsChecked, isChecked }) => {
               >
                 <InputField
                   label="Населённый пункт, улица, дом"
-                  placeholder="Нас. пункт, улица, дом, квартира"
+                  placeholder="Нас. пункт, улица, дом, кв."
                   id="street-address"
                   type="text"
                   name="street"

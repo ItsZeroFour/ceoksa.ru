@@ -112,6 +112,10 @@
       }
     }
   }
+
+  @media (max-width: 520px) {
+    height: 46px;
+  }
 }
 
 .error_text {

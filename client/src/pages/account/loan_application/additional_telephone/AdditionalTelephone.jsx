@@ -152,7 +152,7 @@ const AdditionalTelephone = ({ userData }) => {
               <InputField
                 icon={Mail}
                 label="ФИО владельца телефона"
-                placeholder="Необходимо указать ФИО"
+                placeholder="ФИО"
                 id="name"
                 type="text"
                 name="name"
