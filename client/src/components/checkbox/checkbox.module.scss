@@ -2,8 +2,8 @@
   display: inline-flex;
   align-items: center;
   cursor: pointer;
-  width: 36px;
-  height: 20px;
+  width: 38px;
+  height: 26px;
   position: relative;
   z-index: 0;
 }
@@ -21,7 +21,7 @@
 .track {
   position: absolute;
   inset: 0;
-  background-color: var(--color-gray-fourth);
+  background-color: var(--color-white);
   border-radius: 999px;
   transition: background-color 0.2s ease;
   pointer-events: none;
@@ -33,18 +33,20 @@
   top: 50%;
   left: 3px;
   transform: translateY(-50%);
-  width: 14px;
-  height: 14px;
-  background-color: var(--color-white);
+  width: 20px;
+  height: 20px;
+  background-color: #b7b7b7;
   border-radius: 50%;
   transition: left 0.2s ease;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .checkbox_container input:checked ~ .track {
-  background-color: var(--color-blue);
+  background-color: var(--color-checkbox);
 }
 
 .checkbox_container input:checked ~ .track .thumb {
-  left: calc(100% - 17px);
+  left: calc(100% - 23px);
+  background-color: var(--color-checkbox-thumb);
+  border: 2px solid var(--color-white);
 }

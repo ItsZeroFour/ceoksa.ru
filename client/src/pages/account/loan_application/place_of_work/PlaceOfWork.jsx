@@ -16,12 +16,11 @@ import {
 } from "../../../../redux/slices/user/updateUserSlice";
 
 const EMPLOYMENT_TYPES = [
-  { value: "Работа в найме", title: "Работа в найме" },
+  { value: "Не работаю", title: "Не работаю" },
+  { value: "Работа по найму", title: "Работа по найму" },
+  { value: "Собственный бизнес", title: "Собственный бизнес" },
   { value: "Самозанятый", title: "Самозанятый" },
-  { value: "ИП", title: "ИП" },
   { value: "Пенсионер", title: "Пенсионер" },
-  { value: "Студент", title: "Студент" },
-  { value: "Безработный", title: "Безработный" },
 ];
 
 const dateMask = {
@@ -183,7 +182,7 @@ const PlaceOfWork = () => {
               <InputField
                 icon={Work}
                 label="Название организации"
-                placeholder="Необходимо указать название организации"
+                placeholder="Название организации"
                 id="organization_name"
                 type="text"
                 name="organization_name"
@@ -228,6 +227,7 @@ const PlaceOfWork = () => {
                 id="work_phone"
                 type="tel"
                 ref={phoneInputRef}
+                inputMode="numeric"
               />
             </li>
             {errors.work_phone && (

@@ -70,11 +70,11 @@
 .select__placeholder {
   font-size: 16px;
   font-weight: 400;
-  opacity: 0.4;
+  opacity: 0.6;
   color: var(--color-text-primary);
 
   @media (max-width: 520px) {
-    font-size: 14px;
+    font-size: 13px;
   }
 }
 

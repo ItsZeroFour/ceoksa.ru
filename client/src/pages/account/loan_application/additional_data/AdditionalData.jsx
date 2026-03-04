@@ -16,19 +16,21 @@ import Notification from "../../../../components/notification/Notification";
 import Checkbox from "../../../../components/checkbox/Checkbox";
 
 const EDUCATION_OPTIONS = [
-  { value: "Среднее", title: "Среднее" },
-  { value: "Среднее специальное", title: "Среднее специальное" },
-  { value: "Неполное высшее", title: "Неполное высшее" },
   { value: "Высшее", title: "Высшее" },
-  { value: "Два и более высших", title: "Два и более высших" },
-  { value: "Учёная степень", title: "Учёная степень" },
+  { value: "Среднее", title: "Среднее" },
+  { value: "Средне специальное", title: "Средне специальное" },
+  { value: "Неоконченное высшее", title: "Неоконченное высшее" },
 ];
 
 const MARITAL_OPTIONS = [
-  { value: "Холост / Не замужем", title: "Холост / Не замужем" },
   { value: "Женат / Замужем", title: "Женат / Замужем" },
+  { value: "Холост / Не замужем", title: "Холост / Не замужем" },
   { value: "Разведён / Разведена", title: "Разведён / Разведена" },
   { value: "Вдовец / Вдова", title: "Вдовец / Вдова" },
+  {
+    value: "Гражданский брак после Разведен",
+    title: "Гражданский брак после Разведен",
+  },
 ];
 
 const CHILDREN_OPTIONS = [
