@@ -15,12 +15,11 @@ import {
 } from "../../../../redux/slices/user/updateUserSlice";
 
 const EMPLOYMENT_TYPES = [
-  { value: "Работа в найме", title: "Работа в найме" },
+  { value: "Не работаю", title: "Не работаю" },
+  { value: "Работа по найму", title: "Работа по найму" },
+  { value: "Собственный бизнес", title: "Собственный бизнес" },
   { value: "Самозанятый", title: "Самозанятый" },
-  { value: "ИП", title: "ИП" },
   { value: "Пенсионер", title: "Пенсионер" },
-  { value: "Студент", title: "Студент" },
-  { value: "Безработный", title: "Безработный" },
 ];
 
 const dateMask = {
@@ -151,8 +150,7 @@ const PlaceOfWork = () => {
     }
   }, [placeOfWork?.start_date]);
 
-  const showExtraFields =
-    formData.employment_type === "Работа в найме"
+  const showExtraFields = formData.employment_type === "Работа по найму";
 
   return (
     <section className={style.place_of_work}>
