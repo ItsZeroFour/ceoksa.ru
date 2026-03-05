@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import style from "./requisites.module.scss";
-import Checkbox from "../../../../components/checkbox/Checkbox";
+import Checkbox from "../../../../components/checkbox_2/Checkbox";
 import { useDispatch, useSelector } from "react-redux";
 import {
   updateUser,
