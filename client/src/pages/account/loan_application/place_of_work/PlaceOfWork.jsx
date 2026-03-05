@@ -34,6 +34,34 @@ const dateMask = {
   lazy: true,
 };
 
+const WorkPhoneInput = ({ initialValue, onPhoneChange, error }) => {
+  const onAcceptRef = useRef(null);
+
+  onAcceptRef.current = ({ value }) => onPhoneChange(value);
+
+  const { inputRef: phoneInputRef } = usePhoneMask({
+    onAccept: (...args) => onAcceptRef.current?.(...args),
+    initialValue: initialValue || "",
+  });
+
+  return (
+    <div>
+      <li className={error ? style.li_error : ""}>
+        <InputField
+          icon={Phone}
+          label="Рабочий телефон"
+          placeholder="Рабочий телефон"
+          id="work_phone"
+          type="tel"
+          ref={phoneInputRef}
+          inputMode="numeric"
+        />
+      </li>
+      {error && <span className={style.input_error_text}>{error}</span>}
+    </div>
+  );
+};
+
 const PlaceOfWork = () => {
   const dispatch = useDispatch();
   const placeOfWork = useSelector(
@@ -225,24 +253,13 @@ const PlaceOfWork = () => {
                 )}
               </div>
 
-              <div>
-                <li className={errors.work_phone ? style.li_error : ""}>
-                  <InputField
-                    icon={Phone}
-                    label="Рабочий телефон"
-                    placeholder="Рабочий телефон"
-                    id="work_phone"
-                    type="tel"
-                    ref={phoneInputRef}
-                    inputMode="numeric"
-                  />
-                </li>
-                {errors.work_phone && (
-                  <span className={style.input_error_text}>
-                    {errors.work_phone}
-                  </span>
-                )}
-              </div>
+              <WorkPhoneInput
+                initialValue={placeOfWork?.work_phone}
+                onPhoneChange={(value) =>
+                  handleFieldChange("work_phone", value)
+                }
+                error={errors.work_phone}
+              />
 
               {showPosition && (
                 <div>

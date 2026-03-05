@@ -32,7 +32,7 @@ const UserSchema = new mongoose.Schema(
 
     address_doesnt_match: {
       type: Boolean,
-      default: true,
+      default: false,
     },
 
     requisites: {
@@ -107,7 +107,7 @@ const UserSchema = new mongoose.Schema(
     place_of_work: {
       employment_type: {
         type: String,
-        default: "Работа в найме",
+        default: "Работа по найму",
       },
       organization_name: String,
       start_date: String,
