@@ -234,6 +234,7 @@ const PlaceOfWork = () => {
                     id="work_phone"
                     type="tel"
                     ref={phoneInputRef}
+                    inputMode="numeric"
                   />
                 </li>
                 {errors.work_phone && (

@@ -34,6 +34,8 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const userChangedRef = useRef(false);
+
   const user = useSelector((state) => state.auth);
   const isAuthenticated = user?.isAuth ?? false;
   const authStatus = user?.status;
@@ -127,6 +129,7 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
   useEffect(() => {
     if (!isAuthenticated) return;
     if (!isHydrated) return;
+    if (!userChangedRef.current) return;
 
     debouncedUpdate(getCurrentFormData());
   }, [
@@ -153,14 +156,16 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
     if (loanApplication.salary) {
       salary.setSalaryValue(loanApplication.salary);
     }
-  }, [authStatus]);
+  }, [authStatus, loanApplication]);
 
   const handleTermSelect = (term) => {
+    userChangedRef.current = true;
     setSelectedTerm(term);
     setOpenDropdown(null);
   };
 
   const handleTargetSelect = (target) => {
+    userChangedRef.current = true;
     setSelectedTarget(target);
     setOpenDropdown(null);
   };
@@ -175,6 +180,7 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
       dispatch(clearError());
       dispatch(updateUser({ loan_application: getCurrentFormData() }));
       navigate("/account/loan_applications");
+      window.location.reload();
     } else {
       saveDraft(getCurrentFormData());
       setOpenAuthMenu(true);

@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useRef } from "react";
 import { useNumberFormatter } from "./useNumberFormatter";
 
 export const useCreditAmount = (options = {}) => {
@@ -14,10 +14,13 @@ export const useCreditAmount = (options = {}) => {
     isFocused: false,
   });
 
+  const isDirtyRef = useRef(false);
+
   const { formatNumber } = useNumberFormatter();
 
   const handleAmountChange = useCallback(
     (e) => {
+      isDirtyRef.current = true;
       const value = e.target.value;
       const cleanValue = value.replace(/\D/g, "");
 
@@ -28,10 +31,9 @@ export const useCreditAmount = (options = {}) => {
 
       const numValue = Number(cleanValue);
       const clampedValue = Math.min(maxAmount, Math.max(minAmount, numValue));
-
       setAmountState((prev) => ({ ...prev, raw: String(clampedValue) }));
     },
-    [minAmount, maxAmount],
+    [minAmount, maxAmount]
   );
 
   const handleAmountFocus = useCallback((e) => {
@@ -51,17 +53,17 @@ export const useCreditAmount = (options = {}) => {
   }, []);
 
   const increment = useCallback(() => {
+    isDirtyRef.current = true;
     setAmountState((prev) => {
-      const currentValue = Number(prev.raw);
-      const newValue = Math.min(maxAmount, currentValue + step);
+      const newValue = Math.min(maxAmount, Number(prev.raw) + step);
       return { ...prev, raw: String(newValue) };
     });
   }, [maxAmount, step]);
 
   const decrement = useCallback(() => {
+    isDirtyRef.current = true;
     setAmountState((prev) => {
-      const currentValue = Number(prev.raw);
-      const newValue = Math.max(minAmount, currentValue - step);
+      const newValue = Math.max(minAmount, Number(prev.raw) - step);
       return { ...prev, raw: String(newValue) };
     });
   }, [minAmount, step]);
@@ -85,15 +87,17 @@ export const useCreditAmount = (options = {}) => {
   }, [amountState.raw]);
 
   const setAmountValue = useCallback((value) => {
-    const stringValue = String(value);
-    setAmountState((prev) => ({ ...prev, raw: stringValue }));
+    setAmountState((prev) => ({ ...prev, raw: String(value) }));
   }, []);
+
+  const amountValue = useMemo(() => Number(amountState.raw), [amountState.raw]);
 
   return useMemo(
     () => ({
       amountRaw: amountState.raw,
-      amountValue: getAmountValue(),
+      amountValue,
       isAmountFocused: amountState.isFocused,
+      isDirty: isDirtyRef.current,
       displayAmount,
       handleAmountChange,
       handleAmountFocus,
@@ -113,6 +117,6 @@ export const useCreditAmount = (options = {}) => {
       decrement,
       getAmountValue,
       setAmountValue,
-    ],
+    ]
   );
 };

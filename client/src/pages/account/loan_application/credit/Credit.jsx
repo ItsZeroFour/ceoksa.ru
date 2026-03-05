@@ -39,8 +39,8 @@ const Credit = () => {
 
   const termRef = useRef(null);
   const targetRef = useRef(null);
-
   const userChangedRef = useRef(false);
+  const currentDataRef = useRef({});
 
   const { data: filesData, status: filesStatus } = useSelector(
     (state) => state.files
@@ -70,9 +70,24 @@ const Credit = () => {
     dispatch(updateUser({ loan_application: data }));
   }, 1000);
 
+  currentDataRef.current = {
+    sum: creditAmount.amountValue,
+    date: selectedTerm.value,
+    target: selectedTarget.value,
+    salary: salary.salaryValue,
+  };
+
   useEffect(() => {
     dispatch(fetchFiles("fajly?populate=*"));
   }, [dispatch]);
+
+  useEffect(() => {
+    return () => {
+      if (!userChangedRef.current) return;
+      dispatch(clearError());
+      dispatch(updateUser({ loan_application: currentDataRef.current }));
+    };
+  }, []);
 
   useEffect(() => {
     if (user.status !== "succeeded") return;

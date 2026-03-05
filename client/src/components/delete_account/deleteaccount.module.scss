@@ -1,0 +1,94 @@
+.delete_account {
+  position: fixed;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  top: 0;
+  left: 0;
+
+  z-index: 999;
+
+  width: 100vw;
+  height: 100vh;
+
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.delete_account__wrapper {
+  background: var(--color-bg);
+  padding: 20px;
+
+  position: relative;
+
+  height: 200px;
+  width: 400px;
+  border-radius: 10px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  gap: 20px;
+
+  p {
+    font-size: 20px;
+    text-align: center;
+  }
+
+  a {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .delete_account__close {
+    position: absolute;
+
+    right: 10px;
+    top: 10px;
+
+    width: 30px;
+    height: 30px;
+    // background: red;
+    background: none;
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+
+      width: 100%;
+      height: 2px;
+
+      // background: var(--color-white);
+      background: var(--color-black);
+      transform: rotate(-45deg);
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      left: 0;
+
+      width: 100%;
+      height: 2px;
+
+      // background: var(--color-white);
+      background: var(--color-black);
+      transform: rotate(45deg);
+    }
+  }
+
+  @media (max-width: 430px) {
+    width: 95%;
+
+    img {
+      width: 80%;
+    }
+  }
+}

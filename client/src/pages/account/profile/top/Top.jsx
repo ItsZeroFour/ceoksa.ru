@@ -83,9 +83,9 @@ const Top = ({ user }) => {
               <div className={style.top__main__name}>
                 <div className={style.top__main__name__avatar}>
                   <div className={style.top__main__name__avatar__img}>
-                    {user.profilePhoto ? (
+                    {user?.profilePhoto ? (
                       <img
-                        src={`${process.env.REACT_APP_SERVERF_API}${user.profilePhoto}`}
+                        src={`${process.env.REACT_APP_SERVERF_API}${user?.profilePhoto}`}
                         alt="Фото профиля"
                       />
                     ) : (
@@ -141,7 +141,7 @@ const Top = ({ user }) => {
                     <p>Номер телефона</p>
                     <p>
                       +
-                      {user.phone.replace(
+                      {user?.phone.replace(
                         /^7(\d{3})(\d{3})(\d{2})(\d{2})$/,
                         "7 ($1) $2-$3-$4"
                       )}
@@ -170,7 +170,7 @@ const Top = ({ user }) => {
                       {...getFieldProps("mail")}
                       readOnly={true}
                     /> */}
-                    <p>{user.email || "example@mail.ru"}</p>
+                    <p>{user?.email || "example@mail.ru"}</p>
                     {/* <Edit /> */}
                     {hasError("mail") && (
                       <span className={style.error_text}>{errors.mail}</span>
@@ -196,7 +196,7 @@ const Top = ({ user }) => {
 
                   <div className={style.top__item__text}>
                     <p>Пол</p>
-                    <p>{formatGender(user.passport.gender || "")}</p>
+                    <p>{formatGender(user?.passport?.gender || "")}</p>
                   </div>
                 </li>
               </ul>

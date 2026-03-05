@@ -98,9 +98,9 @@ const PhotoPassport = () => {
         })
       );
 
-      if (uploadedKey === "firstSpread") {
-        triggerPassportOcr();
-      }
+      // if (uploadedKey === "firstSpread") {
+      //   triggerPassportOcr();
+      // }
 
       dispatch(resetUpload());
       currentUploadKey.current = null;
@@ -114,23 +114,23 @@ const PhotoPassport = () => {
     user.user.data?.photos,
   ]);
 
-  const triggerPassportOcr = async () => {
-    try {
-      setOcrLoading(true);
-      setOcrError(null);
+  // const triggerPassportOcr = async () => {
+  //   try {
+  //     setOcrLoading(true);
+  //     setOcrError(null);
 
-      await axios.post(`/ocr/passport`);
+  //     await axios.post(`/ocr/passport`);
 
-      window.location.reload();
-    } catch (error) {
-      console.error("[OCR] Ошибка распознавания паспорта:", error);
-      setOcrError(
-        error.response?.data?.message || "Ошибка распознавания паспорта"
-      );
-    } finally {
-      setOcrLoading(false);
-    }
-  };
+  //     window.location.reload();
+  //   } catch (error) {
+  //     console.error("[OCR] Ошибка распознавания паспорта:", error);
+  //     setOcrError(
+  //       error.response?.data?.message || "Ошибка распознавания паспорта"
+  //     );
+  //   } finally {
+  //     setOcrLoading(false);
+  //   }
+  // };
 
   const handleFileSelect = (key) => async (file) => {
     if (!file) return;
