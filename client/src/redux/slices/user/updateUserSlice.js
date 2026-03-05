@@ -8,7 +8,6 @@ export const updateUser = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const response = await axios.patch("/user/update", userData);
-
       return response.data.data;
     } catch (error) {
       return rejectWithValue(

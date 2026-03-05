@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import style from "./accept.module.scss";
 import { Link } from "react-router-dom";
 import { ReactComponent as File } from "../../../../assets/icons/profile/file.svg";
@@ -6,12 +6,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchFiles } from "../../../../redux/slices/strapi/FilesSlide";
 import axios from "../../../../utils/axios";
 import { generateConsentPdf } from "../../../../utils/Generateconsentpdf";
+import DeleteAccount from "../../../../components/delete_account/DeleteAccount";
 
 const hasPassportData = (user) => {
   const p = user?.passport;
   if (!p) return false;
-
-  console.log(p);
 
   return Boolean(
     p.series_number &&
@@ -29,6 +28,8 @@ const Accept = ({ user }) => {
   const dispatch = useDispatch();
   const { data, status, error } = useSelector((state) => state.files);
 
+  const [showModal, setShowModal] = useState(false);
+
   useEffect(() => {
     dispatch(fetchFiles("fajly?populate=*"));
   }, [dispatch]);
@@ -38,7 +39,7 @@ const Accept = ({ user }) => {
       const response = await axios.delete("/user/delete");
       console.log(response);
       if (response.status === 200) {
-        return window.location.reload();
+        return setShowModal(true);
       }
     } catch (err) {
       console.log(err);
@@ -148,6 +149,7 @@ const Accept = ({ user }) => {
       )}
 
       <button onClick={deleteUser}>Удалить профиль и данные</button>
+      {showModal && <DeleteAccount />}
     </div>
   );
 };

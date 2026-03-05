@@ -21,7 +21,7 @@
 .track {
   position: absolute;
   inset: 0;
-  background-color: var(--color-white);
+  background-color: #d7d7d7;
   border-radius: 999px;
   transition: background-color 0.2s ease;
   pointer-events: none;
@@ -35,7 +35,7 @@
   transform: translateY(-50%);
   width: 20px;
   height: 20px;
-  background-color: #b7b7b7;
+  background-color: #999999;
   border-radius: 50%;
   transition: left 0.2s ease;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
