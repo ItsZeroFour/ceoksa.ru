@@ -193,8 +193,8 @@ const PlaceOfWork = () => {
           <li>
             <CustomSelect
               icon={Work}
-              label="Тип занятости"
-              placeholder="Выберите тип занятости"
+              label=""
+              placeholder="Тип занятости"
               defaultValue={
                 placeOfWork?.employment_type
                   ? {

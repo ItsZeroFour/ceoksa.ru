@@ -83,10 +83,7 @@ const UserSchema = new mongoose.Schema(
     additional_telephone: {
       name: String,
       phone: String,
-      owner: {
-        type: String,
-        default: "Номер родственника",
-      },
+      owner: String,
     },
 
     additional_data: {
@@ -105,10 +102,7 @@ const UserSchema = new mongoose.Schema(
     },
 
     place_of_work: {
-      employment_type: {
-        type: String,
-        default: "Работа по найму",
-      },
+      employment_type: String,
       organization_name: String,
       start_date: String,
       work_phone: String,
