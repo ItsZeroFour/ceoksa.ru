@@ -497,11 +497,15 @@ button {
     margin-top: 6px;
     background: none;
     font-size: 17px;
-    font-weight: 500;
+    font-weight: 600;
     color: var(--color-black);
 
     @media (max-width: 1024px) {
       font-size: 16px;
+    }
+
+    &::placeholder {
+      font-weight: 500;
     }
   }
 }
