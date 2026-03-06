@@ -6,7 +6,10 @@ pdfMake.vfs = pdfFonts?.pdfMake?.vfs ?? pdfFonts;
 const capitalize = (str = "") =>
   str
     .split(" ")
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .map((w) => {
+      if (w === w.toUpperCase()) return w;
+      return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+    })
     .join(" ");
 
 const toDate = (iso) => {

@@ -166,9 +166,14 @@ const PlaceOfWork = () => {
     }
   });
 
+  const showExtraFields =
+    formData.employment_type === "Работа по найму" ||
+    formData.employment_type === "Собственный бизнес";
+
   useEffect(() => {
     if (
       !startDateInitialized.current &&
+      showExtraFields &&
       placeOfWork?.start_date &&
       startDateRef.current
     ) {
@@ -176,11 +181,7 @@ const PlaceOfWork = () => {
       startDateRef.current.dispatchEvent(new Event("input", { bubbles: true }));
       startDateInitialized.current = true;
     }
-  }, [placeOfWork?.start_date]);
-
-  const showExtraFields =
-    formData.employment_type === "Работа по найму" ||
-    formData.employment_type === "Собственный бизнес";
+  }, [placeOfWork?.start_date, showExtraFields]);
 
   const showPosition = formData.employment_type === "Работа по найму";
 
