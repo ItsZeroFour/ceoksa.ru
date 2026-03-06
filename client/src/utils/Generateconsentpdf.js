@@ -48,7 +48,7 @@ export const generateConsentPdf = (user) => {
   const issueDate = passport.date ?? "";
   const departmentCode = passport.department_code ?? "";
 
-  const address = user?.address ?? "";
+  const address = user?.address?.street ?? "";
 
   const docDate = toDate(user?.createdAt ?? new Date().toISOString());
   const docTime = toTime(user?.createdAt ?? new Date().toISOString());
