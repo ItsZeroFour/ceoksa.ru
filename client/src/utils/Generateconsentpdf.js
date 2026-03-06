@@ -3,15 +3,6 @@ import pdfFonts from "pdfmake/build/vfs_fonts";
 
 pdfMake.vfs = pdfFonts?.pdfMake?.vfs ?? pdfFonts;
 
-const capitalize = (str = "") =>
-  str
-    .split(" ")
-    .map((w) => {
-      if (w === w.toUpperCase()) return w;
-      return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
-    })
-    .join(" ");
-
 const toDate = (iso) => {
   const d = new Date(iso);
   return [
@@ -36,18 +27,17 @@ const toTime = (iso) => {
 export const generateConsentPdf = (user) => {
   const passport = user?.passport ?? {};
 
-  const fio = capitalize(
+  const fio =
     user?.fullName ||
-      `${passport.surname || ""} ${passport.name || ""} ${
-        passport.middle_name || ""
-      }`.trim()
-  );
+    `${passport.surname || ""} ${passport.name || ""} ${
+      passport.middle_name || ""
+    }`.trim();
 
   const rawSN = String(passport.series_number ?? "");
   const passportSeries = rawSN.slice(0, 4);
   const passportNumber = rawSN.slice(4);
 
-  const issuedBy = capitalize(passport.issued_by ?? "");
+  const issuedBy = passport.issued_by ?? "";
   const issueDate = passport.date ?? "";
   const departmentCode = passport.department_code ?? "";
 
