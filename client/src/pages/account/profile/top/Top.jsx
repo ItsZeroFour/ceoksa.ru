@@ -16,8 +16,6 @@ import { useSelector } from "react-redux";
 const Top = ({ user }) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  console.log(user);
-
   const handleRefresh = () => {
     setIsRefreshing(true);
 

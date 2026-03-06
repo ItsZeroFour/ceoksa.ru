@@ -80,8 +80,6 @@ const PhotoWithPassport = () => {
       setIsUploadingHere(true);
       dispatch(clearUploadError());
       await dispatch(uploadPhoto(file)).unwrap();
-
-      console.log("Фото с паспортом успешно загружено");
     } catch (error) {
       console.error("Ошибка загрузки фото:", error);
       // alert("Ошибка при загрузке фотографии");

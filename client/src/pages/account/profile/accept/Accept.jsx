@@ -37,7 +37,6 @@ const Accept = ({ user }) => {
   const deleteUser = async () => {
     try {
       const response = await axios.delete("/user/delete");
-      console.log(response);
       if (response.status === 200) {
         return setShowModal(true);
       }
