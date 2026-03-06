@@ -23,7 +23,7 @@
   ul {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    align-items: start;
+    align-items: stretch;
     gap: 15px;
     margin-top: 15px;
 
@@ -69,6 +69,7 @@
 
       li {
         width: 100%;
+        flex: 1;
       }
 
       .input_error_text {

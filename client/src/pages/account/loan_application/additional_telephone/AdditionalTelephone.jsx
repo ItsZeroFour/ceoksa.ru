@@ -129,8 +129,8 @@ const AdditionalTelephone = ({ userData }) => {
           <li>
             <CustomSelect
               icon={Person}
-              label="Владелец телефона"
-              placeholder="Выберите из списка"
+              label=""
+              placeholder="Владелец телефона"
               defaultValue={
                 additionalTelephone?.owner
                   ? {

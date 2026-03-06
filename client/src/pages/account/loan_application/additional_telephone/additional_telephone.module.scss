@@ -23,7 +23,7 @@
   ul {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-start;
+    align-items: stretch;
     gap: 15px;
     margin-top: 15px;
 
@@ -38,7 +38,7 @@
       }
 
       li {
-        flex: 1 1 100%;
+        flex: 1;
       }
 
       .input_error_text {
@@ -51,6 +51,7 @@
 
     & > li {
       flex: 1 1 calc(50% - 7.5px);
+      align-self: stretch;
 
       @media (max-width: 780px) {
         flex: 1 1 100%;
