@@ -20,8 +20,6 @@ const AdditionalTelephone = ({ userData }) => {
     (state) => state.auth.user?.data?.additional_telephone
   );
 
-  console.log(userData.phone);
-
   const formDataRef = useRef({
     phone: "",
     name: "",

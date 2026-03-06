@@ -1,4 +1,10 @@
 import User from "../models/User.js";
+import fs from "fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const updateUser = async (req, res) => {
   const protected_fields = ["phone", "mts_sub", "lastAuthAt"];
@@ -59,6 +65,29 @@ export const deleteUser = async (req, res) => {
         message: "Пользователь не авторизован",
       });
     }
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Пользователь не найден",
+      });
+    }
+
+    const filePaths = [
+      user.profilePhoto,
+      ...Object.values(user.photos?.toObject?.() ?? user.photos ?? {}),
+    ].filter(Boolean);
+
+    await Promise.allSettled(
+      filePaths.map((relativePath) => {
+        const absolutePath = path.join(__dirname, "..", relativePath);
+        console.log("Удален");
+        
+        return fs.unlink(absolutePath);
+      })
+    );
 
     await User.findByIdAndDelete(userId);
 

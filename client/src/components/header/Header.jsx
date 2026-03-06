@@ -29,8 +29,6 @@ const Header = ({
     return names[0][0];
   };
 
-  console.log(userData);
-
   return (
     <header className={style.header}>
       <div className="container">
