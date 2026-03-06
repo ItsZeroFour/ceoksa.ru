@@ -149,7 +149,7 @@ const Accept = ({ user }) => {
       )}
 
       <button onClick={deleteUser}>Удалить профиль и данные</button>
-      {!showModal && <DeleteAccount />}
+      {showModal && <DeleteAccount />}
     </div>
   );
 };
