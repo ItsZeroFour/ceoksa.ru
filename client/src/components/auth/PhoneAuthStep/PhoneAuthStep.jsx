@@ -48,7 +48,10 @@ const PhoneAuthStep = ({
               </Link>{" "}
               и принимаете{" "}
               <Link to="/privacy-policy" target="_blank">
-                условия политики конфиденциальности.
+                условия политики конфиденциальности,
+              </Link>{" "}
+              <Link to="/polzovatelskoe-soglashenie" target="_blank">
+                пользовательского соглашения
               </Link>
             </p>
           </>
