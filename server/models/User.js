@@ -109,6 +109,11 @@ const UserSchema = new mongoose.Schema(
       position: String,
     },
 
+    consentPdfPath: {
+      type: String,
+      default: null,
+    },
+
     loans: {
       sum: Number,
     },
