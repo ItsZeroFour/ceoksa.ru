@@ -84,7 +84,7 @@ export const deleteUser = async (req, res) => {
       filePaths.map((relativePath) => {
         const absolutePath = path.join(__dirname, "..", relativePath);
         console.log("Удален");
-        
+
         return fs.unlink(absolutePath);
       })
     );
@@ -101,5 +101,42 @@ export const deleteUser = async (req, res) => {
       message: "Ошибка сервера при удалении пользователя",
       error: error.message,
     });
+  }
+};
+
+export const saveConsentPdf = async (req, res) => {
+  try {
+    const userId = req.userId;
+    if (!userId) return res.status(401).json({ success: false });
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ success: false });
+
+    if (user.consentPdfPath) {
+      return res.json({
+        success: true,
+        path: user.consentPdfPath,
+        cached: true,
+      });
+    }
+
+    const { pdfBase64 } = req.body;
+    if (!pdfBase64) return res.status(400).json({ success: false });
+
+    const filesDir = path.join(__dirname, "..", "files");
+    await fs.mkdir(filesDir, { recursive: true });
+
+    const filename = `${userId}_${Date.now()}.pdf`;
+    const filePath = path.join(filesDir, filename);
+
+    await fs.writeFile(filePath, pdfBase64, "base64");
+
+    const relativePath = `/files/${filename}`;
+
+    await User.findByIdAndUpdate(userId, { consentPdfPath: relativePath });
+
+    res.json({ success: true, path: relativePath });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
   }
 };

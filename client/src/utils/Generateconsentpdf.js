@@ -319,5 +319,22 @@ export const generateConsentPdf = (user) => {
     },
   };
 
-  pdfMake.createPdf(docDefinition).open();
+  return new Promise((resolve) => {
+    const originalCreateObjectURL = URL.createObjectURL;
+
+    URL.createObjectURL = (blob) => {
+      URL.createObjectURL = originalCreateObjectURL;
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64 = reader.result.split(",")[1];
+        resolve(base64);
+      };
+      reader.readAsDataURL(blob);
+
+      return originalCreateObjectURL(blob);
+    };
+
+    pdfMake.createPdf(docDefinition).open();
+  });
 };

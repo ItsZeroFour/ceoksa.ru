@@ -45,6 +45,28 @@ const Accept = ({ user }) => {
     }
   };
 
+  const handleConsentPdf = async () => {
+    try {
+      const base64 = await generateConsentPdf(user);
+
+      await axios.post("/user/save-consent-pdf", {
+        pdfBase64: base64,
+        filename: `consent_${Date.now()}.pdf`,
+      });
+    } catch (err) {
+      console.error("Ошибка сохранения:", err);
+    }
+  };
+
+  const base64ToBlob = (base64, type) => {
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    return new Blob([bytes], { type });
+  };
+
   return (
     <div className={style.accept}>
       {status === "succeeded" && !error && (
@@ -131,7 +153,7 @@ const Accept = ({ user }) => {
                 <button
                   type="button"
                   className={style.accept__file_button}
-                  onClick={() => generateConsentPdf(user)}
+                  onClick={handleConsentPdf}
                 >
                   <div className={style.accept__item__icon}>
                     <File />
