@@ -3,7 +3,15 @@ import User from "../models/User.js";
 import { getRimToken } from "../utils/mtsRimToken.js";
 
 const RIM_BASE_URL = "https://api.mts.ru/rim/2.0/api/v2";
-const RIM_FILE_PROXY_URL = "https://rim.idscan.mts.ru/api/v2/fileproxy";
+
+// ID приложения для доступа к fileproxy (из Postman-коллекции)
+const DC_APPLICATION_ID = "e11abd8c-b8f5-44de-8820-84b7ff602711";
+
+// Список URL для fileproxy (fallback)
+const FILE_PROXY_URLS = [
+  "https://rim.idscan.mts.ru/api/v2/fileproxy",
+  "https://api.mts.ru/rim/2.0/api/v2/fileproxy",
+];
 
 const rimRequest = async (method, path, data = null) => {
   const token = await getRimToken();
@@ -113,7 +121,6 @@ export const startVerification = async (req, res) => {
       }
     }
 
-    const callbackUrl = process.env.RIM_CALLBACK_URL || null;
     const redirectUrl =
       process.env.RIM_REDIRECT_URL ||
       `${
@@ -330,7 +337,6 @@ export const completeIdentification = async (req, res) => {
       };
 
       if (fullName) updateFields.fullName = fullName;
-
       if (seriesNumber) updateFields["passport.series_number"] = seriesNumber;
 
       const issuedDate = doc.issuedDate || "";
@@ -503,27 +509,84 @@ export const getCurrentIdentification = async (req, res) => {
   }
 };
 
+/**
+ * Получение фото из RIM через fileproxy
+ * Пробует несколько URL (fallback) пока не получит 200
+ */
 export const getRimPhoto = async (req, res) => {
   try {
-    const objectName = Array.isArray(req.params.objectName)
-      ? req.params.objectName.join("/")
-      : req.params.objectName || req.params[0];
+    // Express 5 wildcard возвращает массив сегментов пути
+    const raw = req.params.objectName || req.params[0];
+    const objectName = Array.isArray(raw) ? raw.join("/") : raw;
+
+    if (!objectName) {
+      return res.status(400).json({
+        success: false,
+        message: "objectName не указан",
+      });
+    }
+
     const token = await getRimToken();
 
-    const response = await axios.get(`${RIM_FILE_PROXY_URL}/${objectName}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "dc-application-id": process.env.MTS_RIM_CLIENT_ID,
-      },
-      responseType: "arraybuffer",
-    });
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      "dc-application-id": DC_APPLICATION_ID,
+    };
 
-    const contentType = response.headers["content-type"] || "image/jpeg";
-    res.setHeader("Content-Type", contentType);
-    res.send(response.data);
+    console.log(`[RIM Photo] Запрос фото: ${objectName}`);
+
+    // Пробуем каждый URL по очереди
+    let lastError = null;
+    for (const baseUrl of FILE_PROXY_URLS) {
+      const fullUrl = `${baseUrl}/${objectName}`;
+      try {
+        const response = await axios.get(fullUrl, {
+          headers,
+          responseType: "arraybuffer",
+          timeout: 15000,
+        });
+
+        console.log(
+          `[RIM Photo] Успех: ${baseUrl} => ${response.status} (${response.headers["content-type"]})`
+        );
+
+        const contentType = response.headers["content-type"] || "image/jpeg";
+        res.setHeader("Content-Type", contentType);
+        res.setHeader("Cache-Control", "private, max-age=3600");
+        return res.send(response.data);
+      } catch (err) {
+        const status = err.response?.status || "N/A";
+        console.warn(`[RIM Photo] ${baseUrl} => ${status}`);
+        lastError = err;
+      }
+    }
+
+    // Все URL вернули ошибку
+    const errStatus = lastError?.response?.status || 500;
+    const errData = lastError?.response?.data;
+    let errMessage = "Фото не найдено";
+
+    if (errData) {
+      try {
+        const parsed =
+          typeof errData === "string"
+            ? errData
+            : Buffer.isBuffer(errData)
+            ? errData.toString("utf-8")
+            : JSON.stringify(errData);
+        console.error(`[RIM Photo] Ответ MTS:`, parsed);
+      } catch (_) {
+        console.error(`[RIM Photo] Ответ MTS: не удалось прочитать`);
+      }
+    }
+
+    res.status(errStatus).json({
+      success: false,
+      message: errMessage,
+    });
   } catch (error) {
     console.error("[RIM] Ошибка getRimPhoto:", error.message);
-    res.status(error.response?.status || 500).json({
+    res.status(500).json({
       success: false,
       message: "Ошибка получения фото",
     });
