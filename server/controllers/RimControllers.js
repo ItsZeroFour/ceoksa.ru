@@ -380,6 +380,7 @@ export const completeIdentification = async (req, res) => {
       if (regAddr) {
         const addressParts = [
           regAddr.region,
+          regAddr.district,
           regAddr.city,
           regAddr.street,
           regAddr.house ? `д. ${regAddr.house}` : null,
@@ -390,6 +391,12 @@ export const completeIdentification = async (req, res) => {
         if (addressParts.length > 0) {
           updateFields["address.street"] =
             regAddr.summary || addressParts.join(", ");
+        }
+        if (regAddr.flat) {
+          updateFields["address.apartment"] = regAddr.flat;
+        }
+        if (regAddr.photoKey) {
+          updateFields["rim.registrationPhotoKey"] = regAddr.photoKey;
         }
       }
 
