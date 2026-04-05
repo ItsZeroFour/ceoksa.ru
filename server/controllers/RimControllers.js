@@ -3,7 +3,7 @@ import User from "../models/User.js";
 import { getRimToken } from "../utils/mtsRimToken.js";
 
 const RIM_BASE_URL = "https://api.mts.ru/rim/2.0/api/v2";
-const RIM_FILE_PROXY_URL = "https://api.mts.ru/api/v2/fileproxy";
+const RIM_FILE_PROXY_URL = "https://rim.idscan.mts.ru/api/v2/fileproxy";
 
 const rimRequest = async (method, path, data = null) => {
   const token = await getRimToken();
