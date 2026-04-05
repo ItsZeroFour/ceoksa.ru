@@ -505,7 +505,9 @@ export const getCurrentIdentification = async (req, res) => {
 
 export const getRimPhoto = async (req, res) => {
   try {
-    const objectName = req.params.objectName || req.params[0];
+    const objectName = Array.isArray(req.params.objectName)
+      ? req.params.objectName.join("/")
+      : req.params.objectName || req.params[0];
     const token = await getRimToken();
 
     const response = await axios.get(`${RIM_FILE_PROXY_URL}/${objectName}`, {
