@@ -148,6 +148,7 @@ export const startVerification = async (req, res) => {
             "document",
             "documentForm",
             "registration",
+            "address",
             "successPage",
           ],
           deepfakeCheck: true,
@@ -157,10 +158,17 @@ export const startVerification = async (req, res) => {
           isActive: false,
         },
         inn: {
-          isActive: false,
+          isActive: true,
         },
         rfm: {
-          isActive: false,
+          isActive: true,
+        },
+        behaviourScoring: {
+          isActive: true,
+          scoringTypes: ["fraudScoring", "riskScoring"],
+          msisdn: user.phone
+            ? String(user.phone).replace(/\D/g, "").slice(0, 11)
+            : undefined,
         },
       },
     };
@@ -379,6 +387,7 @@ export const completeIdentification = async (req, res) => {
       const regAddr = personalData.registrationAddress;
       if (regAddr) {
         const addressParts = [
+          regAddr.postalCode,
           regAddr.region,
           regAddr.district,
           regAddr.city,
@@ -397,6 +406,14 @@ export const completeIdentification = async (req, res) => {
         }
         if (regAddr.photoKey) {
           updateFields["rim.registrationPhotoKey"] = regAddr.photoKey;
+          updateFields["photos.page_with_registration_stamp"] =
+            regAddr.photoKey;
+        }
+
+        updateFields["real_address.street"] =
+          regAddr.summary || addressParts.join(", ");
+        if (regAddr.flat) {
+          updateFields["real_address.apartment"] = regAddr.flat;
         }
       }
 
@@ -409,6 +426,9 @@ export const completeIdentification = async (req, res) => {
       }
       if (optionalChecks.rfm !== undefined) {
         updateFields["rim.rfmFound"] = optionalChecks.rfm?.isFound;
+      }
+      if (optionalChecks.behaviourScoring) {
+        updateFields["rim.behaviourScoring"] = optionalChecks.behaviourScoring;
       }
 
       if (data.consents) {
