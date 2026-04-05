@@ -506,12 +506,13 @@ export const getCurrentIdentification = async (req, res) => {
 export const getRimPhoto = async (req, res) => {
   try {
     const objectName = req.params.objectName || req.params[0];
+    console.log("[RIM DEBUG] objectName:", objectName, "| full URL:", `${RIM_FILE_PROXY_URL}/${objectName}`);
     const token = await getRimToken();
 
     const response = await axios.get(`${RIM_FILE_PROXY_URL}/${objectName}`, {
       headers: {
         Authorization: `Bearer ${token}`,
-        "dc-application-id": process.env.MTS_RIM_CLIENT_ID,
+        "dc-application-id": "e11abd8c-b8f5-44de-8820-84b7ff602711",
       },
       responseType: "arraybuffer",
     });
