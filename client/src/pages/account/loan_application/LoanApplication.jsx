@@ -54,7 +54,7 @@ const LoanApplication = ({ setOpenMenu, openMenu, userData }) => {
             <PlaceOfWork />
             <AdditionalData />
             <PhotoPassport />
-            <PhotoWithPassport />
+            {/* <PhotoWithPassport /> */}
             <Credit />
           </div>
         </div>

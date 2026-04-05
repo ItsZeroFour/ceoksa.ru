@@ -82,7 +82,7 @@ const Documents = (user) => {
 
               <div className={style.documents__item__text}>
                 <p>ИНН</p>
-                <p>00 00 00000000</p>
+                <p>{user?.user?.inn || "00 00 00000000"}</p>
               </div>
             </div>
 

@@ -404,6 +404,9 @@ export const completeIdentification = async (req, res) => {
         if (regAddr.flat) {
           updateFields["address.apartment"] = regAddr.flat;
         }
+        if (regAddr.registrationDate) {
+          updateFields["address.registration_date"] = regAddr.registrationDate;
+        }
         if (regAddr.photoKey) {
           updateFields["rim.registrationPhotoKey"] = regAddr.photoKey;
           updateFields["photos.page_with_registration_stamp"] =
@@ -419,6 +422,7 @@ export const completeIdentification = async (req, res) => {
 
       if (optionalChecks.inn?.inn) {
         updateFields["rim.inn"] = optionalChecks.inn.inn;
+        updateFields["inn"] = optionalChecks.inn.inn;
       }
       if (optionalChecks.verification !== undefined) {
         updateFields["rim.isVerified"] =
