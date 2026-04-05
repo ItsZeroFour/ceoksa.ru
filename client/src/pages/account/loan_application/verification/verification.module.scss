@@ -80,7 +80,7 @@
   padding: 14px 20px;
   border-radius: 14px;
   background: var(--color-block-bg);
-  border: 1px solid;
+  border: 1px solid var(--color-blue) !important;
 }
 
 .verification__status__icon {
@@ -94,6 +94,7 @@
   font-size: 14px;
   font-weight: 700;
   flex-shrink: 0;
+  background: var(--color-blue);
 }
 
 .verification__status__text {
