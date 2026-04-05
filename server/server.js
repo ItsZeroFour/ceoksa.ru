@@ -20,6 +20,8 @@ import AuthRoutes from "./routes/authRoutes.js";
 import UserRoutes from "./routes/userRoutes.js";
 import ValidateBICRoutes from "./routes/validateBICRoutes.js";
 import OcrRoutes from "./routes/ocrRoutes.js";
+import RimRoutes from "./routes/rimRoutes.js";
+import { startRimTokenAutoRefresh } from "./utils/mtsRimToken.js";
 
 /* ROUTES */
 const app = express();
@@ -57,18 +59,11 @@ app.use(
   })
 );
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-app.use(
-  cors({
-     origin: "https://ceoksa.ru",
-     credentials: true,
-   })
- );
+app.use("/files", express.static(path.join(__dirname, "files")));
 
 /**
- * @description Загрузка изображений в папку uploads
- * @access public
+ * Загрузка изображений
  */
-
 const storage = multer.diskStorage({
   destination: (_, __, cb) => {
     cb(null, path.join(__dirname, "uploads"));
@@ -103,6 +98,7 @@ app.use("/auth", AuthRoutes);
 app.use("/user", UserRoutes);
 app.use("/validate", ValidateBICRoutes);
 app.use("/ocr", OcrRoutes);
+app.use("/rim", RimRoutes);
 
 app.post("/logout", (req, res) => {
   res.clearCookie("app_token", {
@@ -123,6 +119,16 @@ async function start() {
         console.log("Mongo db connection successfully");
       })
       .catch((err) => console.log(err));
+
+    if (process.env.MTS_RIM_CLIENT_ID && process.env.MTS_RIM_CLIENT_SECRET) {
+      startRimTokenAutoRefresh().catch((err) =>
+        console.warn("[RIM] Не удалось запустить автообновление токена:", err.message)
+      );
+    } else {
+      console.warn(
+        "[RIM] MTS_RIM_CLIENT_ID / MTS_RIM_CLIENT_SECRET не заданы. RIM интеграция отключена."
+      );
+    }
 
     app.listen(PORT, (err) => {
       if (err) return console.log("Приложение аварийно завершилось: ", err);

@@ -185,7 +185,7 @@ const Passport = () => {
                   icon={PassportIcon}
                   inputMode="numeric"
                   ref={passportRef}
-                  // readOnly={true}
+                  readOnly={true}
                 />
               </div>
             </li>
@@ -206,7 +206,7 @@ const Passport = () => {
                   icon={PassportIcon}
                   inputMode="numeric"
                   ref={dateRef}
-                  // readOnly={true}
+                  readOnly={true}
                 />
               </div>
             </li>
@@ -227,7 +227,7 @@ const Passport = () => {
                   icon={PassportIcon}
                   inputMode="numeric"
                   ref={departmentRef}
-                  // readOnly={true}
+                  readOnly={true}
                 />
               </div>
             </li>
@@ -248,7 +248,7 @@ const Passport = () => {
                   value={formatCapitalize(formData.issued_by)}
                   icon={PassportIcon}
                   onChange={handleChange}
-                  // readOnly={true}
+                  readOnly={true}
                 />
               </div>
             </li>
@@ -258,7 +258,7 @@ const Passport = () => {
           </div>
 
           <div>
-            <li className={errors.gender ? style.li_error : ""}>
+            {/* <li className={errors.gender ? style.li_error : ""}>
               <div className={style.passport__item__text}>
                 <CustomSelect
                   icon={PassportIcon}
@@ -282,6 +282,22 @@ const Passport = () => {
                   showLabel={false}
                 />
               </div>
+            </li> */}
+
+            <li className={errors.issued_by ? style.li_error : ""}>
+              <div className={style.passport__item__text}>
+                <InputField
+                  label="Пол"
+                  placeholder="Пол"
+                  id="issued-by"
+                  type="text"
+                  name="issued_by"
+                  value={formData.gender}
+                  icon={PassportIcon}
+                  onChange={handleChange}
+                  readOnly={true}
+                />
+              </div>
             </li>
             {errors.gender && (
               <span className={style.error_text}>{errors.gender}</span>
@@ -302,7 +318,7 @@ const Passport = () => {
                   inputMode="numeric"
                   icon={Bag}
                   ref={dateInputRef}
-                  // readOnly={true}
+                  readOnly={true}
                 />
               </div>
             </li>
@@ -323,7 +339,7 @@ const Passport = () => {
                   value={formatCity(formData.place_of_birth)}
                   icon={Town}
                   onChange={handleChange}
-                  // readOnly={true}
+                  readOnly={true}
                 />
               </div>
             </li>

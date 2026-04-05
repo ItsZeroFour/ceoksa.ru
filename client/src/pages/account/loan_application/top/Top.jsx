@@ -144,10 +144,8 @@ const Top = () => {
   return (
     <section className={style.top}>
       <div className={style.top__wrapper}>
-        <h1>Заявка на кредит</h1>
-
         <div className={style.top__main}>
-          <Notification text="Чтобы направить заявку, необходимо дозаполнить ваши персональные данные" />
+          {/* <Notification text="Чтобы направить заявку, необходимо дозаполнить ваши персональные данные" /> */}
 
           <div
             className={`${style.top__main__name} ${
@@ -191,6 +189,7 @@ const Top = () => {
                 value={formatFullName(formData.fullName)}
                 onChange={handleChange}
                 fontSize={screenWidth > 768 ? 24 : 16}
+                readOnly={true}
               />
             </div>
           </div>
