@@ -19,11 +19,9 @@ const rimRequest = async (method, path, data = null) => {
   return axios(config);
 };
 
-
 const generateExternalId = (userId) => {
   return `oksa_${userId}`;
 };
-
 
 export const startVerification = async (req, res) => {
   try {
@@ -62,7 +60,9 @@ export const startVerification = async (req, res) => {
     const applicantData = {
       externalId,
       email: user.email || undefined,
-      phone: user.phone ? String(user.phone).replace(/\D/g, "").slice(0, 11) : undefined,
+      phone: user.phone
+        ? String(user.phone).replace(/\D/g, "").slice(0, 11)
+        : undefined,
       firstName: firstName || undefined,
       surname: surname || undefined,
       middleName: middleName || undefined,
@@ -98,7 +98,11 @@ export const startVerification = async (req, res) => {
           applicantError.response?.data || applicantError.message
         );
         try {
-          await rimRequest("PUT", `/applicants/${externalId}`, cleanApplicantData);
+          await rimRequest(
+            "PUT",
+            `/applicants/${externalId}`,
+            cleanApplicantData
+          );
           console.log(`[RIM] Заявитель обновлён: ${externalId}`);
         } catch (updateError) {
           console.error(
@@ -112,7 +116,9 @@ export const startVerification = async (req, res) => {
     const callbackUrl = process.env.RIM_CALLBACK_URL || null;
     const redirectUrl =
       process.env.RIM_REDIRECT_URL ||
-      `${process.env.BASE_URL || "https://ceoksa.ru"}/account/loan_applications`;
+      `${
+        process.env.BASE_URL || "https://ceoksa.ru"
+      }/account/loan_applications`;
 
     const identificationData = {
       linkLifetimeInMinutes: 460,
@@ -130,12 +136,7 @@ export const startVerification = async (req, res) => {
         bio: {
           isActive: true,
           allowedDocuments: ["rus.passport"],
-          steps: [
-            "document",
-            "documentForm",
-            "selfie",
-            "successPage",
-          ],
+          steps: ["document", "documentForm", "selfie", "successPage"],
           deepfakeCheck: true,
           lastSelfieMatching: false,
         },
@@ -204,7 +205,9 @@ export const getIdentificationStatus = async (req, res) => {
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(404).json({ success: false, message: "Пользователь не найден" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Пользователь не найден" });
     }
 
     if (!user.rim?.applicantExternalId || !user.rim?.lastRequestGuid) {
@@ -249,14 +252,15 @@ export const getIdentificationStatus = async (req, res) => {
   }
 };
 
-
 export const completeIdentification = async (req, res) => {
   try {
     const userId = req.userId;
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(404).json({ success: false, message: "Пользователь не найден" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Пользователь не найден" });
     }
 
     if (!user.rim?.applicantExternalId || !user.rim?.lastRequestGuid) {
@@ -291,8 +295,7 @@ export const completeIdentification = async (req, res) => {
       status === "identificationSucceeded" ||
       status === "personDataCollected"
     ) {
-      const doc =
-        personalData.documents?.[0] || personalData.passport || {};
+      const doc = personalData.documents?.[0] || personalData.passport || {};
 
       const recognizedSeries = doc.series || "";
       const recognizedNumber = doc.number || "";
@@ -330,24 +333,21 @@ export const completeIdentification = async (req, res) => {
 
       if (seriesNumber) updateFields["passport.series_number"] = seriesNumber;
 
-      const issuedDate =
-        doc.issuedDate || "";
-      if (issuedDate) updateFields["passport.date"] = formatDateFromISO(issuedDate);
+      const issuedDate = doc.issuedDate || "";
+      if (issuedDate)
+        updateFields["passport.date"] = formatDateFromISO(issuedDate);
 
-      const issuedBy =
-        doc.issuedBy || doc.authority || "";
+      const issuedBy = doc.issuedBy || doc.authority || "";
       if (issuedBy) updateFields["passport.issued_by"] = issuedBy;
 
-      const divisionCode =
-        doc.divisionCode || doc.authorityCode || "";
+      const divisionCode = doc.divisionCode || doc.authorityCode || "";
       if (divisionCode) updateFields["passport.department_code"] = divisionCode;
 
-      const birthDate =
-        doc.birthdate || personalData.birthdate || "";
-      if (birthDate) updateFields["passport.birth"] = formatDateFromISO(birthDate);
+      const birthDate = doc.birthdate || personalData.birthdate || "";
+      if (birthDate)
+        updateFields["passport.birth"] = formatDateFromISO(birthDate);
 
-      const birthPlace =
-        doc.birthplace || personalData.birthplace || "";
+      const birthPlace = doc.birthplace || personalData.birthplace || "";
       if (birthPlace) updateFields["passport.place_of_birth"] = birthPlace;
 
       const gender = mapSex(doc.sex || personalData.sex || "");
@@ -376,7 +376,8 @@ export const completeIdentification = async (req, res) => {
         ].filter(Boolean);
 
         if (addressParts.length > 0) {
-          updateFields["address.street"] = regAddr.summary || addressParts.join(", ");
+          updateFields["address.street"] =
+            regAddr.summary || addressParts.join(", ");
         }
       }
 
@@ -384,7 +385,8 @@ export const completeIdentification = async (req, res) => {
         updateFields["rim.inn"] = optionalChecks.inn.inn;
       }
       if (optionalChecks.verification !== undefined) {
-        updateFields["rim.isVerified"] = optionalChecks.verification?.isVerified;
+        updateFields["rim.isVerified"] =
+          optionalChecks.verification?.isVerified;
       }
       if (optionalChecks.rfm !== undefined) {
         updateFields["rim.rfmFound"] = optionalChecks.rfm?.isFound;
@@ -406,18 +408,21 @@ export const completeIdentification = async (req, res) => {
       status,
       statusReasons: identification.statusReasons || [],
       isSucceeded: status === "identificationSucceeded",
-      personalData: status === "identificationSucceeded" ? {
-        fullName: updateFields.fullName,
-        passport: {
-          seriesNumber: updateFields["passport.series_number"],
-          date: updateFields["passport.date"],
-          issuedBy: updateFields["passport.issued_by"],
-          departmentCode: updateFields["passport.department_code"],
-          birth: updateFields["passport.birth"],
-          placeOfBirth: updateFields["passport.place_of_birth"],
-          gender: updateFields["passport.gender"],
-        },
-      } : null,
+      personalData:
+        status === "identificationSucceeded"
+          ? {
+              fullName: updateFields.fullName,
+              passport: {
+                seriesNumber: updateFields["passport.series_number"],
+                date: updateFields["passport.date"],
+                issuedBy: updateFields["passport.issued_by"],
+                departmentCode: updateFields["passport.department_code"],
+                birth: updateFields["passport.birth"],
+                placeOfBirth: updateFields["passport.place_of_birth"],
+                gender: updateFields["passport.gender"],
+              },
+            }
+          : null,
     });
   } catch (error) {
     console.error(
@@ -430,7 +435,6 @@ export const completeIdentification = async (req, res) => {
     });
   }
 };
-
 
 export const handleRimCallback = async (req, res) => {
   try {
@@ -468,14 +472,15 @@ export const handleRimCallback = async (req, res) => {
   }
 };
 
-
 export const getCurrentIdentification = async (req, res) => {
   try {
     const userId = req.userId;
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(404).json({ success: false, message: "Пользователь не найден" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Пользователь не найден" });
     }
 
     if (!user.rim?.lastRequestGuid) {
@@ -498,21 +503,18 @@ export const getCurrentIdentification = async (req, res) => {
   }
 };
 
-
 export const getRimPhoto = async (req, res) => {
   try {
     const objectName = req.params.objectName || req.params[0];
     const token = await getRimToken();
 
-    const response = await axios.get(
-      `${RIM_FILE_PROXY_URL}/${objectName}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        responseType: "arraybuffer",
-      }
-    );
+    const response = await axios.get(`${RIM_FILE_PROXY_URL}/${objectName}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "dc-application-id": process.env.MTS_RIM_CLIENT_ID,
+      },
+      responseType: "arraybuffer",
+    });
 
     const contentType = response.headers["content-type"] || "image/jpeg";
     res.setHeader("Content-Type", contentType);
