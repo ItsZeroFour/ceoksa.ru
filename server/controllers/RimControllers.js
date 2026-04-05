@@ -144,10 +144,10 @@ export const startVerification = async (req, res) => {
           isActive: true,
           allowedDocuments: ["rus.passport"],
           steps: [
+            "selfie",
             "document",
             "documentForm",
             "registration",
-            "selfie",
             "successPage",
           ],
           deepfakeCheck: true,
