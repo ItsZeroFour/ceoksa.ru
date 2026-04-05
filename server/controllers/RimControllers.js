@@ -522,7 +522,15 @@ export const getRimPhoto = async (req, res) => {
     res.setHeader("Content-Type", contentType);
     res.send(response.data);
   } catch (error) {
-    console.error("[RIM] Ошибка getRimPhoto:", error.message);
+    console.error(
+      "[RIM] Ошибка getRimPhoto:",
+      error.message,
+      "| Status:",
+      error.response?.status,
+      "| Data:",
+      error.response?.data?.toString?.() || error.response?.data
+    );
+
     res.status(error.response?.status || 500).json({
       success: false,
       message: "Ошибка получения фото",
