@@ -33,7 +33,7 @@ const UserSchema = new mongoose.Schema(
 
     address_doesnt_match: {
       type: Boolean,
-      default: false,
+      default: true,
     },
 
     requisites: {
