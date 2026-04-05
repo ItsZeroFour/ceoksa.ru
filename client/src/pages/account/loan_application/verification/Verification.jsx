@@ -110,7 +110,7 @@ const Verification = () => {
             >
               <span
                 className={style.verification__status__icon}
-                style={{ background: statusInfo.color }}
+                // style={{ background: statusInfo.color }}
               >
                 {statusInfo.icon}
               </span>
