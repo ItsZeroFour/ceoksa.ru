@@ -162,16 +162,16 @@ const PhotoPassport = () => {
   };
 
   const uploadFields = [
-    {
-      key: "firstSpread",
-      label: "Первый разворот паспорта",
-      id: "first-spread",
-    },
-    {
-      key: "registration",
-      label: "Страница со штампом регистрации",
-      id: "registration",
-    },
+    // {
+    //   key: "firstSpread",
+    //   label: "Первый разворот паспорта",
+    //   id: "first-spread",
+    // },
+    // {
+    //   key: "registration",
+    //   label: "Страница со штампом регистрации",
+    //   id: "registration",
+    // },
     {
       key: "maritalStatus",
       label: "Страница семейного положения",
