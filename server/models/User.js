@@ -138,6 +138,31 @@ const UserSchema = new mongoose.Schema(
         type: Number,
       },
     },
+
+    // === MTS RIM (ID KYC) ===
+    rim: {
+      applicantExternalId: String,
+      lastRequestGuid: String,
+      identificationUrl: String,
+      identificationStatus: {
+        type: String,
+        default: null,
+      },
+      startedAt: String,
+      completedAt: String,
+      callbackReceivedAt: String,
+      selfiePhotoKey: String,
+      passportPhotoKey: String,
+      registrationPhotoKey: String,
+      inn: String,
+      isVerified: Boolean,
+      rfmFound: Boolean,
+      consents: {
+        isAgreedToProcessPdn: Boolean,
+        isConfirmedIsNotPdl: Boolean,
+      },
+      rawResult: mongoose.Schema.Types.Mixed,
+    },
   },
   {
     timestamps: true,

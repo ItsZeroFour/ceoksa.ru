@@ -14,6 +14,8 @@ import PhotoWithPassport from "./photo_with_passport/PhotoWithPassport";
 import AdditionalTelephone from "./additional_telephone/AdditionalTelephone";
 import PlaceOfWork from "./place_of_work/PlaceOfWork";
 import AdditionalData from "./additional_data/AdditionalData";
+import Verification from "./verification/Verification";
+import RimIdentification from "../../../components/rim_identification/RimIdentification";
 
 const LoanApplication = ({ setOpenMenu, openMenu, userData }) => {
   const [isChecked, setIsChecked] = useState(true);
@@ -26,8 +28,11 @@ const LoanApplication = ({ setOpenMenu, openMenu, userData }) => {
           <MobileLeftPanel setOpenMenu={setOpenMenu} openMenu={openMenu} />
 
           <div className="loan_application__main">
+            <h1>Заявка на кредит</h1>
+
+            <Verification />
             <Top />
-            {/* <Birth /> */}
+
             <Passport />
             <Address isChecked={isChecked} setIsChecked={setIsChecked} />
             <AnimatePresence>
@@ -54,6 +59,8 @@ const LoanApplication = ({ setOpenMenu, openMenu, userData }) => {
           </div>
         </div>
       </div>
+
+      <RimIdentification />
     </div>
   );
 };
