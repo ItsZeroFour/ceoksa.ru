@@ -29,6 +29,7 @@ const UserSchema = new mongoose.Schema(
     total_debt: Number,
     income: Number,
     profilePhoto: String,
+    inn: String,
 
     address_doesnt_match: {
       type: Boolean,

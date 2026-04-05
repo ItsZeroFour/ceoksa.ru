@@ -76,6 +76,12 @@ const Verification = () => {
     currentStatus === "completed" ||
     isSucceeded;
 
+  useEffect(() => {
+    if (isSucceeded) {
+      window.location.reload();
+    }
+  }, [isSucceeded]);
+
   const isFailed =
     currentStatus === "identificationFailed" || currentStatus === "systemError";
 
