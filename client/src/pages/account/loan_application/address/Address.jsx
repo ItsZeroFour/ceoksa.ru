@@ -132,6 +132,7 @@ const Address = ({ setIsChecked, isChecked }) => {
                   value={formData.street}
                   icon={Location}
                   onChange={handleChange}
+                  readOnly={true}
                 />
               </div>
               {errors.street && (
