@@ -148,6 +148,7 @@ const UserSchema = new mongoose.Schema(
         type: String,
         default: null,
       },
+
       startedAt: String,
       completedAt: String,
       callbackReceivedAt: String,
@@ -157,6 +158,7 @@ const UserSchema = new mongoose.Schema(
       inn: String,
       isVerified: Boolean,
       rfmFound: Boolean,
+      behaviourScoring: mongoose.Schema.Types.Mixed,
       consents: {
         isAgreedToProcessPdn: Boolean,
         isConfirmedIsNotPdl: Boolean,
