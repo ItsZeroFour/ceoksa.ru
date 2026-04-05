@@ -15,7 +15,7 @@ router.post("/start-verification", verifyToken, startVerification);
 router.get("/identification-status", verifyToken, getIdentificationStatus);
 router.post("/complete-identification", verifyToken, completeIdentification);
 router.get("/current-identification", verifyToken, getCurrentIdentification);
-router.get("/photo/:objectName", verifyToken, getRimPhoto);
+router.get("/photo/*objectName", verifyToken, getRimPhoto);
 
 router.post("/callback", handleRimCallback);
 
