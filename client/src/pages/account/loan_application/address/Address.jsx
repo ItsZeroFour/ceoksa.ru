@@ -107,7 +107,21 @@ const Address = ({ setIsChecked, isChecked }) => {
     const newCheckedState = !isChecked;
     setIsChecked(newCheckedState);
     dispatch(clearError());
-    dispatch(updateUser({ address_doesnt_match: !newCheckedState }));
+
+    if (newCheckedState) {
+      // Адреса совпадают — записываем адрес регистрации как фактический
+      dispatch(
+        updateUser({
+          address_doesnt_match: false,
+          real_address: {
+            street: formDataRef.current.street,
+            apartment: formDataRef.current.apartment,
+          },
+        })
+      );
+    } else {
+      dispatch(updateUser({ address_doesnt_match: true }));
+    }
   };
 
   return (
