@@ -406,11 +406,6 @@ export const completeIdentification = async (req, res) => {
             regAddr.photoKey;
         }
 
-        updateFields["real_address.street"] =
-          regAddr.summary || addressParts.join(", ");
-        if (regAddr.flat) {
-          updateFields["real_address.apartment"] = regAddr.flat;
-        }
       }
 
       if (optionalChecks.inn?.inn) {

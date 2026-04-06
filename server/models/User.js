@@ -72,6 +72,11 @@ const UserSchema = new mongoose.Schema(
       apartment: String,
     },
 
+    manual_real_address: {
+      street: String,
+      apartment: String,
+    },
+
     photos: {
       first_page_of_the_passport: String,
       marital_status_page: String,

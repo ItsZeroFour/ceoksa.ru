@@ -40,7 +40,9 @@ const RealAddress = () => {
 
   const debouncedUpdate = useDebouncedUpdate((data) => {
     dispatch(clearError());
-    dispatch(updateUser({ real_address: data }));
+    dispatch(
+      updateUser({ real_address: data, manual_real_address: data })
+    );
   }, 3000);
 
   useEffect(() => {
