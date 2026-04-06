@@ -163,9 +163,6 @@ export const startVerification = async (req, res) => {
         rfm: {
           isActive: true,
         },
-        behaviourScoring: {
-          isActive: false,
-        },
       },
     };
 
