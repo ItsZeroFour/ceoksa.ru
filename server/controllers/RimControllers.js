@@ -164,11 +164,7 @@ export const startVerification = async (req, res) => {
           isActive: true,
         },
         behaviourScoring: {
-          isActive: true,
-          scoringTypes: ["fraudScoring", "riskScoring"],
-          msisdn: user.phone
-            ? String(user.phone).replace(/\D/g, "").slice(0, 11)
-            : undefined,
+          isActive: false,
         },
       },
     };
