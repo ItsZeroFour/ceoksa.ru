@@ -16,6 +16,9 @@ import {
 const Address = ({ setIsChecked, isChecked }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth);
+  const manualRealAddress = useSelector(
+    (state) => state.auth.user?.data?.manual_real_address
+  );
   const initialized = useRef(false);
 
   const formDataRef = useRef({
@@ -120,7 +123,16 @@ const Address = ({ setIsChecked, isChecked }) => {
         })
       );
     } else {
-      dispatch(updateUser({ address_doesnt_match: true }));
+      // Адреса не совпадают — восстанавливаем ручной ввод
+      dispatch(
+        updateUser({
+          address_doesnt_match: true,
+          real_address: {
+            street: manualRealAddress?.street || "",
+            apartment: manualRealAddress?.apartment || "",
+          },
+        })
+      );
     }
   };
 
