@@ -63,9 +63,9 @@ const InputFileUpload = ({
   };
 
   const closeCameraModal = () => {
-    setIsModalOpen(false);
-    setCapturedImage(null);
-    document.body.style.overflow = "";
+    // setIsModalOpen(false);
+    // setCapturedImage(null);
+    // document.body.style.overflow = "";
   };
 
   const handleCapture = () => {
