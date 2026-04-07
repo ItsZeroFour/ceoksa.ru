@@ -166,7 +166,7 @@
 
 /* ======== Frame with box-shadow as dark overlay (rounded inner corners) ======== */
 
-$dim: rgba(0, 0, 0, 0.80);
+$dim: rgba(26, 26, 26, 0.88);
 $frame-radius: 18px;
 
 .overlay__frame {
@@ -174,15 +174,15 @@ $frame-radius: 18px;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 84vw;
-  aspect-ratio: 3 / 4;
+  width: 78vw;
+  aspect-ratio: 2.1 / 3;
   border-radius: $frame-radius;
   box-shadow: 0 0 0 200vmax $dim;
   z-index: 1;
   pointer-events: none;
 
   @media (min-width: 420px) {
-    width: 80vw;
+    width: 74vw;
   }
 }
 
@@ -246,52 +246,112 @@ $frame-radius: 18px;
   }
 }
 
-/* ======== Corner markers — RIM style ======== */
-$c-size: 56px;
-$c-thick: 6px;
-$c-color: rgba(255, 255, 255, 0.9);
-$c-radius: 18px;
+/* ======== Corner markers — RIM style (fully rounded bars) ======== */
+$c-len: 60px;    // length of each bar
+$c-thick: 5px;   // thickness of each bar
+$c-color: rgba(255, 255, 255, 0.92);
+$c-cap: 3px;     // round cap radius on bar ends
+
+// Each corner uses ::before (horizontal bar) and ::after (vertical bar)
+// Both bars are fully rounded rectangles
 
 .corner_tl,
 .corner_tr,
 .corner_bl,
 .corner_br {
   position: absolute;
-  width: $c-size;
-  height: $c-size;
-  border-radius: $c-thick;
+  width: 0;
+  height: 0;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    background: $c-color;
+    border-radius: $c-cap;
+  }
 }
 
+// Top-left
 .corner_tl {
   top: 0;
   left: 0;
-  border-top: $c-thick solid $c-color;
-  border-left: $c-thick solid $c-color;
-  border-top-left-radius: $c-radius;
+
+  &::before {
+    // horizontal bar going right
+    top: 0;
+    left: 0;
+    width: $c-len;
+    height: $c-thick;
+  }
+
+  &::after {
+    // vertical bar going down
+    top: 0;
+    left: 0;
+    width: $c-thick;
+    height: $c-len;
+  }
 }
 
+// Top-right
 .corner_tr {
   top: 0;
   right: 0;
-  border-top: $c-thick solid $c-color;
-  border-right: $c-thick solid $c-color;
-  border-top-right-radius: $c-radius;
+
+  &::before {
+    top: 0;
+    right: 0;
+    width: $c-len;
+    height: $c-thick;
+  }
+
+  &::after {
+    top: 0;
+    right: 0;
+    width: $c-thick;
+    height: $c-len;
+  }
 }
 
+// Bottom-left
 .corner_bl {
   bottom: 0;
   left: 0;
-  border-bottom: $c-thick solid $c-color;
-  border-left: $c-thick solid $c-color;
-  border-bottom-left-radius: $c-radius;
+
+  &::before {
+    bottom: 0;
+    left: 0;
+    width: $c-len;
+    height: $c-thick;
+  }
+
+  &::after {
+    bottom: 0;
+    left: 0;
+    width: $c-thick;
+    height: $c-len;
+  }
 }
 
+// Bottom-right
 .corner_br {
   bottom: 0;
   right: 0;
-  border-bottom: $c-thick solid $c-color;
-  border-right: $c-thick solid $c-color;
-  border-bottom-right-radius: $c-radius;
+
+  &::before {
+    bottom: 0;
+    right: 0;
+    width: $c-len;
+    height: $c-thick;
+  }
+
+  &::after {
+    bottom: 0;
+    right: 0;
+    width: $c-thick;
+    height: $c-len;
+  }
 }
 
 /* ======== Confirm overlay (over captured image) ======== */
