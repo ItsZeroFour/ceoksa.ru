@@ -120,8 +120,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 16px;
-  background: #000;
+  padding: 22px 16px;
+  background: #2c2c2c;
   flex-shrink: 0;
 }
 
@@ -195,6 +195,11 @@ $cutout: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewB
     -webkit-mask-size: 80vw auto, 100% 100%;
     mask-size: 80vw auto, 100% 100%;
   }
+
+  @media (max-height: 700px) {
+    -webkit-mask-size: auto 55dvh, 100% 100%;
+    mask-size: auto 55dvh, 100% 100%;
+  }
 }
 
 /* ======== Frame (corners + glow) ======== */
@@ -208,6 +213,7 @@ $frame-radius: 18px;
   transform: translate(-50%, -50%);
   width: 84vw;
   aspect-ratio: 2.3 / 3;
+  max-height: 62dvh;
   border-radius: $frame-radius;
   z-index: 2;
   pointer-events: none;
@@ -219,6 +225,12 @@ $frame-radius: 18px;
 
   @media (min-width: 420px) {
     width: 80vw;
+  }
+
+  // На невысоких экранах — рамка адаптируется по высоте, ширина подстроится
+  @media (max-height: 700px) {
+    width: auto;
+    height: 55dvh;
   }
 }
 
@@ -290,8 +302,8 @@ $frame-radius: 18px;
 .corner_bl,
 .corner_br {
   position: absolute;
-  width: 85px;
-  height: 85px;
+  width: 77px;
+  height: 77px;
   z-index: 2;
   overflow: visible;
 }

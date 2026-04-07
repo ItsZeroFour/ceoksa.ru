@@ -267,20 +267,20 @@ const InputFileUpload = ({
                     {/* Frame corners + glow */}
                     <div className={style.overlay__frame} ref={frameRef}>
                       {/* Top-left */}
-                      <svg className={style.corner_tl} viewBox="0 0 85 85" fill="none">
-                        <path d="M 82 3.5 L 17 3.5 Q 3.5 3.5 3.5 17 L 3.5 82" stroke="rgba(255,255,255,0.92)" strokeWidth="7" strokeLinecap="round" />
+                      <svg className={style.corner_tl} viewBox="0 0 77 77" fill="none">
+                        <path d="M 74 3.5 L 17 3.5 Q 3.5 3.5 3.5 17 L 3.5 74" stroke="rgba(255,255,255,0.92)" strokeWidth="7" strokeLinecap="round" />
                       </svg>
                       {/* Top-right */}
-                      <svg className={style.corner_tr} viewBox="0 0 85 85" fill="none">
-                        <path d="M 3 3.5 L 68 3.5 Q 81.5 3.5 81.5 17 L 81.5 82" stroke="rgba(255,255,255,0.92)" strokeWidth="7" strokeLinecap="round" />
+                      <svg className={style.corner_tr} viewBox="0 0 77 77" fill="none">
+                        <path d="M 3 3.5 L 60 3.5 Q 73.5 3.5 73.5 17 L 73.5 74" stroke="rgba(255,255,255,0.92)" strokeWidth="7" strokeLinecap="round" />
                       </svg>
                       {/* Bottom-left */}
-                      <svg className={style.corner_bl} viewBox="0 0 85 85" fill="none">
-                        <path d="M 3.5 3 L 3.5 68 Q 3.5 81.5 17 81.5 L 82 81.5" stroke="rgba(255,255,255,0.92)" strokeWidth="7" strokeLinecap="round" />
+                      <svg className={style.corner_bl} viewBox="0 0 77 77" fill="none">
+                        <path d="M 3.5 3 L 3.5 60 Q 3.5 73.5 17 73.5 L 74 73.5" stroke="rgba(255,255,255,0.92)" strokeWidth="7" strokeLinecap="round" />
                       </svg>
                       {/* Bottom-right */}
-                      <svg className={style.corner_br} viewBox="0 0 85 85" fill="none">
-                        <path d="M 81.5 3 L 81.5 68 Q 81.5 81.5 68 81.5 L 3 81.5" stroke="rgba(255,255,255,0.92)" strokeWidth="7" strokeLinecap="round" />
+                      <svg className={style.corner_br} viewBox="0 0 77 77" fill="none">
+                        <path d="M 73.5 3 L 73.5 60 Q 73.5 73.5 60 73.5 L 3 73.5" stroke="rgba(255,255,255,0.92)" strokeWidth="7" strokeLinecap="round" />
                       </svg>
                     </div>
 
