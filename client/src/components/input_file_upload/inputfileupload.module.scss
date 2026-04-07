@@ -164,47 +164,16 @@
   background: #000;
 }
 
-/* ======== Blurred dark overlay with rounded cutout (via CSS mask) ======== */
-
-// SVG rounded rectangle for the mask cutout (viewBox matches aspect-ratio 2.1:3)
-$cutout: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 230 300'%3E%3Crect width='230' height='300' rx='18' fill='white'/%3E%3C/svg%3E");
+/* ======== Blur overlay (progressive enhancement — hidden if mask unsupported) ======== */
 
 .overlay_blur {
-  position: absolute;
-  inset: 0;
-  background: rgba(40, 40, 40, 0.72);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  z-index: 1;
-  pointer-events: none;
-
-  // Two-layer mask: full white coverage + cutout shape. XOR/exclude removes the cutout.
-  -webkit-mask-image: $cutout, linear-gradient(#fff 0 0);
-  -webkit-mask-size: min(84vw, calc(100vw - 48px)) auto, 100% 100%;
-  -webkit-mask-position: center, center;
-  -webkit-mask-repeat: no-repeat, no-repeat;
-  -webkit-mask-composite: xor;
-
-  mask-image: $cutout, linear-gradient(#fff 0 0);
-  mask-size: min(84vw, calc(100vw - 48px)) auto, 100% 100%;
-  mask-position: center, center;
-  mask-repeat: no-repeat, no-repeat;
-  mask-composite: exclude;
-
-  @media (min-width: 425px) {
-    -webkit-mask-size: 80vw auto, 100% 100%;
-    mask-size: 80vw auto, 100% 100%;
-  }
-
-  @media (max-height: 700px) {
-    -webkit-mask-size: auto 55dvh, 100% 100%;
-    mask-size: auto 62dvh, 100% 100%;
-  }
+  display: none;
 }
 
-/* ======== Frame (corners + glow) ======== */
+/* ======== Frame (corners + dark overlay via box-shadow) ======== */
 
 $frame-radius: 18px;
+$dim: rgba(40, 40, 40, 0.75);
 
 .overlay__frame {
   position: absolute;
@@ -218,8 +187,9 @@ $frame-radius: 18px;
   z-index: 2;
   pointer-events: none;
 
-  // Subtle edge glow like RIM
+  // Dark overlay + subtle glow — works on all devices
   box-shadow:
+    0 0 0 200vmax $dim,
     0 0 18px 2px rgba(255, 255, 255, 0.07),
     inset 0 0 0 0.5px rgba(255, 255, 255, 0.1);
 
@@ -227,7 +197,6 @@ $frame-radius: 18px;
     width: 80vw;
   }
 
-  // На невысоких экранах — рамка адаптируется по высоте, ширина подстроится
   @media (max-height: 700px) {
     height: 62dvh;
   }
