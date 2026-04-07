@@ -181,8 +181,8 @@ $dim: rgba(40, 40, 40, 0.75);
   left: 50%;
   transform: translate(-50%, -50%);
   width: min(84vw, calc(100vw - 48px));
-  aspect-ratio: 2.3 / 3;
-  max-height: 62dvh;
+  aspect-ratio: 2.4 / 3;
+  max-height: 65dvh;
   border-radius: $frame-radius;
   z-index: 2;
   pointer-events: none;
@@ -198,7 +198,7 @@ $dim: rgba(40, 40, 40, 0.75);
   }
 
   @media (max-height: 700px) {
-    height: 62dvh;
+    height: 60dvh;
   }
 }
 
