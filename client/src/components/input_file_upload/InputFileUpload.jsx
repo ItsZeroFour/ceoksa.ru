@@ -261,38 +261,30 @@ const InputFileUpload = ({
                       className={style.webcam_preview}
                     />
 
-                    {/* Dark overlay with text + frame + button all inside */}
-                    <div className={style.overlay}>
-                      {/* Top dark zone with text */}
-                      <div className={style.overlay__top}>
-                        <h3 className={style.overlay__title}>Фото паспорта</h3>
-                        <p className={style.overlay__subtitle}>
-                          Соедините углы документа с уголками на{"\u00A0"}экране
-                        </p>
-                      </div>
+                    {/* Frame with box-shadow as dark overlay (rounded corners) */}
+                    <div className={style.overlay__frame} ref={frameRef}>
+                      <div className={style.corner_tl} />
+                      <div className={style.corner_tr} />
+                      <div className={style.corner_bl} />
+                      <div className={style.corner_br} />
+                    </div>
 
-                      {/* Middle row: dark | frame | dark */}
-                      <div className={style.overlay__middle}>
-                        <div className={style.overlay__side} />
-                        <div className={style.overlay__frame} ref={frameRef}>
-                          <div className={style.corner_tl} />
-                          <div className={style.corner_tr} />
-                          <div className={style.corner_bl} />
-                          <div className={style.corner_br} />
-                        </div>
-                        <div className={style.overlay__side} />
-                      </div>
+                    {/* Text and button positioned over the dark zones */}
+                    <div className={style.overlay__top}>
+                      <h3 className={style.overlay__title}>Фото паспорта</h3>
+                      <p className={style.overlay__subtitle}>
+                        Соедините углы документа с уголками на{"\u00A0"}экране
+                      </p>
+                    </div>
 
-                      {/* Bottom dark zone with button */}
-                      <div className={style.overlay__bottom}>
-                        <button
-                          type="button"
-                          className={style.overlay__capture_btn}
-                          onClick={handleCapture}
-                        >
-                          СДЕЛАТЬ ФОТО
-                        </button>
-                      </div>
+                    <div className={style.overlay__bottom}>
+                      <button
+                        type="button"
+                        className={style.overlay__capture_btn}
+                        onClick={handleCapture}
+                      >
+                        СДЕЛАТЬ ФОТО
+                      </button>
                     </div>
                   </>
                 )}
