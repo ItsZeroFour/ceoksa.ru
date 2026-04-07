@@ -194,11 +194,11 @@ const PhotoPassport = () => {
           фотографии страниц паспорта.
         </p>
 
-        <ul className={style.photopassport__tips}>
+        {/* <ul className={style.photopassport__tips}>
           <li>Обеспечьте хорошее и равномерное освещение.</li>
           <li>Избегайте появления бликов и голограмм поверх текста или фотографии.</li>
           <li>Избегайте наклона документа.</li>
-        </ul>
+        </ul> */}
 
         {!isMobile && (
           <p className={style.photopassport__warning}>

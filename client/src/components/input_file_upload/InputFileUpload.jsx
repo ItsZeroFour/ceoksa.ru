@@ -62,8 +62,8 @@ const InputFileUpload = ({
   };
 
   const closeCameraModal = () => {
-    setIsModalOpen(false);
-    setCapturedImage(null);
+    // setIsModalOpen(false);
+    // setCapturedImage(null);
   };
 
   const handleCapture = () => {
