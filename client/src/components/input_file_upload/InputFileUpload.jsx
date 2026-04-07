@@ -230,23 +230,19 @@ const InputFileUpload = ({
               className={style.camera_modal}
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Header with close button */}
-              <div className={style.camera_modal__header}>
-                <div className={style.camera_modal__header_top}>
-                  <div className={style.camera_modal__header_spacer} />
-                  <h3>Фото паспорта</h3>
-                  <button
-                    type="button"
-                    className={style.camera_modal__close_btn}
-                    onClick={closeCameraModal}
-                  >
-                    ✕
-                  </button>
-                </div>
-                <p>Соедините углы документа с уголками на{"\u00A0"}экране</p>
+              {/* Top bar — close button only (RIM has "Верификация личности" here, we skip text) */}
+              <div className={style.camera_modal__topbar}>
+                <div />
+                <button
+                  type="button"
+                  className={style.camera_modal__close_btn}
+                  onClick={closeCameraModal}
+                >
+                  ✕
+                </button>
               </div>
 
-              {/* Camera viewfinder */}
+              {/* Camera area — everything else is inside here */}
               <div className={style.camera_modal__viewfinder} ref={viewfinderRef}>
                 {capturedImage ? (
                   <img
@@ -265,50 +261,61 @@ const InputFileUpload = ({
                       className={style.webcam_preview}
                     />
 
-                    <div className={style.camera_modal__dark_overlay}>
-                      <div className={style.blur_top} />
-                      <div className={style.blur_middle}>
-                        <div className={style.blur_left} />
-                        <div className={style.frame_cutout} ref={frameRef}>
+                    {/* Dark overlay with text + frame + button all inside */}
+                    <div className={style.overlay}>
+                      {/* Top dark zone with text */}
+                      <div className={style.overlay__top}>
+                        <h3 className={style.overlay__title}>Фото паспорта</h3>
+                        <p className={style.overlay__subtitle}>
+                          Соедините углы документа с уголками на{"\u00A0"}экране
+                        </p>
+                      </div>
+
+                      {/* Middle row: dark | frame | dark */}
+                      <div className={style.overlay__middle}>
+                        <div className={style.overlay__side} />
+                        <div className={style.overlay__frame} ref={frameRef}>
                           <div className={style.corner_tl} />
                           <div className={style.corner_tr} />
                           <div className={style.corner_bl} />
                           <div className={style.corner_br} />
                         </div>
-                        <div className={style.blur_right} />
+                        <div className={style.overlay__side} />
                       </div>
-                      <div className={style.blur_bottom} />
+
+                      {/* Bottom dark zone with button */}
+                      <div className={style.overlay__bottom}>
+                        <button
+                          type="button"
+                          className={style.overlay__capture_btn}
+                          onClick={handleCapture}
+                        >
+                          СДЕЛАТЬ ФОТО
+                        </button>
+                      </div>
                     </div>
                   </>
                 )}
-              </div>
 
-              {/* Bottom controls */}
-              <div className={style.camera_modal__controls}>
-                {!capturedImage ? (
-                  <button
-                    type="button"
-                    className={style.camera_modal__capture_btn}
-                    onClick={handleCapture}
-                  >
-                    СДЕЛАТЬ ФОТО
-                  </button>
-                ) : (
-                  <div className={style.camera_modal__confirm_row}>
-                    <button
-                      type="button"
-                      className={style.camera_modal__retake_btn}
-                      onClick={handleRetake}
-                    >
-                      Переснять
-                    </button>
-                    <button
-                      type="button"
-                      className={style.camera_modal__use_btn}
-                      onClick={handleConfirm}
-                    >
-                      Использовать
-                    </button>
+                {/* Confirm/retake controls over captured image */}
+                {capturedImage && (
+                  <div className={style.overlay__confirm}>
+                    <div className={style.overlay__confirm_row}>
+                      <button
+                        type="button"
+                        className={style.overlay__retake_btn}
+                        onClick={handleRetake}
+                      >
+                        Переснять
+                      </button>
+                      <button
+                        type="button"
+                        className={style.overlay__use_btn}
+                        onClick={handleConfirm}
+                      >
+                        Использовать
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
