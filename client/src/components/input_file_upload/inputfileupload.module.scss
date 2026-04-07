@@ -289,7 +289,7 @@ $c-size: 70px;
 $c-thick: 7px;
 $c-color: rgba(255, 255, 255, 0.92);
 $c-inner: 18px;  // inner curve radius (where bars meet)
-$c-tip: 6px;     // tip rounding (must be > $c-thick so inner edge rounds too)
+$c-tip: 8px;     // tip rounding (must be > $c-thick so inner edge rounds too)
 
 .corner_tl,
 .corner_tr,
