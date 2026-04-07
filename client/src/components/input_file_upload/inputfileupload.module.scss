@@ -247,7 +247,7 @@ $frame-radius: 18px;
 }
 
 /* ======== Corner markers — RIM style ======== */
-$c-size: 46px;
+$c-size: 56px;
 $c-thick: 6px;
 $c-color: rgba(255, 255, 255, 0.9);
 $c-radius: 18px;
@@ -259,6 +259,7 @@ $c-radius: 18px;
   position: absolute;
   width: $c-size;
   height: $c-size;
+  border-radius: $c-thick;
 }
 
 .corner_tl {
