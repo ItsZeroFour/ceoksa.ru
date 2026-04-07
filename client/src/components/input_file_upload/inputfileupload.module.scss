@@ -283,63 +283,23 @@ $frame-radius: 18px;
   }
 }
 
-/* ======== Corner markers — RIM style (smooth inner curve + rounded tips) ======== */
-
-$c-size: 70px;
-$c-thick: 7px;
-$c-color: rgba(255, 255, 255, 0.92);
-$c-inner: 20px;  // smooth curve where bars meet
-$c-tip: 10px;    // gentle tip rounding — inner edge = $c-tip - $c-thick = 3px
+/* ======== Corner markers — SVG paths with rounded caps + smooth curve ======== */
 
 .corner_tl,
 .corner_tr,
 .corner_bl,
 .corner_br {
   position: absolute;
-  width: $c-size;
-  height: $c-size;
+  width: 70px;
+  height: 70px;
   z-index: 2;
+  overflow: visible;
 }
 
-.corner_tl {
-  top: 0;
-  left: 0;
-  border-top: $c-thick solid $c-color;
-  border-left: $c-thick solid $c-color;
-  border-top-left-radius: $c-inner;
-  border-top-right-radius: $c-tip;
-  border-bottom-left-radius: $c-tip;
-}
-
-.corner_tr {
-  top: 0;
-  right: 0;
-  border-top: $c-thick solid $c-color;
-  border-right: $c-thick solid $c-color;
-  border-top-right-radius: $c-inner;
-  border-top-left-radius: $c-tip;
-  border-bottom-right-radius: $c-tip;
-}
-
-.corner_bl {
-  bottom: 0;
-  left: 0;
-  border-bottom: $c-thick solid $c-color;
-  border-left: $c-thick solid $c-color;
-  border-bottom-left-radius: $c-inner;
-  border-bottom-right-radius: $c-tip;
-  border-top-left-radius: $c-tip;
-}
-
-.corner_br {
-  bottom: 0;
-  right: 0;
-  border-bottom: $c-thick solid $c-color;
-  border-right: $c-thick solid $c-color;
-  border-bottom-right-radius: $c-inner;
-  border-bottom-left-radius: $c-tip;
-  border-top-right-radius: $c-tip;
-}
+.corner_tl { top: 0; left: 0; }
+.corner_tr { top: 0; right: 0; }
+.corner_bl { bottom: 0; left: 0; }
+.corner_br { bottom: 0; right: 0; }
 
 /* ======== Confirm overlay (over captured image) ======== */
 

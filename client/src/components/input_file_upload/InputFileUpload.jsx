@@ -266,10 +266,22 @@ const InputFileUpload = ({
 
                     {/* Frame corners + glow */}
                     <div className={style.overlay__frame} ref={frameRef}>
-                      <div className={style.corner_tl} />
-                      <div className={style.corner_tr} />
-                      <div className={style.corner_bl} />
-                      <div className={style.corner_br} />
+                      {/* Top-left */}
+                      <svg className={style.corner_tl} viewBox="0 0 70 70" fill="none">
+                        <path d="M 67 3.5 L 17 3.5 Q 3.5 3.5 3.5 17 L 3.5 67" stroke="rgba(255,255,255,0.92)" strokeWidth="7" strokeLinecap="round" />
+                      </svg>
+                      {/* Top-right */}
+                      <svg className={style.corner_tr} viewBox="0 0 70 70" fill="none">
+                        <path d="M 3 3.5 L 53 3.5 Q 66.5 3.5 66.5 17 L 66.5 67" stroke="rgba(255,255,255,0.92)" strokeWidth="7" strokeLinecap="round" />
+                      </svg>
+                      {/* Bottom-left */}
+                      <svg className={style.corner_bl} viewBox="0 0 70 70" fill="none">
+                        <path d="M 3.5 3 L 3.5 53 Q 3.5 66.5 17 66.5 L 67 66.5" stroke="rgba(255,255,255,0.92)" strokeWidth="7" strokeLinecap="round" />
+                      </svg>
+                      {/* Bottom-right */}
+                      <svg className={style.corner_br} viewBox="0 0 70 70" fill="none">
+                        <path d="M 66.5 3 L 66.5 53 Q 66.5 66.5 53 66.5 L 3 66.5" stroke="rgba(255,255,255,0.92)" strokeWidth="7" strokeLinecap="round" />
+                      </svg>
                     </div>
 
                     {/* Text over top dark zone */}
