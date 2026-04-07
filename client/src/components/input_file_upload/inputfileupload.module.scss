@@ -164,24 +164,38 @@
   background: #000;
 }
 
-/* ======== Overlay — dark mask + text + frame + button, all inside viewfinder ======== */
+/* ======== Frame with box-shadow as dark overlay (rounded inner corners) ======== */
 
 $dim: rgba(0, 0, 0, 0.80);
+$frame-radius: 18px;
 
-.overlay {
+.overlay__frame {
   position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 84vw;
+  aspect-ratio: 3 / 4;
+  border-radius: $frame-radius;
+  box-shadow: 0 0 0 200vmax $dim;
   z-index: 1;
+  pointer-events: none;
+
+  @media (min-width: 420px) {
+    width: 80vw;
+  }
 }
 
-/* -- Top dark zone (text lives here) -- */
+/* -- Text (top) and button (bottom) over the dark zones -- */
 .overlay__top {
-  background: $dim;
-  padding: 16px 24px 14px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
   text-align: center;
-  flex-shrink: 0;
+  padding: 16px 24px 14px;
+  pointer-events: none;
 }
 
 .overlay__title {
@@ -199,40 +213,17 @@ $dim: rgba(0, 0, 0, 0.80);
   line-height: 1.35;
 }
 
-/* -- Middle row: side | frame | side -- */
-.overlay__middle {
-  display: flex;
-  flex-shrink: 0;
-}
-
-.overlay__side {
-  flex: 1;
-  background: $dim;
-}
-
-/* Frame cutout — transparent window, NO border-radius so no rounding on blur edges */
-.overlay__frame {
-  width: 84vw;
-  aspect-ratio: 3 / 4;
-  position: relative;
-  flex-shrink: 0;
-  /* No border-radius — sharp edges where dark meets clear */
-
-  @media (min-width: 420px) {
-    width: 80vw;
-  }
-}
-
-/* -- Bottom dark zone (button lives here) -- */
 .overlay__bottom {
-  flex: 1;
-  background: $dim;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
   display: flex;
-  flex-direction: column;
   justify-content: center;
-  align-items: center;
   padding: 20px 24px;
   padding-bottom: max(24px, env(safe-area-inset-bottom));
+  pointer-events: none;
 }
 
 .overlay__capture_btn {
@@ -256,8 +247,8 @@ $dim: rgba(0, 0, 0, 0.80);
 }
 
 /* ======== Corner markers — RIM style ======== */
-$c-size: 36px;
-$c-thick: 4px;
+$c-size: 46px;
+$c-thick: 6px;
 $c-color: rgba(255, 255, 255, 0.9);
 $c-radius: 18px;
 
