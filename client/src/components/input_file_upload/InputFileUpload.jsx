@@ -58,12 +58,14 @@ const InputFileUpload = ({
     if (screenWidth < 800) {
       setIsModalOpen(true);
       setCapturedImage(null);
+      document.body.style.overflow = "hidden";
     }
   };
 
   const closeCameraModal = () => {
     setIsModalOpen(false);
     setCapturedImage(null);
+    document.body.style.overflow = "";
   };
 
   const handleCapture = () => {
