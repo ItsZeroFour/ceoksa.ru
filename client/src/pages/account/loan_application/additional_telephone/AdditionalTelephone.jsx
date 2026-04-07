@@ -112,11 +112,12 @@ const AdditionalTelephone = ({ userData }) => {
               <InputField
                 icon={Phone}
                 label="Номер дополнительного телефона"
-                placeholder={placeholder}
+                placeholder="(9XX) XXX-XX-XX"
                 id="phone"
                 type="tel"
                 ref={phoneInputRef}
                 inputMode="numeric"
+                prefix="+7"
               />
             </li>
             {errors.phone && (

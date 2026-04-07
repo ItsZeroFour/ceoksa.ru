@@ -50,11 +50,12 @@ const WorkPhoneInput = ({ initialValue, onPhoneChange, error }) => {
         <InputField
           icon={Phone}
           label="Рабочий телефон"
-          placeholder="Рабочий телефон"
+          placeholder="(9XX) XXX-XX-XX"
           id="work_phone"
           type="tel"
           ref={phoneInputRef}
           inputMode="numeric"
+          prefix="+7"
         />
       </li>
       {error && <span className={style.input_error_text}>{error}</span>}

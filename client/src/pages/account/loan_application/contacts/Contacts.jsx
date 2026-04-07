@@ -74,11 +74,12 @@ const Contacts = ({ userData }) => {
             <InputField
               icon={Phone}
               label="Номер телефона"
-              placeholder="+7 (9XX) XXX-XX-XX"
+              placeholder="(9XX) XXX-XX-XX"
               id="phone"
               type="tel"
               readOnly={true}
               ref={phoneInputRef}
+              prefix="+7"
             />
           </li>
 

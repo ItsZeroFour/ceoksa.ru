@@ -20,6 +20,7 @@ const InputField = forwardRef(
       inputMode,
       value,
       name,
+      prefix,
     },
     ref
   ) => {
@@ -40,6 +41,7 @@ const InputField = forwardRef(
         >
           {/* {label && <label htmlFor={id}>{label}</label>} */}
           <div className={style.inputwith__action}>
+            {prefix && <span className={style.inputfield__prefix}>{prefix}</span>}
             <input
               id={id}
               type={type}
