@@ -26,6 +26,22 @@
     font-weight: 300;
   }
 
+  .photopassport__tips {
+    margin-top: 12px;
+    padding-left: 20px;
+    list-style: disc;
+
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    li {
+      font-size: 14px;
+      font-weight: 400;
+      opacity: 0.7;
+    }
+  }
+
   ul {
     margin-top: 25px;
 

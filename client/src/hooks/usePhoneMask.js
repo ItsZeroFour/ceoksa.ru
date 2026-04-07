@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import IMask from "imask";
 
 export const usePhoneMask = ({
-  mask = "+{7} (000) 000-00-00",
+  mask = "(000) 000-00-00",
   lazy = true,
   onAccept,
   initialValue = "",
@@ -24,16 +24,18 @@ export const usePhoneMask = ({
     maskRef.current = IMask(inputRef.current, { mask, lazy });
 
     const handleChange = () => {
-      const value = maskRef.current.value;
+      const rawValue = maskRef.current.value;
       const unmasked = maskRef.current.unmaskedValue;
-      const valid = unmasked.length === 11;
+      const valid = unmasked.length === 10;
+      const fullValue = "+7 " + rawValue;
+      const fullUnmasked = "7" + unmasked;
 
-      setPhone(value);
-      setUnmaskedPhone(unmasked);
+      setPhone(fullValue);
+      setUnmaskedPhone(fullUnmasked);
       setIsValid(valid);
 
       if (onAcceptRef.current) {
-        onAcceptRef.current({ value, unmaskedValue: unmasked, isValid: valid });
+        onAcceptRef.current({ value: fullValue, unmaskedValue: fullUnmasked, isValid: valid });
       }
     };
 
@@ -42,7 +44,11 @@ export const usePhoneMask = ({
 
     // Потом устанавливаем значение — это триггернет accept
     if (initialValue) {
-      maskRef.current.value = initialValue;
+      // Убираем +7 из начала если есть, т.к. маска теперь без +7
+      let cleanValue = initialValue;
+      if (cleanValue.startsWith("+7 ")) cleanValue = cleanValue.slice(3);
+      else if (cleanValue.startsWith("+7")) cleanValue = cleanValue.slice(2);
+      maskRef.current.value = cleanValue;
       maskRef.current.updateValue();
     }
 

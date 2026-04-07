@@ -4,14 +4,6 @@
   border-radius: 14px;
   width: 100%;
 
-  // label {
-  //   display: flex;
-  //   justify-content: space-between;
-  //   align-items: center;
-
-  //   cursor: pointer;
-  // }
-
   & > p {
     font-size: 13px;
     margin-top: 15px;
@@ -101,218 +93,222 @@
   }
 }
 
+/* ============ Camera Modal (MTS-style) ============ */
+
 .camera_modal_overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100dvh;
-  background: rgba(0, 0, 0, 0.7);
+  background: #000;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
   z-index: 1000;
-
-  @media (max-width: 900px) {
-    align-items: end;
-  }
 }
 
 .camera_modal {
-  background: var(--color-bg);
-  border-radius: 16px 16px 0 0;
-  overflow: hidden;
-  width: 100vw;
-  height: 90dvh;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 16px;
-
+  background: #1a1a1a;
   position: relative;
-  padding-bottom: env(safe-area-inset-bottom, 16px) h3 {
+}
+
+.camera_modal__header {
+  text-align: center;
+  padding: 20px 16px 12px;
+  background: #1a1a1a;
+
+  h3 {
     font-family: "Inter", sans-serif;
     font-weight: 600;
-    font-size: 20px;
+    font-size: 18px;
+    color: #fff;
+    margin-bottom: 6px;
   }
 
-  &::before {
-    content: "";
-    position: absolute;
-    top: 5px;
-    width: 35px;
-    height: 5px;
-    border-radius: 20px;
-    background: rgba(60, 60, 67, 0.302);
-  }
-
-  @media (max-width: 900px) {
-    height: 90vh;
-    padding: 0;
+  p {
+    font-size: 14px;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.7);
   }
 }
 
-.webcam_nav {
-  padding: 20px;
-  background: rgba(5, 18, 37, 0.6);
-  width: 100%;
-  position: absolute;
-  bottom: 0;
-
-  // padding-bottom: env(safe-area-inset-bottom, 20px);
-  // margin-bottom: 0;
-
+.camera_modal__viewfinder {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: end;
-
-  .webcam_nav__container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-
-    div {
-      width: 33% !important;
-      display: flex;
-      align-items: center;
-    }
-  }
-
-  .webcam_nav__photo__rotate {
-    justify-content: end;
-
-    button {
-      background: none;
-
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-
-      border-radius: 50%;
-
-      width: 35px;
-      height: 35px;
-
-      background: rgba(255, 255, 255, 0.2);
-    }
-  }
-
-  .webcam_nav__photo {
-    justify-content: center;
-
-    button {
-      width: 50px;
-      height: 50px;
-      background: var(--color-white);
-      border-radius: 50%;
-      position: relative;
-
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-
-      transform-style: preserve-3d;
-
-      &::before {
-        content: "";
-        position: absolute;
-        width: 60px;
-        height: 60px;
-        background: none;
-        border-radius: 50%;
-        border: 2px solid var(--color-white);
-
-        transform: translateZ(-1px);
-      }
-    }
-  }
+  align-items: center;
+  justify-content: center;
+  background: #000;
 }
 
-.webcam_nav__container__captured {
-  height: 50px;
-  background: none;
-  color: var(--color-white);
-  font-weight: 300;
+.webcam_preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(1) !important;
 }
 
-.webcam_preview,
 .captured_preview {
   width: 100%;
   height: 100%;
-  // aspect-ratio: 4 / 3;
-  overflow: hidden;
   object-fit: cover;
-  background: #000;
-  transform: scaleX(1) !important;
-
-  // margin-top: 20px;
 }
 
-.camera_modal_buttons {
-  display: flex;
-  gap: 16px;
-  margin-top: 20px;
-  width: 100%;
-  justify-content: center;
+/* Document frame with corner markers */
+.camera_modal__frame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 75%;
+  aspect-ratio: 3 / 4;
+  pointer-events: none;
 
-  @media (max-width: 425px) {
-    flex-direction: column;
+  @media (max-width: 400px) {
+    width: 82%;
   }
 }
 
-.camera_modal_button_capture,
-.camera_modal_button_cancel {
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  flex: 1;
+$corner-size: 30px;
+$corner-width: 3px;
+$corner-color: #fff;
+$corner-radius: 10px;
+
+.corner_tl,
+.corner_tr,
+.corner_bl,
+.corner_br {
+  position: absolute;
+  width: $corner-size;
+  height: $corner-size;
+}
+
+.corner_tl {
+  top: 0;
+  left: 0;
+  border-top: $corner-width solid $corner-color;
+  border-left: $corner-width solid $corner-color;
+  border-top-left-radius: $corner-radius;
+}
+
+.corner_tr {
+  top: 0;
+  right: 0;
+  border-top: $corner-width solid $corner-color;
+  border-right: $corner-width solid $corner-color;
+  border-top-right-radius: $corner-radius;
+}
+
+.corner_bl {
+  bottom: 0;
+  left: 0;
+  border-bottom: $corner-width solid $corner-color;
+  border-left: $corner-width solid $corner-color;
+  border-bottom-left-radius: $corner-radius;
+}
+
+.corner_br {
+  bottom: 0;
+  right: 0;
+  border-bottom: $corner-width solid $corner-color;
+  border-right: $corner-width solid $corner-color;
+  border-bottom-right-radius: $corner-radius;
+}
+
+/* Controls */
+.camera_modal__controls {
+  padding: 16px 20px;
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+  background: #1a1a1a;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.camera_modal__capture_btn {
   width: 100%;
-}
-
-.camera_modal_button_capture {
+  padding: 16px;
+  border-radius: 14px;
   background: var(--color-blue);
-  color: var(--color-white);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: "Inter", sans-serif;
+  letter-spacing: 0.5px;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.85;
+  }
 }
 
-.camera_modal_button_cancel {
-  background: var(--color-red);
-  color: var(--color-white);
+.camera_modal__bottom_row {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.camera_modal__top {
+.camera_modal__cancel_btn {
+  background: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 15px;
+  font-weight: 400;
+  border: none;
+  cursor: pointer;
+  padding: 8px 0;
+}
+
+.camera_modal__rotate_btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  cursor: pointer;
 
+  svg {
+    color: #fff;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* Confirm / Retake */
+.camera_modal__confirm_row {
   width: 100%;
-  padding: 20px;
+  display: flex;
+  gap: 12px;
+}
 
-  div,
-  button,
-  h3 {
-    width: 33%;
-  }
+.camera_modal__retake_btn,
+.camera_modal__use_btn {
+  flex: 1;
+  padding: 16px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+}
 
-  h3 {
-    text-align: center;
-  }
+.camera_modal__retake_btn {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
 
-  button {
-    text-align: left;
-    background: none;
-    color: var(--color-blue);
-
-    display: flex;
-    align-items: center;
-
-    svg {
-      transform: rotate(90deg);
-    }
-  }
+.camera_modal__use_btn {
+  background: var(--color-blue);
+  color: #fff;
 }

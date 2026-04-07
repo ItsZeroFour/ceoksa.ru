@@ -20,12 +20,15 @@ const PhoneAuthStep = ({
       <form>
         <div className={styles.auth__form__input}>
           <label htmlFor="phone">Номер телефона</label>
-          <input
-            ref={phoneInputRef}
-            type="tel"
-            id="phone"
-            placeholder="+7 (9XX) XXX-XX-XX"
-          />
+          <div className={styles.auth__phone_wrapper}>
+            <span className={styles.auth__phone_prefix}>+7</span>
+            <input
+              ref={phoneInputRef}
+              type="tel"
+              id="phone"
+              placeholder="(9XX) XXX-XX-XX"
+            />
+          </div>
         </div>
 
         {filesStatus === "succeeded" && (
