@@ -285,11 +285,11 @@ $frame-radius: 18px;
 
 /* ======== Corner markers — RIM style (border with full rounding) ======== */
 
-$c-size: 56px;
-$c-thick: 5px;
+$c-size: 66px;
+$c-thick: 7px;
 $c-color: rgba(255, 255, 255, 0.92);
 $c-inner: 18px;  // inner curve radius (where bars meet)
-$c-tip: 8px;     // tip rounding (must be > $c-thick so inner edge rounds too)
+$c-tip: 5px;     // tip rounding (must be > $c-thick so inner edge rounds too)
 
 .corner_tl,
 .corner_tr,
