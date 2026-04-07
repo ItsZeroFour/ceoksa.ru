@@ -27,22 +27,25 @@
   }
 
   .photopassport__tips {
-    margin-top: 12px;
-    padding-left: 20px;
-    list-style: disc;
-
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    margin-top: 14px;
+    padding-left: 18px;
+    list-style: disc !important;
+    display: block !important;
 
     li {
-      font-size: 14px;
-      font-weight: 400;
+      font-weight: 300;
       opacity: 0.7;
+      margin-bottom: 8px;
+      line-height: 1.45;
+      list-style: disc !important;
+
+      &::marker {
+        font-size: 0.9em;
+      }
     }
   }
 
-  ul {
+  ul:not(.photopassport__tips) {
     margin-top: 25px;
 
     display: grid;
