@@ -261,7 +261,10 @@ const InputFileUpload = ({
                       className={style.webcam_preview}
                     />
 
-                    {/* Frame with box-shadow as dark overlay (rounded corners) */}
+                    {/* Blurred dark overlay with rounded cutout */}
+                    <div className={style.overlay_blur} />
+
+                    {/* Frame corners + glow */}
                     <div className={style.overlay__frame} ref={frameRef}>
                       <div className={style.corner_tl} />
                       <div className={style.corner_tr} />
@@ -269,7 +272,7 @@ const InputFileUpload = ({
                       <div className={style.corner_br} />
                     </div>
 
-                    {/* Text and button positioned over the dark zones */}
+                    {/* Text over top dark zone */}
                     <div className={style.overlay__top}>
                       <h3 className={style.overlay__title}>Фото паспорта</h3>
                       <p className={style.overlay__subtitle}>
@@ -277,6 +280,7 @@ const InputFileUpload = ({
                       </p>
                     </div>
 
+                    {/* Button over bottom dark zone */}
                     <div className={style.overlay__bottom}>
                       <button
                         type="button"
