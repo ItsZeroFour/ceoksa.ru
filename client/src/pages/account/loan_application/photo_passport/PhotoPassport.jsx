@@ -224,6 +224,7 @@ const PhotoPassport = () => {
                 onFileSelect={handleFileSelect(key)}
                 id={id}
                 fileName={getFileName(key)}
+                disabled={!isMobile}
               />
             </li>
           ))}
