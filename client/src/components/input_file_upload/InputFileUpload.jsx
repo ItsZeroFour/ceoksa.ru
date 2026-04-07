@@ -19,6 +19,8 @@ const InputFileUpload = ({
   disabled,
 }) => {
   const webcamRef = useRef(null);
+  const frameRef = useRef(null);
+  const viewfinderRef = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [facingMode, setFacingMode] = useState("environment");
   const [capturedImage, setCapturedImage] = useState(null);
@@ -68,12 +70,68 @@ const InputFileUpload = ({
   };
 
   const handleCapture = () => {
-    const imageSrc = webcamRef.current?.getScreenshot();
-    if (!imageSrc) {
+    const video = webcamRef.current?.video;
+    const frame = frameRef.current;
+    const viewfinder = viewfinderRef.current;
+
+    if (!video || !frame || !viewfinder) {
       alert("Не удалось сделать снимок.");
       return;
     }
-    setCapturedImage(imageSrc);
+
+    const vfRect = viewfinder.getBoundingClientRect();
+    const frameRect = frame.getBoundingClientRect();
+
+    // Рассчитываем позицию рамки относительно viewfinder
+    const relX = (frameRect.left - vfRect.left) / vfRect.width;
+    const relY = (frameRect.top - vfRect.top) / vfRect.height;
+    const relW = frameRect.width / vfRect.width;
+    const relH = frameRect.height / vfRect.height;
+
+    // Видео может быть обрезано из-за object-fit: cover
+    const videoW = video.videoWidth;
+    const videoH = video.videoHeight;
+    const vfAspect = vfRect.width / vfRect.height;
+    const vidAspect = videoW / videoH;
+
+    let srcX, srcY, srcW, srcH;
+
+    if (vidAspect > vfAspect) {
+      // Видео шире — обрезаны бока
+      const visibleW = videoH * vfAspect;
+      const offsetX = (videoW - visibleW) / 2;
+      srcX = offsetX + relX * visibleW;
+      srcY = relY * videoH;
+      srcW = relW * visibleW;
+      srcH = relH * videoH;
+    } else {
+      // Видео выше — обрезан верх/низ
+      const visibleH = videoW / vfAspect;
+      const offsetY = (videoH - visibleH) / 2;
+      srcX = relX * videoW;
+      srcY = offsetY + relY * visibleH;
+      srcW = relW * videoW;
+      srcH = relH * visibleH;
+    }
+
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(srcW);
+    canvas.height = Math.round(srcH);
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(
+      video,
+      Math.round(srcX),
+      Math.round(srcY),
+      Math.round(srcW),
+      Math.round(srcH),
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+
+    const croppedImage = canvas.toDataURL("image/jpeg", 0.92);
+    setCapturedImage(croppedImage);
   };
 
   const handleConfirm = () => {
@@ -186,7 +244,7 @@ const InputFileUpload = ({
                 <p>Соедините углы документа с уголками на экране</p>
               </div>
 
-              <div className={style.camera_modal__viewfinder}>
+              <div className={style.camera_modal__viewfinder} ref={viewfinderRef}>
                 {capturedImage ? (
                   <img
                     src={capturedImage}
@@ -194,23 +252,32 @@ const InputFileUpload = ({
                     className={style.captured_preview}
                   />
                 ) : (
-                  <Webcam
-                    audio={false}
-                    ref={webcamRef}
-                    screenshotFormat="image/jpeg"
-                    videoConstraints={{ facingMode }}
-                    onUserMediaError={handleCameraError}
-                    className={style.webcam_preview}
-                  />
-                )}
+                  <>
+                    <Webcam
+                      audio={false}
+                      ref={webcamRef}
+                      screenshotFormat="image/jpeg"
+                      videoConstraints={{ facingMode }}
+                      onUserMediaError={handleCameraError}
+                      className={style.webcam_preview}
+                    />
 
-                {!capturedImage && (
-                  <div className={style.camera_modal__frame}>
-                    <div className={style.corner_tl} />
-                    <div className={style.corner_tr} />
-                    <div className={style.corner_bl} />
-                    <div className={style.corner_br} />
-                  </div>
+                    {/* Блюр-оверлей вокруг рамки */}
+                    <div className={style.camera_modal__blur_overlay}>
+                      <div className={style.blur_top} />
+                      <div className={style.blur_middle}>
+                        <div className={style.blur_left} />
+                        <div className={style.frame_cutout} ref={frameRef}>
+                          <div className={style.corner_tl} />
+                          <div className={style.corner_tr} />
+                          <div className={style.corner_bl} />
+                          <div className={style.corner_br} />
+                        </div>
+                        <div className={style.blur_right} />
+                      </div>
+                      <div className={style.blur_bottom} />
+                    </div>
+                  </>
                 )}
               </div>
 
