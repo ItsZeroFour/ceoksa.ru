@@ -173,8 +173,8 @@ $cutout: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewB
   position: absolute;
   inset: 0;
   background: rgba(40, 40, 40, 0.72);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   z-index: 1;
   pointer-events: none;
 
@@ -289,7 +289,7 @@ $c-size: 56px;
 $c-thick: 5px;
 $c-color: rgba(255, 255, 255, 0.92);
 $c-inner: 18px;  // inner curve radius (where bars meet)
-$c-tip: 3px;     // outer tip rounding
+$c-tip: 8px;     // tip rounding (must be > $c-thick so inner edge rounds too)
 
 .corner_tl,
 .corner_tr,
