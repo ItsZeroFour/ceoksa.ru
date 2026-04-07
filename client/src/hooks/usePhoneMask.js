@@ -45,9 +45,11 @@ export const usePhoneMask = ({
     // Потом устанавливаем значение — это триггернет accept
     if (initialValue) {
       // Убираем +7 из начала если есть, т.к. маска теперь без +7
-      let cleanValue = initialValue;
-      if (cleanValue.startsWith("+7 ")) cleanValue = cleanValue.slice(3);
-      else if (cleanValue.startsWith("+7")) cleanValue = cleanValue.slice(2);
+      let cleanValue = initialValue.replace(/\D/g, ""); // только цифры
+      // Убираем ведущую 7 (из +7 или просто 7) если длина 11
+      if (cleanValue.length === 11 && cleanValue.startsWith("7")) {
+        cleanValue = cleanValue.slice(1);
+      }
       maskRef.current.value = cleanValue;
       maskRef.current.updateValue();
     }
