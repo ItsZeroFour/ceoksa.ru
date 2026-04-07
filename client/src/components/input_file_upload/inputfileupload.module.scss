@@ -93,7 +93,7 @@
   }
 }
 
-/* ============ Camera Modal (MTS-style) ============ */
+/* ============ Camera Modal — MTS RIM exact replica ============ */
 
 .camera_modal_overlay {
   position: fixed;
@@ -112,41 +112,71 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: #1a1a1a;
+  background: #000;
   position: relative;
 }
 
+/* ---- Header ---- */
 .camera_modal__header {
-  text-align: center;
-  padding: 20px 16px 12px;
-  background: #1a1a1a;
+  background: #000;
+  padding: 14px 20px 8px;
+}
 
+.camera_modal__header_top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.camera_modal__header_spacer {
+  width: 32px;
+}
+
+.camera_modal__header {
   h3 {
     font-family: "Inter", sans-serif;
-    font-weight: 600;
-    font-size: 18px;
+    font-weight: 700;
+    font-size: 16px;
     color: #fff;
-    margin-bottom: 6px;
+    text-align: center;
+    flex: 1;
   }
 
   p {
-    font-size: 14px;
-    font-weight: 300;
-    color: rgba(255, 255, 255, 0.7);
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.55);
+    line-height: 1.35;
+    text-align: center;
   }
 }
 
+.camera_modal__close_btn {
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+}
+
+/* ---- Viewfinder ---- */
 .camera_modal__viewfinder {
   flex: 1;
   position: relative;
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   background: #000;
 }
 
 .webcam_preview {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -160,9 +190,11 @@
   background: #000;
 }
 
-/* ============ Blur overlay around document frame ============ */
+/* ---- Dark overlay (RIM: nearly opaque black around frame) ---- */
 
-.camera_modal__blur_overlay {
+$overlay-bg: rgba(0, 0, 0, 0.82);
+
+.camera_modal__dark_overlay {
   position: absolute;
   inset: 0;
   display: flex;
@@ -170,156 +202,109 @@
   pointer-events: none;
 }
 
-// Размытые зоны сверху и снизу
 .blur_top,
 .blur_bottom {
   flex: 1;
-  backdrop-filter: blur(6px);
-  background: rgba(0, 0, 0, 0.45);
+  background: $overlay-bg;
 }
 
-// Средняя полоса: blur-left | рамка | blur-right
 .blur_middle {
   display: flex;
-  // Высота определяется aspect-ratio рамки и шириной
-  // Рамка = 75% ширины, aspect-ratio 3:4, значит высота = width * 4/3
 }
 
 .blur_left,
 .blur_right {
   flex: 1;
-  backdrop-filter: blur(6px);
-  background: rgba(0, 0, 0, 0.45);
+  background: $overlay-bg;
 }
 
+/* ---- Frame cutout (clear window) ---- */
 .frame_cutout {
-  width: 75vw;
+  width: 84vw;
   aspect-ratio: 3 / 4;
   position: relative;
   flex-shrink: 0;
-  // Прозрачная зона — видео видно чётко
-  border-radius: 12px;
 
-  @media (max-width: 400px) {
-    width: 82vw;
+  @media (min-width: 420px) {
+    width: 80vw;
   }
 }
 
-/* Corner markers */
-$corner-size: 30px;
-$corner-width: 3px;
-$corner-color: #fff;
-$corner-radius: 12px;
+/* ---- Corners — RIM style: thick, large, very rounded ---- */
+$c-size: 36px;
+$c-thick: 4px;
+$c-color: rgba(255, 255, 255, 0.9);
+$c-radius: 18px;
 
 .corner_tl,
 .corner_tr,
 .corner_bl,
 .corner_br {
   position: absolute;
-  width: $corner-size;
-  height: $corner-size;
+  width: $c-size;
+  height: $c-size;
 }
 
 .corner_tl {
   top: 0;
   left: 0;
-  border-top: $corner-width solid $corner-color;
-  border-left: $corner-width solid $corner-color;
-  border-top-left-radius: $corner-radius;
+  border-top: $c-thick solid $c-color;
+  border-left: $c-thick solid $c-color;
+  border-top-left-radius: $c-radius;
 }
 
 .corner_tr {
   top: 0;
   right: 0;
-  border-top: $corner-width solid $corner-color;
-  border-right: $corner-width solid $corner-color;
-  border-top-right-radius: $corner-radius;
+  border-top: $c-thick solid $c-color;
+  border-right: $c-thick solid $c-color;
+  border-top-right-radius: $c-radius;
 }
 
 .corner_bl {
   bottom: 0;
   left: 0;
-  border-bottom: $corner-width solid $corner-color;
-  border-left: $corner-width solid $corner-color;
-  border-bottom-left-radius: $corner-radius;
+  border-bottom: $c-thick solid $c-color;
+  border-left: $c-thick solid $c-color;
+  border-bottom-left-radius: $c-radius;
 }
 
 .corner_br {
   bottom: 0;
   right: 0;
-  border-bottom: $corner-width solid $corner-color;
-  border-right: $corner-width solid $corner-color;
-  border-bottom-right-radius: $corner-radius;
+  border-bottom: $c-thick solid $c-color;
+  border-right: $c-thick solid $c-color;
+  border-bottom-right-radius: $c-radius;
 }
 
-/* Controls */
+/* ---- Bottom controls ---- */
 .camera_modal__controls {
   padding: 16px 20px;
-  padding-bottom: max(16px, env(safe-area-inset-bottom));
-  background: #1a1a1a;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  align-items: center;
+  padding-bottom: max(24px, env(safe-area-inset-bottom));
+  background: #000;
 }
 
 .camera_modal__capture_btn {
   width: 100%;
-  padding: 16px;
-  border-radius: 14px;
+  padding: 17px;
+  border-radius: 28px;
   background: var(--color-blue);
   color: #fff;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
   font-family: "Inter", sans-serif;
-  letter-spacing: 0.5px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
   border: none;
   cursor: pointer;
-  transition: opacity 0.2s ease;
 
-  &:hover {
+  &:active {
     opacity: 0.85;
   }
 }
 
-.camera_modal__bottom_row {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.camera_modal__cancel_btn {
-  background: none;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 15px;
-  font-weight: 400;
-  border: none;
-  cursor: pointer;
-  padding: 8px 0;
-}
-
-.camera_modal__rotate_btn {
-  background: rgba(255, 255, 255, 0.15);
-  border: none;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-
-  svg {
-    color: #fff;
-    width: 20px;
-    height: 20px;
-  }
-}
-
-/* Confirm / Retake */
+/* ---- Confirm / Retake ---- */
 .camera_modal__confirm_row {
-  width: 100%;
   display: flex;
   gap: 12px;
 }
@@ -327,10 +312,13 @@ $corner-radius: 12px;
 .camera_modal__retake_btn,
 .camera_modal__use_btn {
   flex: 1;
-  padding: 16px;
-  border-radius: 14px;
-  font-size: 15px;
-  font-weight: 500;
+  padding: 17px;
+  border-radius: 28px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: "Inter", sans-serif;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
   border: none;
   cursor: pointer;
 }

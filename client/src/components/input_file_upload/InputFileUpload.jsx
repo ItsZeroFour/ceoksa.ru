@@ -3,10 +3,8 @@ import Webcam from "react-webcam";
 import style from "./inputfileupload.module.scss";
 import { ReactComponent as Image } from "../../assets/icons/account/image.svg";
 import { ReactComponent as Photo } from "../../assets/icons/account/photo.svg";
-import { ReactComponent as Rotate } from "../../assets/icons/rotate.svg";
 import {
   overlayVariants,
-  modalTransition,
 } from "../../animations/camera-modal-аnimations";
 import { motion, AnimatePresence } from "framer-motion";
 import { useScreenWidth } from "../../hooks/useScreenWidth";
@@ -22,7 +20,6 @@ const InputFileUpload = ({
   const frameRef = useRef(null);
   const viewfinderRef = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [facingMode, setFacingMode] = useState("environment");
   const [capturedImage, setCapturedImage] = useState(null);
 
   const fileInputRef = useRef(null);
@@ -164,12 +161,6 @@ const InputFileUpload = ({
     setCapturedImage(null);
   };
 
-  const toggleCamera = () => {
-    setFacingMode((prevMode) =>
-      prevMode === "environment" ? "user" : "environment"
-    );
-  };
-
   const handleCameraError = (error) => {
     console.error("Ошибка камеры:", error);
     alert(
@@ -239,11 +230,23 @@ const InputFileUpload = ({
               className={style.camera_modal}
               onClick={(e) => e.stopPropagation()}
             >
+              {/* Header with close button */}
               <div className={style.camera_modal__header}>
-                <h3>Фото паспорта</h3>
-                <p>Соедините углы документа с уголками на экране</p>
+                <div className={style.camera_modal__header_top}>
+                  <div className={style.camera_modal__header_spacer} />
+                  <h3>Фото паспорта</h3>
+                  <button
+                    type="button"
+                    className={style.camera_modal__close_btn}
+                    onClick={closeCameraModal}
+                  >
+                    ✕
+                  </button>
+                </div>
+                <p>Соедините углы документа с уголками на{"\u00A0"}экране</p>
               </div>
 
+              {/* Camera viewfinder */}
               <div className={style.camera_modal__viewfinder} ref={viewfinderRef}>
                 {capturedImage ? (
                   <img
@@ -257,13 +260,12 @@ const InputFileUpload = ({
                       audio={false}
                       ref={webcamRef}
                       screenshotFormat="image/jpeg"
-                      videoConstraints={{ facingMode }}
+                      videoConstraints={{ facingMode: "environment" }}
                       onUserMediaError={handleCameraError}
                       className={style.webcam_preview}
                     />
 
-                    {/* Блюр-оверлей вокруг рамки */}
-                    <div className={style.camera_modal__blur_overlay}>
+                    <div className={style.camera_modal__dark_overlay}>
                       <div className={style.blur_top} />
                       <div className={style.blur_middle}>
                         <div className={style.blur_left} />
@@ -281,33 +283,16 @@ const InputFileUpload = ({
                 )}
               </div>
 
+              {/* Bottom controls */}
               <div className={style.camera_modal__controls}>
                 {!capturedImage ? (
-                  <>
-                    <button
-                      type="button"
-                      className={style.camera_modal__capture_btn}
-                      onClick={handleCapture}
-                    >
-                      СДЕЛАТЬ ФОТО
-                    </button>
-                    <div className={style.camera_modal__bottom_row}>
-                      <button
-                        type="button"
-                        className={style.camera_modal__cancel_btn}
-                        onClick={closeCameraModal}
-                      >
-                        Отмена
-                      </button>
-                      <button
-                        type="button"
-                        className={style.camera_modal__rotate_btn}
-                        onClick={toggleCamera}
-                      >
-                        <Rotate />
-                      </button>
-                    </div>
-                  </>
+                  <button
+                    type="button"
+                    className={style.camera_modal__capture_btn}
+                    onClick={handleCapture}
+                  >
+                    СДЕЛАТЬ ФОТО
+                  </button>
                 ) : (
                   <div className={style.camera_modal__confirm_row}>
                     <button
@@ -322,7 +307,7 @@ const InputFileUpload = ({
                       className={style.camera_modal__use_btn}
                       onClick={handleConfirm}
                     >
-                      Использовать фото
+                      Использовать
                     </button>
                   </div>
                 )}
