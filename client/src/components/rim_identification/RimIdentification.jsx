@@ -5,15 +5,25 @@ import style from "./rimidentification.module.scss";
 import {
   closeIframe,
   completeIdentification,
+  fetchIdentificationStatus,
 } from "../../redux/slices/rim/rimSlice";
+
+const POLL_INTERVAL = 5000; // Проверяем статус каждые 5 секунд
 
 const RimIdentification = () => {
   const dispatch = useDispatch();
   const iframeRef = useRef(null);
+  const completeCalled = useRef(false);
 
-  const { identificationUrl, isIframeOpen, isLoading, status } = useSelector(
+  const { identificationUrl, isIframeOpen, isLoading, status, identificationStatus } = useSelector(
     (state) => state.rim
   );
+
+  const tryComplete = useCallback(() => {
+    if (completeCalled.current) return;
+    completeCalled.current = true;
+    dispatch(completeIdentification());
+  }, [dispatch]);
 
   const handleMessage = useCallback(
     (event) => {
@@ -28,21 +38,47 @@ const RimIdentification = () => {
           event.data.context
         );
 
-        dispatch(completeIdentification());
+        tryComplete();
       }
     },
-    [dispatch]
+    [tryComplete]
   );
 
   useEffect(() => {
     if (isIframeOpen) {
       window.addEventListener("message", handleMessage);
+      completeCalled.current = false;
     }
 
     return () => {
       window.removeEventListener("message", handleMessage);
     };
   }, [isIframeOpen, handleMessage]);
+
+  // Поллинг статуса — пока iframe открыт, проверяем каждые 5 секунд,
+  // не завершилась ли верификация на стороне МТС (через callback)
+  useEffect(() => {
+    if (!isIframeOpen) return;
+
+    const interval = setInterval(() => {
+      dispatch(fetchIdentificationStatus());
+    }, POLL_INTERVAL);
+
+    return () => clearInterval(interval);
+  }, [isIframeOpen, dispatch]);
+
+  // Если поллинг обнаружил что МТС завершил — сразу вызываем complete
+  useEffect(() => {
+    if (
+      isIframeOpen &&
+      !completeCalled.current &&
+      (identificationStatus === "identificationSucceeded" ||
+        identificationStatus === "completed" ||
+        identificationStatus === "personDataCollected")
+    ) {
+      tryComplete();
+    }
+  }, [isIframeOpen, identificationStatus, tryComplete]);
 
   useEffect(() => {
     if (isIframeOpen) {
@@ -58,6 +94,9 @@ const RimIdentification = () => {
 
   const handleClose = () => {
     if (isLoading) return;
+    // При закрытии iframe — пытаемся завершить идентификацию
+    // (пользователь мог пройти верификацию, но postMessage не дошёл)
+    tryComplete();
     dispatch(closeIframe());
   };
 

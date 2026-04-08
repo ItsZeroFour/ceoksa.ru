@@ -5,6 +5,7 @@ import { ReactComponent as Shield } from "../../../../assets/icons/info.svg";
 import {
   startVerification,
   fetchCurrentIdentification,
+  completeIdentification,
   resetRim,
 } from "../../../../redux/slices/rim/rimSlice";
 import useIsMobile from "../../../../hooks/useIsMobile";
@@ -57,7 +58,19 @@ const Verification = () => {
   const isMobile = useIsMobile();
 
   useEffect(() => {
-    dispatch(fetchCurrentIdentification());
+    dispatch(fetchCurrentIdentification()).then((action) => {
+      // Если МТС завершил верификацию (callback пришёл), но данные ещё не подтянуты —
+      // сразу вызываем completeIdentification для загрузки паспортных данных
+      const serverStatus = action.payload?.status;
+      if (
+        action.payload?.hasIdentification &&
+        (serverStatus === "completed" ||
+          serverStatus === "personDataCollected") &&
+        serverStatus !== "identificationSucceeded"
+      ) {
+        dispatch(completeIdentification());
+      }
+    });
   }, [dispatch]);
 
   const handleStartVerification = () => {
