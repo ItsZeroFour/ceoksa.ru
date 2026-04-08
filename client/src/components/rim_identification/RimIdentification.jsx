@@ -94,9 +94,6 @@ const RimIdentification = () => {
 
   const handleClose = () => {
     if (isLoading) return;
-    // При закрытии iframe — пытаемся завершить идентификацию
-    // (пользователь мог пройти верификацию, но postMessage не дошёл)
-    tryComplete();
     dispatch(closeIframe());
   };
 
