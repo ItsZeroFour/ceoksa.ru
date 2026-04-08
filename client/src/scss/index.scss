@@ -473,12 +473,16 @@ button {
     width: 100%;
   }
 
+  @media (max-width: 980px) {
+    padding: 20px 18px;
+  }
+
   @media (max-width: 1024px) {
     font-size: 14px;
   }
 
   @media (max-width: 768px) {
-    padding: 15px;
+    padding: 15px 14px !important;
   }
 
   @media (max-width: 390px) {
