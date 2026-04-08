@@ -290,7 +290,9 @@ const InputFileUpload = ({
                     <div className={style.overlay__top}>
                       <h3 className={style.overlay__title}>Фото паспорта</h3>
                       <p className={style.overlay__subtitle}>
-                        Соедините углы документа с уголками на{"\u00A0"}экране
+                        Соедините углы документа с уголками на
+                        <br />
+                        экране
                       </p>
                     </div>
 
