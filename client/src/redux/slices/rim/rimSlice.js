@@ -106,6 +106,8 @@ const rimSlice = createSlice({
         state.isLoading = true;
         state.status = "starting";
         state.error = null;
+        state.identificationStatus = null;
+        state.isSucceeded = false;
       })
       .addCase(startVerification.fulfilled, (state, action) => {
         state.isLoading = false;

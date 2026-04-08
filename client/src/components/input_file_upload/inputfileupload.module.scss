@@ -180,12 +180,11 @@ $dim: rgba(40, 40, 40, 0.75);
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  // Высота — основа размера. Ширина вычисляется из aspect-ratio.
-  // При появлении нижнего меню браузера dvh уменьшается →
-  // рамка сжимается пропорционально и по высоте, и по ширине.
-  height: 55dvh;
-  width: auto;
-  max-width: calc(100vw - 48px);
+  // Ширина — основа размера. Высота вычисляется из aspect-ratio.
+  // Рамка заполняет почти всю ширину экрана (как у МТС).
+  width: calc(100vw - 16px);
+  height: auto;
+  max-height: 65dvh;
   aspect-ratio: 2.5 / 3;
   border-radius: $frame-radius;
   z-index: 2;
