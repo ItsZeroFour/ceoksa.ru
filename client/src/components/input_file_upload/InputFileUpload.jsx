@@ -303,7 +303,7 @@ const InputFileUpload = ({
                         className={style.overlay__capture_btn}
                         onClick={handleCapture}
                       >
-                        СДЕЛАТЬ ФОТО
+                        Сделать фото
                       </button>
                     </div>
                   </>

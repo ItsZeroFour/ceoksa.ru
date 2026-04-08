@@ -95,12 +95,16 @@
           padding: 0 20px;
 
           .auth__phone_prefix {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 400;
             color: var(--color-black);
             white-space: nowrap;
             margin-right: 4px;
-            // margin-bottom: 1px;
+            margin-bottom: 2px;
+
+            @media (max-width: 545px) {
+              margin-bottom: 0;
+            }
           }
 
           input {
