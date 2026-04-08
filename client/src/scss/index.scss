@@ -215,7 +215,7 @@ button {
     padding: 20px;
     background: var(--color-blue);
     color: var(--color-white);
-    border-radius: 15px;
+    border-radius: 60px;
     font-size: 17px;
   }
 
@@ -451,7 +451,7 @@ button {
 .credit__main__form__auth {
   width: 100%;
   padding: 20px;
-  border-radius: 16px;
+  border-radius: 60px;
 
   background: #d9d9d9;
   color: #b7b7b7;
@@ -497,11 +497,15 @@ button {
     margin-top: 6px;
     background: none;
     font-size: 17px;
-    font-weight: 500;
+    font-weight: 600;
     color: var(--color-black);
 
     @media (max-width: 1024px) {
       font-size: 16px;
+    }
+
+    &::placeholder {
+      font-weight: 500;
     }
   }
 }

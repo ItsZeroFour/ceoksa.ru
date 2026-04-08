@@ -48,12 +48,6 @@ export const recognizePassport = async (req, res) => {
 
     const iamToken = await getIamToken();
 
-    console.log(iamToken);
-
-    console.log(
-      `[recognizePassport] Отправляем паспорт на распознавание. userId: ${userId}`
-    );
-
     const ocrResponse = await axios.post(
       YANDEX_OCR_URL,
       {
@@ -91,10 +85,6 @@ export const recognizePassport = async (req, res) => {
       acc[entity.name] = entity.text;
       return acc;
     }, {});
-
-    console.log(
-      `[recognizePassport] Успешно распознано полей: ${entities.length}. userId: ${userId}`
-    );
 
     await User.findByIdAndUpdate(userId, {
       $set: {

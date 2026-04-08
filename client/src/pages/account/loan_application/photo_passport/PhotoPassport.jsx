@@ -12,6 +12,7 @@ import {
   clearError,
 } from "../../../../redux/slices/user/updateUserSlice";
 import useIsMobile from "../../../../hooks/useIsMobile";
+import axios from "../../../../utils/axios";
 
 const PhotoPassport = () => {
   const dispatch = useDispatch();
@@ -39,6 +40,9 @@ const PhotoPassport = () => {
     children_availability_page: "",
     previously_issued_passports_page: "",
   });
+
+  const [ocrLoading, setOcrLoading] = useState(false);
+  const [ocrError, setOcrError] = useState(null);
 
   const currentUploadKey = useRef(null);
   const isUploadingHere = useRef(false);
@@ -74,7 +78,8 @@ const PhotoPassport = () => {
       currentUploadKey.current &&
       isUploadingHere.current
     ) {
-      const dbKey = keyMapping[currentUploadKey.current];
+      const uploadedKey = currentUploadKey.current;
+      const dbKey = keyMapping[uploadedKey];
 
       const newPhotoPaths = {
         ...photoPaths,
@@ -93,6 +98,10 @@ const PhotoPassport = () => {
         })
       );
 
+      // if (uploadedKey === "firstSpread") {
+      //   triggerPassportOcr();
+      // }
+
       dispatch(resetUpload());
       currentUploadKey.current = null;
       isUploadingHere.current = false;
@@ -105,8 +114,25 @@ const PhotoPassport = () => {
     user.user.data?.photos,
   ]);
 
+  // const triggerPassportOcr = async () => {
+  //   try {
+  //     setOcrLoading(true);
+  //     setOcrError(null);
+
+  //     await axios.post(`/ocr/passport`);
+
+  //     window.location.reload();
+  //   } catch (error) {
+  //     console.error("[OCR] Ошибка распознавания паспорта:", error);
+  //     setOcrError(
+  //       error.response?.data?.message || "Ошибка распознавания паспорта"
+  //     );
+  //   } finally {
+  //     setOcrLoading(false);
+  //   }
+  // };
+
   const handleFileSelect = (key) => async (file) => {
-    // if (!isMobile) return;
     if (!file) return;
 
     if (!file.type.startsWith("image/")) return;
@@ -136,16 +162,16 @@ const PhotoPassport = () => {
   };
 
   const uploadFields = [
-    {
-      key: "firstSpread",
-      label: "Первый разворот паспорта",
-      id: "first-spread",
-    },
-    {
-      key: "registration",
-      label: "Страница со штампом регистрации",
-      id: "registration",
-    },
+    // {
+    //   key: "firstSpread",
+    //   label: "Первый разворот паспорта",
+    //   id: "first-spread",
+    // },
+    // {
+    //   key: "registration",
+    //   label: "Страница со штампом регистрации",
+    //   id: "registration",
+    // },
     {
       key: "maritalStatus",
       label: "Страница семейного положения",
@@ -164,15 +190,30 @@ const PhotoPassport = () => {
       <div className={style.photopassport__wrappe}>
         <h2>Страницы паспорта для рассмотрения заявки</h2>
         <p>
-          Для рассмотрения кредитной заявки необходимо загрузить документы,
-          удостоверяющие личность. Пожалуйста, прикрепите изображения в хорошем
-          качестве — все данные должны быть чётко читаемы.
+          Для рассмотрения кредитной заявки необходимо загрузить недостающие
+          фотографии страниц паспорта.
         </p>
+
+        {/* <ul className={style.photopassport__tips}>
+          <li>Обеспечьте хорошее и равномерное освещение.</li>
+          <li>Избегайте появления бликов и голограмм поверх текста или фотографии.</li>
+          <li>Избегайте наклона документа.</li>
+        </ul> */}
 
         {!isMobile && (
           <p className={style.photopassport__warning}>
             Загрузка фотографий доступна только с мобильного устройства.
           </p>
+        )}
+
+        {ocrLoading && (
+          <p className={style.photopassport__ocr_loading}>
+            Распознавание паспорта...
+          </p>
+        )}
+
+        {ocrError && (
+          <p className={style.photopassport__ocr_error}>{ocrError}</p>
         )}
 
         <ul>
@@ -183,9 +224,7 @@ const PhotoPassport = () => {
                 onFileSelect={handleFileSelect(key)}
                 id={id}
                 fileName={getFileName(key)}
-                // disabled={
-                //   !isMobile || (uploading && currentUploadKey.current === key)
-                // }
+                disabled={!isMobile}
               />
             </li>
           ))}

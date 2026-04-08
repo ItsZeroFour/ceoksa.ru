@@ -3,7 +3,14 @@ import style from "./policy.module.scss";
 
 const Policy = () => {
   useEffect(() => {
-    window.scrollTo(0, 0);
+    if (window.location.hash === "#cookies") {
+      const el = document.getElementById("cookies");
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+      }
+    } else {
+      window.scrollTo(0, 0);
+    }
   }, []);
 
   return (
@@ -860,7 +867,7 @@ const Policy = () => {
             </ul>
           </section>
 
-          <section>
+          <section id="cookies">
             <h2>12. Файлы куки</h2>
             <p>
               12.1. При первом посещении веб-сайта (приложения), или входе на

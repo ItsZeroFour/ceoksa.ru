@@ -12,6 +12,7 @@ import {
   updateUser,
   clearError,
 } from "../../../../redux/slices/user/updateUserSlice";
+import CustomSelect from "../../../../components/CustomSelect/CustomSelect";
 
 const Passport = () => {
   const dispatch = useDispatch();
@@ -25,6 +26,7 @@ const Passport = () => {
     issued_by: "",
     birth: "",
     place_of_birth: "",
+    gender: "",
   });
 
   const [formData, setFormData] = useState(formDataRef.current);
@@ -79,6 +81,7 @@ const Passport = () => {
         issued_by: user.user.data.passport.issued_by || "",
         birth: user.user.data.passport.birth || "",
         place_of_birth: user.user.data.passport.place_of_birth || "",
+        gender: user.user.data.passport.gender || "",
       };
       formDataRef.current = data;
       setFormData(data);
@@ -114,7 +117,6 @@ const Passport = () => {
         return "";
       case "gender":
         if (!value) return "Поле обязательно";
-        if (value.trim().length < 5) return "Укажите ваш пол";
         return "";
       case "birth":
         return validateDate(value);
@@ -144,6 +146,25 @@ const Passport = () => {
 
   const handleChange = (e) => {
     handleFieldChange(e.target.name, e.target.value);
+  };
+
+  const formatCapitalize = (str) =>
+    str ? str.replace(/\b\w/g, (c) => c.toUpperCase()) : "";
+
+  const formatGender = (val) => {
+    if (!val) return "";
+    const v = val.trim().toLowerCase();
+    if (v === "муж" || v === "м" || v === "male") return "Мужской";
+    if (v === "жен" || v === "ж" || v === "female") return "Женский";
+    return formatCapitalize(val);
+  };
+
+  const formatCity = (val) => {
+    if (!val) return "";
+    return val
+      .replace(/^гор\.\s*/i, "г. ")
+      .replace(/^город\s*/i, "г. ")
+      .replace(/\b\w/g, (c) => c.toUpperCase());
   };
 
   return (
@@ -224,7 +245,7 @@ const Passport = () => {
                   id="issued-by"
                   type="text"
                   name="issued_by"
-                  value={formData.issued_by}
+                  value={formatCapitalize(formData.issued_by)}
                   icon={PassportIcon}
                   onChange={handleChange}
                   readOnly={true}
@@ -237,14 +258,40 @@ const Passport = () => {
           </div>
 
           <div>
-            <li className={errors.gender ? style.li_error : ""}>
+            {/* <li className={errors.gender ? style.li_error : ""}>
+              <div className={style.passport__item__text}>
+                <CustomSelect
+                  icon={PassportIcon}
+                  label="Пол"
+                  placeholder="Выберите пол"
+                  defaultValue={
+                    formData.gender
+                      ? {
+                          value: formData.gender,
+                          title: formatGender(formData.gender),
+                        }
+                      : null
+                  }
+                  options={[
+                    { value: "Мужской", title: "Мужской" },
+                    { value: "Женский", title: "Женский" },
+                  ]}
+                  onChange={(option) =>
+                    handleFieldChange("gender", option.value)
+                  }
+                  showLabel={false}
+                />
+              </div>
+            </li> */}
+
+            <li className={errors.issued_by ? style.li_error : ""}>
               <div className={style.passport__item__text}>
                 <InputField
                   label="Пол"
                   placeholder="Пол"
-                  id="gender"
+                  id="issued-by"
                   type="text"
-                  name="gender"
+                  name="issued_by"
                   value={formData.gender}
                   icon={PassportIcon}
                   onChange={handleChange}
@@ -289,7 +336,7 @@ const Passport = () => {
                   id="birth-place"
                   type="text"
                   name="place_of_birth"
-                  value={formData.place_of_birth}
+                  value={formatCity(formData.place_of_birth)}
                   icon={Town}
                   onChange={handleChange}
                   readOnly={true}

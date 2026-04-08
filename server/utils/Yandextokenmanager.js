@@ -23,10 +23,6 @@ const fetchNewToken = async () => {
   cachedToken = iamToken;
   tokenExpiresAt = new Date(expiresAt);
 
-  console.log(
-    `[YandexTokenManager] IAM-токен обновлён. Действителен до: ${tokenExpiresAt.toISOString()}`
-  );
-
   return iamToken;
 };
 
@@ -45,10 +41,6 @@ export const startTokenAutoRefresh = async () => {
   }, REFRESH_INTERVAL_MS);
 
   refreshTimer.unref();
-
-  console.log(
-    "[YandexTokenManager] Автообновление IAM-токена запущено (каждый час)"
-  );
 };
 
 export const getIamToken = async () => {
@@ -69,6 +61,5 @@ export const stopTokenAutoRefresh = () => {
   if (refreshTimer) {
     clearInterval(refreshTimer);
     refreshTimer = null;
-    console.log("[YandexTokenManager] Автообновление остановлено");
   }
 };

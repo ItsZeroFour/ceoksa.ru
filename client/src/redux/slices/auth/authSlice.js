@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { updateUser } from "../user/updateUserSlice";
 
 const API = process.env.REACT_APP_SERVERF_API;
 
@@ -47,6 +48,14 @@ const authSlice = createSlice({
         state.user = null;
         state.isAuth = false;
         state.status = "failed";
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        if (state.user?.data && action.payload) {
+          state.user.data = {
+            ...state.user.data,
+            ...action.payload,
+          };
+        }
       });
   },
 });

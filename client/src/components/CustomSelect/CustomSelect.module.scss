@@ -1,6 +1,11 @@
 .select {
   position: relative;
   width: 100%;
+  padding: 0 10px;
+
+  @media (max-width: 520px) {
+    padding: 0;
+  }
 }
 
 .select__head {
@@ -25,6 +30,16 @@
     color: var(--color-blue-secondary);
     width: 22px;
     height: 22px;
+
+    @media (max-width: 520px) {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  @media (max-width: 520px) {
+    width: 44px;
+    height: 44px;
   }
 }
 
@@ -34,6 +49,11 @@
   gap: 3px;
   padding: 16px;
   flex: 1;
+
+  @media (max-width: 520px) {
+    padding: 0;
+    padding-left: 10px;
+  }
 }
 
 .select__label {
@@ -41,19 +61,31 @@
   opacity: 0.6;
   font-weight: 300;
   font-family: "Inter", sans-serif;
+
+  @media (max-width: 520px) {
+    font-size: 11px;
+  }
 }
 
 .select__placeholder {
   font-size: 16px;
-  font-weight: 400;
-  opacity: 0.4;
+  font-weight: 500;
+  opacity: 0.6;
   color: var(--color-text-primary);
+
+  @media (max-width: 520px) {
+    font-size: 13px;
+  }
 }
 
 .select__value {
   font-size: 16px;
   font-weight: 500;
   color: var(--color-text-primary);
+
+  @media (max-width: 520px) {
+    font-size: 16px;
+  }
 }
 
 .select__angle {
@@ -76,10 +108,13 @@
   background: var(--color-block-bg);
   border-radius: 14px;
   border: 1px solid var(--color-border-address);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
   z-index: 10;
   overflow: hidden;
   animation: fadeIn 0.15s ease;
+
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 .select__option {
@@ -90,6 +125,8 @@
   transition: background 0.15s;
   color: var(--color-text-primary);
 
+  width: 100%;
+
   &:not(:last-child) {
     border-bottom: 1px solid var(--color-border-address);
   }
@@ -99,7 +136,7 @@
   }
 
   &_active {
-    font-weight: 600;
+    font-weight: 400;
     color: var(--color-blue-secondary);
   }
 }

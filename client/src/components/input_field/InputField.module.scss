@@ -38,6 +38,10 @@
         font-size: 13px;
       }
     }
+
+    @media (max-width: 520px) {
+      margin-top: 0;
+    }
   }
 
   label {
@@ -102,6 +106,19 @@
   @media (max-width: 520px) {
     width: 44px;
     height: 44px;
+  }
+}
+
+.inputfield__prefix {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color-black);
+  white-space: nowrap;
+  margin-top: 5px;
+  margin-right: 2px;
+
+  @media (max-width: 520px) {
+    margin-top: 0;
   }
 }
 

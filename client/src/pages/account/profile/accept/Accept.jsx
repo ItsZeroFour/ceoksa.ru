@@ -1,72 +1,34 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import style from "./accept.module.scss";
 import { Link } from "react-router-dom";
 import { ReactComponent as File } from "../../../../assets/icons/profile/file.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchFiles } from "../../../../redux/slices/strapi/FilesSlide";
 import axios from "../../../../utils/axios";
+import { generateConsentPdf } from "../../../../utils/Generateconsentpdf";
+import DeleteAccount from "../../../../components/delete_account/DeleteAccount";
 
-// const files = [
-//   {
-//     path: "/soglasie-na-obrabotku-personalnyh-dannyh",
-//     text: "Согласие на обработку персональных данных",
-//   },
+const hasPassportData = (user) => {
+  const p = user?.passport;
+  if (!p) return false;
 
-//   {
-//     path: "/soglasie-na-poluchenie-reklamy",
-//     text: "Согласие на получение рекламы",
-//   },
+  return Boolean(
+    p.series_number &&
+      p.issued_by &&
+      p.date &&
+      user.fullName &&
+      p.birth &&
+      p.department_code &&
+      p.gender &&
+      p.place_of_birth
+  );
+};
 
-//   {
-//     path: "/",
-//     text: "Политика конфиденциальности",
-//   },
-
-//   {
-//     path: "/",
-//     text: "Правила ЭДО",
-//   },
-
-//   {
-//     path: "/",
-//     text: "Заявление на присоединение к правилам платформы",
-//   },
-
-//   {
-//     path: "/",
-//     text: "Правила финансовой платформы АО “Название платформы”",
-//   },
-
-//   {
-//     path: "/",
-//     text: "Согласие на обработку ПД Финансовыми организациями-партнерами",
-//   },
-
-//   {
-//     path: "/",
-//     text: "Согласие на получение информации из БКИ Финансовыми организациями и Финансовыми организациями-партнерами",
-//   },
-
-//   {
-//     path: "/",
-//     text: "Согласие на обработку ПД Финансовыми организациями",
-//   },
-
-//   {
-//     path: "/",
-//     text: "Согласие на получение информации из БКИ для Оператора финансовой платформы",
-//   },
-
-//   {
-//     path: "/",
-//     text: "Согласие на обработку ПД Оператором финансовой платформы",
-//   },
-// ];
-
-const Accept = () => {
+const Accept = ({ user }) => {
   const dispatch = useDispatch();
-
   const { data, status, error } = useSelector((state) => state.files);
+
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     dispatch(fetchFiles("fajly?populate=*"));
@@ -75,15 +37,34 @@ const Accept = () => {
   const deleteUser = async () => {
     try {
       const response = await axios.delete("/user/delete");
-
-      console.log(response);
-
       if (response.status === 200) {
-        return window.location.reload();
+        return setShowModal(true);
       }
     } catch (err) {
       console.log(err);
     }
+  };
+
+  const handleConsentPdf = async () => {
+    try {
+      const base64 = await generateConsentPdf(user);
+
+      await axios.post("/user/save-consent-pdf", {
+        pdfBase64: base64,
+        filename: `consent_${Date.now()}.pdf`,
+      });
+    } catch (err) {
+      console.error("Ошибка сохранения:", err);
+    }
+  };
+
+  const base64ToBlob = (base64, type) => {
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    return new Blob([bytes], { type });
   };
 
   return (
@@ -93,7 +74,6 @@ const Accept = () => {
           <h2>Согласия</h2>
 
           <ul>
-            {/* {files.map(({ path, text }) => ( */}
             <li>
               <Link
                 to={`${process.env.REACT_APP_ADMIN_IMAGES}${data.consent_to_the_processing_of_personal_data.url}`}
@@ -102,7 +82,6 @@ const Accept = () => {
                 <div className={style.accept__item__icon}>
                   <File />
                 </div>
-
                 <p>Согласие на обработку персональных данных</p>
               </Link>
             </li>
@@ -115,7 +94,6 @@ const Accept = () => {
                 <div className={style.accept__item__icon}>
                   <File />
                 </div>
-
                 <p>Согласие на получение рекламной информации</p>
               </Link>
             </li>
@@ -128,7 +106,6 @@ const Accept = () => {
                 <div className={style.accept__item__icon}>
                   <File />
                 </div>
-
                 <p>Согласие на просмотр кредитного отчета</p>
               </Link>
             </li>
@@ -141,7 +118,6 @@ const Accept = () => {
                 <div className={style.accept__item__icon}>
                   <File />
                 </div>
-
                 <p>Условия передачи информации</p>
               </Link>
             </li>
@@ -154,7 +130,6 @@ const Accept = () => {
                 <div className={style.accept__item__icon}>
                   <File />
                 </div>
-
                 <p>Соглашение об использовании простой электронной подписи</p>
               </Link>
             </li>
@@ -167,18 +142,35 @@ const Accept = () => {
                 <div className={style.accept__item__icon}>
                   <File />
                 </div>
-
                 <p>
                   Согласие на обработку персональных данных операторами связи
                 </p>
               </Link>
             </li>
-            {/* ))} */}
+
+            {hasPassportData(user) && (
+              <li>
+                <button
+                  type="button"
+                  className={style.accept__file_button}
+                  onClick={handleConsentPdf}
+                >
+                  <div className={style.accept__item__icon}>
+                    <File />
+                  </div>
+                  <p>
+                    Согласие на обработку персональных данных оператором и
+                    партнерами оператора
+                  </p>
+                </button>
+              </li>
+            )}
           </ul>
         </div>
       )}
 
       <button onClick={deleteUser}>Удалить профиль и данные</button>
+      {showModal && <DeleteAccount />}
     </div>
   );
 };

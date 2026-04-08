@@ -157,8 +157,8 @@
   gap: 20px;
 
   .header__menu {
-    width: 20px;
-    height: 8px;
+    width: 40px;
+    height: 18px;
     position: relative;
     background: none;
 
@@ -167,24 +167,24 @@
     &::before {
       content: "";
       position: absolute;
-      width: 60%;
+      width: 40%;
       height: 2px;
       background: var(--color-text-button);
       border-radius: 3px;
-      top: 0;
+      top: 30%;
       left: 0;
     }
 
     &::after {
       content: "";
       position: absolute;
-      width: 100%;
+      width: 70%;
       height: 2px;
       border-radius: 3px;
       background: var(--color-text-button);
       border-radius: 3px;
 
-      top: 100%;
+      top: 80%;
       left: 0;
     }
 
@@ -229,6 +229,8 @@
       align-items: center;
       border-radius: 50%;
 
+      text-transform: uppercase;
+
       @media (max-width: 525px) {
         width: 36px;
         height: 36px;
@@ -256,6 +258,21 @@
 
     @media (max-width: 768px) {
       display: none;
+    }
+  }
+}
+
+.header__profile__avatar {
+  img {
+    width: 42px;
+    height: 42px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid var(--color-avatar);
+
+    @media (max-width: 525px) {
+      width: 36px;
+      height: 36px;
     }
   }
 }

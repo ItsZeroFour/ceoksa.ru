@@ -16,8 +16,6 @@ import { useSelector } from "react-redux";
 const Top = ({ user }) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  console.log(user);
-
   const handleRefresh = () => {
     setIsRefreshing(true);
 
@@ -53,6 +51,25 @@ const Top = ({ user }) => {
     return names[0][0];
   };
 
+  const formatFullName = (str) =>
+    str
+      ? str
+          .split(" ")
+          .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+          .join(" ")
+      : "";
+
+  const formatCapitalize = (str) =>
+    str ? str.replace(/\b\w/g, (c) => c.toUpperCase()) : "";
+
+  const formatGender = (val) => {
+    if (!val) return "";
+    const v = val.trim().toLowerCase();
+    if (v === "муж" || v === "м" || v === "male") return "Мужской";
+    if (v === "жен" || v === "ж" || v === "female") return "Женский";
+    return formatCapitalize(val);
+  };
+
   return (
     <div className={style.top}>
       <div className={style.top__wrapper}>
@@ -64,9 +81,9 @@ const Top = ({ user }) => {
               <div className={style.top__main__name}>
                 <div className={style.top__main__name__avatar}>
                   <div className={style.top__main__name__avatar__img}>
-                    {user.profilePhoto ? (
+                    {user?.profilePhoto ? (
                       <img
-                        src={`${process.env.REACT_APP_SERVERF_API}${user.profilePhoto}`}
+                        src={`${process.env.REACT_APP_SERVERF_API}${user?.profilePhoto}`}
                         alt="Фото профиля"
                       />
                     ) : (
@@ -80,7 +97,9 @@ const Top = ({ user }) => {
                 </div>
 
                 <div className={style.top__main__name__main}>
-                  <p>{user?.fullName || "Фамилия Имя Отчество"}</p>
+                  <p>
+                    {formatFullName(user?.fullName || "Фамилия Имя Отчество")}
+                  </p>
 
                   {/* <div className={style.top__main__name__main__data}> */}
                   {/* <div className={style.top__main__name__main__data__text}>
@@ -120,7 +139,7 @@ const Top = ({ user }) => {
                     <p>Номер телефона</p>
                     <p>
                       +
-                      {user.phone.replace(
+                      {user?.phone.replace(
                         /^7(\d{3})(\d{3})(\d{2})(\d{2})$/,
                         "7 ($1) $2-$3-$4"
                       )}
@@ -149,7 +168,7 @@ const Top = ({ user }) => {
                       {...getFieldProps("mail")}
                       readOnly={true}
                     /> */}
-                    <p>{user.email || "example@mail.ru"}</p>
+                    <p>{user?.email || "example@mail.ru"}</p>
                     {/* <Edit /> */}
                     {hasError("mail") && (
                       <span className={style.error_text}>{errors.mail}</span>
@@ -175,7 +194,7 @@ const Top = ({ user }) => {
 
                   <div className={style.top__item__text}>
                     <p>Пол</p>
-                    <p>Женский</p>
+                    <p>{formatGender(user?.passport?.gender || "")}</p>
                   </div>
                 </li>
               </ul>

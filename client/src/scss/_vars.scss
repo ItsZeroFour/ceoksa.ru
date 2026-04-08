@@ -69,6 +69,11 @@
   --color-input-border: #e2e2e2;
   --color-cookies: #051225;
   --color-requisites-input: #f6f7f8;
+
+  --color-checkbox: #e3f4fa;
+  --color-checkbox-thumb: #22c0ff;
+
+  --color-avatar: rgb(34, 192, 255, 0.4);
 }
 
 [data-theme="dark"] {
@@ -133,4 +138,8 @@
   --color-input-border: #3e3f43;
   --color-cookies: #fff;
   --color-requisites-input: #292a2d;
+  --color-checkbox: #3e3f43;
+  --color-checkbox-thumb: #242528;
+
+  --color-avatar: rgba(255, 255, 255, 0.6);
 }

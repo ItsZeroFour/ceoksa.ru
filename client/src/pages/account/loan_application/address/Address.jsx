@@ -16,6 +16,9 @@ import {
 const Address = ({ setIsChecked, isChecked }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth);
+  const manualRealAddress = useSelector(
+    (state) => state.auth.user?.data?.manual_real_address
+  );
   const initialized = useRef(false);
 
   const formDataRef = useRef({
@@ -107,7 +110,30 @@ const Address = ({ setIsChecked, isChecked }) => {
     const newCheckedState = !isChecked;
     setIsChecked(newCheckedState);
     dispatch(clearError());
-    dispatch(updateUser({ address_doesnt_match: !newCheckedState }));
+
+    if (newCheckedState) {
+      // Адреса совпадают — записываем адрес регистрации как фактический
+      dispatch(
+        updateUser({
+          address_doesnt_match: false,
+          real_address: {
+            street: formDataRef.current.street,
+            apartment: formDataRef.current.apartment,
+          },
+        })
+      );
+    } else {
+      // Адреса не совпадают — восстанавливаем ручной ввод
+      dispatch(
+        updateUser({
+          address_doesnt_match: true,
+          real_address: {
+            street: manualRealAddress?.street || "",
+            apartment: manualRealAddress?.apartment || "",
+          },
+        })
+      );
+    }
   };
 
   return (
@@ -125,13 +151,14 @@ const Address = ({ setIsChecked, isChecked }) => {
               >
                 <InputField
                   label="Населённый пункт, улица, дом"
-                  placeholder="Например: г. Москва, ул. Ленина, д. 10, кв. 12"
+                  placeholder="Нас. пункт, улица, дом, кв."
                   id="street-address"
                   type="text"
                   name="street"
                   value={formData.street}
                   icon={Location}
                   onChange={handleChange}
+                  readOnly={true}
                 />
               </div>
               {errors.street && (

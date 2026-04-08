@@ -20,8 +20,6 @@ const AdditionalTelephone = ({ userData }) => {
     (state) => state.auth.user?.data?.additional_telephone
   );
 
-  console.log(userData.phone);
-
   const formDataRef = useRef({
     phone: "",
     name: "",
@@ -101,10 +99,7 @@ const AdditionalTelephone = ({ userData }) => {
   });
 
   const screenWidth = useScreenWidth();
-  const placeholder =
-    screenWidth < 780
-      ? "Укажите номер телефона"
-      : "Необходимо указать номер телефона";
+  const placeholder = screenWidth < 780 ? "Номер телефона" : "Номер телефона";
 
   return (
     <section className={style.additional_telephone}>
@@ -117,10 +112,12 @@ const AdditionalTelephone = ({ userData }) => {
               <InputField
                 icon={Phone}
                 label="Номер дополнительного телефона"
-                placeholder={placeholder}
+                placeholder="(9XX) XXX-XX-XX"
                 id="phone"
                 type="tel"
                 ref={phoneInputRef}
+                inputMode="numeric"
+                prefix="+7"
               />
             </li>
             {errors.phone && (
@@ -131,8 +128,8 @@ const AdditionalTelephone = ({ userData }) => {
           <li>
             <CustomSelect
               icon={Person}
-              label="Владелец телефона"
-              placeholder="Выберите из списка"
+              label=""
+              placeholder="Владелец телефона"
               defaultValue={
                 additionalTelephone?.owner
                   ? {
@@ -154,7 +151,7 @@ const AdditionalTelephone = ({ userData }) => {
               <InputField
                 icon={Mail}
                 label="ФИО владельца телефона"
-                placeholder="Необходимо указать ФИО"
+                placeholder="ФИО"
                 id="name"
                 type="text"
                 name="name"

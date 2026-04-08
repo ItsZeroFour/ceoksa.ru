@@ -14,14 +14,14 @@ export const usePhoneInput = () => {
     }
 
     const mask = IMask(node, {
-      mask: "+{7} (000) 000-00-00",
+      mask: "(000) 000-00-00",
       lazy: true,
     });
 
     const handleChange = () => {
-      const isValid = mask.unmaskedValue.length === 11;
+      const isValid = mask.unmaskedValue.length === 10;
       setIsComplete(isValid);
-      setPhone(mask._value);
+      setPhone("+7 " + mask._value);
     };
 
     mask.on("accept", handleChange);
@@ -30,7 +30,7 @@ export const usePhoneInput = () => {
     maskRef.current = mask;
   }, []);
 
-  const getCleanPhone = () => phone.replace(/\D/g, "");
+  const getCleanPhone = () => ("7" + (maskRef.current?.unmaskedValue || ""));
 
   const reset = useCallback(() => {
     setPhone("");

@@ -13,6 +13,7 @@ import mobileAuthReducer from "./slices/auth/mobileAuthSlice";
 import authReducer from "./slices/auth/authSlice";
 import userReducer from "./slices/user/updateUserSlice";
 import uploadReducer from "./slices/user/uploadSlice";
+import rimReducer from "./slices/rim/rimSlice";
 
 export const store = configureStore({
   reducer: {
@@ -30,5 +31,6 @@ export const store = configureStore({
     auth: authReducer,
     updateUser: userReducer,
     upload: uploadReducer,
+    rim: rimReducer,
   },
 });

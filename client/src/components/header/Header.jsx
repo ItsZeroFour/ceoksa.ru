@@ -59,9 +59,18 @@ const Header = ({
                 to="/account/loan_applications"
                 className={style.header__profile}
               >
-                <div className={style.header__profile__name__avatar}>
-                  <p>{getInitials()}</p>
-                </div>
+                {userData.profilePhoto ? (
+                  <div className={style.header__profile__avatar}>
+                    <img
+                      src={`${process.env.REACT_APP_SERVERF_API}${userData.profilePhoto}`}
+                      alt="Фото профиля"
+                    />
+                  </div>
+                ) : (
+                  <div className={style.header__profile__name__avatar}>
+                    <p>{getInitials()}</p>
+                  </div>
+                )}
 
                 {/* <div className={style.header__profile__name}>
                   <h3>

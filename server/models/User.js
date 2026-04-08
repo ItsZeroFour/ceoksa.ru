@@ -9,7 +9,6 @@ const UserSchema = new mongoose.Schema(
       index: true,
     },
 
-    // MTS
     mts_sub: {
       type: String,
       unique: true,
@@ -30,6 +29,7 @@ const UserSchema = new mongoose.Schema(
     total_debt: Number,
     income: Number,
     profilePhoto: String,
+    inn: String,
 
     address_doesnt_match: {
       type: Boolean,
@@ -72,6 +72,11 @@ const UserSchema = new mongoose.Schema(
       apartment: String,
     },
 
+    manual_real_address: {
+      street: String,
+      apartment: String,
+    },
+
     photos: {
       first_page_of_the_passport: String,
       marital_status_page: String,
@@ -84,10 +89,35 @@ const UserSchema = new mongoose.Schema(
     additional_telephone: {
       name: String,
       phone: String,
-      owner: {
-        type: String,
-        default: "Номер родственника",
+      owner: String,
+    },
+
+    additional_data: {
+      education: String,
+      marital_status: String,
+      children: String,
+      has_property: {
+        type: Boolean,
+        default: false,
       },
+      has_car: {
+        type: Boolean,
+        default: false,
+      },
+      car_number: String,
+    },
+
+    place_of_work: {
+      employment_type: String,
+      organization_name: String,
+      start_date: String,
+      work_phone: String,
+      position: String,
+    },
+
+    consentPdfPath: {
+      type: String,
+      default: null,
     },
 
     loans: {
@@ -113,6 +143,33 @@ const UserSchema = new mongoose.Schema(
       salary: {
         type: Number,
       },
+    },
+
+    // === MTS RIM (ID KYC) ===
+    rim: {
+      applicantExternalId: String,
+      lastRequestGuid: String,
+      identificationUrl: String,
+      identificationStatus: {
+        type: String,
+        default: null,
+      },
+
+      startedAt: String,
+      completedAt: String,
+      callbackReceivedAt: String,
+      selfiePhotoKey: String,
+      passportPhotoKey: String,
+      registrationPhotoKey: String,
+      inn: String,
+      isVerified: Boolean,
+      rfmFound: Boolean,
+      behaviourScoring: mongoose.Schema.Types.Mixed,
+      consents: {
+        isAgreedToProcessPdn: Boolean,
+        isConfirmedIsNotPdl: Boolean,
+      },
+      rawResult: mongoose.Schema.Types.Mixed,
     },
   },
   {

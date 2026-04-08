@@ -48,11 +48,16 @@
   svg {
     color: var(--color-blue-secondary);
   }
+
+  @media (max-width: 520px) {
+    width: 44px;
+    height: 44px;
+  }
 }
 
 .real_address__main {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   background: var(--color-block-bg);
   padding: 20px;
   border-radius: 14px;
@@ -67,14 +72,23 @@
     @media (max-width: 780px) {
       flex-direction: column;
     }
+
+    @media (max-width: 480px) {
+      gap: 10px;
+      margin-left: 0;
+    }
   }
 
   @media (max-width: 480px) {
-    padding: 14px;
+    padding: 10px;
   }
 
   &.error {
     border: 1px solid var(--color-red);
+  }
+
+  @media (max-width: 520px) {
+    padding: 10px;
   }
 }
 
@@ -101,14 +115,23 @@
   flex-direction: column;
   position: relative;
   padding: 5px 10px;
+  padding-left: 0;
   border-radius: 14px;
   border: 1px solid var(--color-border-address);
   transition: border-color 0.2s;
 
   svg {
     position: absolute;
-    top: 50%;
-    left: 95%;
+    top: 30%;
+    left: 98%;
+
+    @media (max-width: 780px) {
+      left: 95%;
+    }
+
+    @media (max-width: 450px) {
+      left: 92%;
+    }
   }
 
   input {
@@ -131,6 +154,11 @@
         font-size: 13px;
       }
     }
+
+    @media (max-width: 520px) {
+      margin-top: 0px;
+      margin-left: 10px;
+    }
   }
 
   label {
@@ -141,5 +169,9 @@
 
   &.error {
     border-color: var(--color-red);
+  }
+
+  @media (max-width: 520px) {
+    padding-left: 0;
   }
 }

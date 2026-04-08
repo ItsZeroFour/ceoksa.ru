@@ -86,6 +86,33 @@
           font-size: 14px;
         }
 
+        .auth__phone_wrapper {
+          display: flex;
+          align-items: center;
+          background: var(--color-block-bg);
+          border: 1px solid var(--color-input-border);
+          border-radius: 15px;
+          padding: 0 20px;
+
+          .auth__phone_prefix {
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--color-black);
+            white-space: nowrap;
+            margin-right: 4px;
+            margin-bottom: 3px;
+          }
+
+          input {
+            padding: 20px 0;
+            background: transparent;
+            border: none;
+            color: var(--color-black);
+            flex: 1;
+            outline: none;
+          }
+        }
+
         input {
           padding: 20px;
           border-radius: 15px;
