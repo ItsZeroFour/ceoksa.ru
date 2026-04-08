@@ -123,13 +123,13 @@ const Address = ({ setIsChecked, isChecked }) => {
         })
       );
     } else {
-      // Адреса не совпадают — восстанавливаем ручной ввод
+      // Адреса не совпадают — оставляем текущий адрес регистрации как фактический
       dispatch(
         updateUser({
           address_doesnt_match: true,
           real_address: {
-            street: manualRealAddress?.street || "",
-            apartment: manualRealAddress?.apartment || "",
+            street: formDataRef.current.street,
+            apartment: formDataRef.current.apartment,
           },
         })
       );

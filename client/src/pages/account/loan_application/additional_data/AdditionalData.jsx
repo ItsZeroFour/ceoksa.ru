@@ -197,7 +197,7 @@ const AdditionalData = () => {
                   <InputField
                     icon={Car}
                     label="Гос. номер автомобиля"
-                    placeholder="Необходимо указать"
+                    placeholder="Гос.номер"
                     id="car_number"
                     type="text"
                     name="car_number"
