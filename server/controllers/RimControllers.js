@@ -266,6 +266,157 @@ export const getIdentificationStatus = async (req, res) => {
   }
 };
 
+// Вспомогательная функция — подтягивает персональные данные из RIM API и сохраняет в БД.
+// Используется как из completeIdentification (фронтенд), так и из handleRimCallback (сервер).
+const pullRimPersonalData = async (user) => {
+  const { applicantExternalId, lastRequestGuid } = user.rim;
+
+  const response = await rimRequest(
+    "GET",
+    `/applicants/${applicantExternalId}/identifications/${lastRequestGuid}`
+  );
+
+  const data = response.data;
+  const identification = data.identification || {};
+  const workflowData = data.workflowData || {};
+  const personalData = workflowData.personalData || {};
+  const optionalChecks = workflowData.optionalChecks || {};
+
+  const status = identification.status;
+
+  const updateFields = {
+    "rim.identificationStatus": status,
+    "rim.completedAt": new Date().toISOString(),
+    "rim.rawResult": data,
+  };
+
+  if (
+    status === "identificationSucceeded" ||
+    status === "personDataCollected"
+  ) {
+    const doc = personalData.documents?.[0] || personalData.passport || {};
+
+    const recognizedSeries = doc.series || "";
+    const recognizedNumber = doc.number || "";
+    const seriesNumber =
+      recognizedSeries && recognizedNumber
+        ? `${recognizedSeries} ${recognizedNumber}`
+        : recognizedSeries || recognizedNumber || "";
+
+    const fullName = [
+      doc.surname || personalData.surname || "",
+      doc.firstName || personalData.firstName || "",
+      doc.middleName || personalData.middleName || "",
+    ]
+      .filter(Boolean)
+      .join(" ");
+
+    const formatDateFromISO = (isoDate) => {
+      if (!isoDate) return "";
+      if (isoDate.includes(".") && !isoDate.includes("-")) return isoDate;
+      const parts = isoDate.split("-");
+      if (parts.length === 3) {
+        return `${parts[2]}.${parts[1]}.${parts[0]}`;
+      }
+      return isoDate;
+    };
+
+    const mapSex = (sex) => {
+      if (!sex) return "";
+      if (sex === "male") return "Мужской";
+      if (sex === "female") return "Женский";
+      return sex;
+    };
+
+    if (fullName) updateFields.fullName = fullName;
+    if (seriesNumber) updateFields["passport.series_number"] = seriesNumber;
+
+    const issuedDate = doc.issuedDate || "";
+    if (issuedDate)
+      updateFields["passport.date"] = formatDateFromISO(issuedDate);
+
+    const issuedBy = doc.issuedBy || doc.authority || "";
+    if (issuedBy) updateFields["passport.issued_by"] = issuedBy;
+
+    const divisionCode = doc.divisionCode || doc.authorityCode || "";
+    if (divisionCode) updateFields["passport.department_code"] = divisionCode;
+
+    const birthDate = doc.birthdate || personalData.birthdate || "";
+    if (birthDate)
+      updateFields["passport.birth"] = formatDateFromISO(birthDate);
+
+    const birthPlace = doc.birthplace || personalData.birthplace || "";
+    if (birthPlace) updateFields["passport.place_of_birth"] = birthPlace;
+
+    const gender = mapSex(doc.sex || personalData.sex || "");
+    if (gender) updateFields["passport.gender"] = gender;
+
+    if (personalData.selfiePhotoKey) {
+      updateFields["rim.selfiePhotoKey"] = personalData.selfiePhotoKey;
+    }
+    if (personalData.passport?.photoKey) {
+      updateFields["rim.passportPhotoKey"] = personalData.passport.photoKey;
+    }
+    if (personalData.registrationAddress?.photoKey) {
+      updateFields["rim.registrationPhotoKey"] =
+        personalData.registrationAddress.photoKey;
+    }
+
+    const regAddr = personalData.registrationAddress;
+    if (regAddr) {
+      const addressParts = [
+        regAddr.postalCode,
+        regAddr.region,
+        regAddr.district,
+        regAddr.city,
+        regAddr.street,
+        regAddr.house ? `д. ${regAddr.house}` : null,
+        regAddr.houseBuilding ? `стр. ${regAddr.houseBuilding}` : null,
+        regAddr.flat ? `кв. ${regAddr.flat}` : null,
+      ].filter(Boolean);
+
+      if (addressParts.length > 0) {
+        updateFields["address.street"] =
+          regAddr.summary || addressParts.join(", ");
+      }
+      if (regAddr.flat) {
+        updateFields["address.apartment"] = regAddr.flat;
+      }
+      if (regAddr.registrationDate) {
+        updateFields["address.registration_date"] = formatDateFromISO(regAddr.registrationDate);
+      }
+      if (regAddr.photoKey) {
+        updateFields["rim.registrationPhotoKey"] = regAddr.photoKey;
+        updateFields["photos.page_with_registration_stamp"] =
+          regAddr.photoKey;
+      }
+    }
+
+    if (optionalChecks.inn?.inn) {
+      updateFields["rim.inn"] = optionalChecks.inn.inn;
+      updateFields["inn"] = optionalChecks.inn.inn;
+    }
+    if (optionalChecks.verification !== undefined) {
+      updateFields["rim.isVerified"] =
+        optionalChecks.verification?.isVerified;
+    }
+    if (optionalChecks.rfm !== undefined) {
+      updateFields["rim.rfmFound"] = optionalChecks.rfm?.isFound;
+    }
+    if (optionalChecks.behaviourScoring) {
+      updateFields["rim.behaviourScoring"] = optionalChecks.behaviourScoring;
+    }
+
+    if (data.consents) {
+      updateFields["rim.consents"] = data.consents;
+    }
+  }
+
+  await User.findByIdAndUpdate(user._id, { $set: updateFields });
+
+  return { status, identification, updateFields };
+};
+
 export const completeIdentification = async (req, res) => {
   try {
     const userId = req.userId;
@@ -284,151 +435,8 @@ export const completeIdentification = async (req, res) => {
       });
     }
 
-    const { applicantExternalId, lastRequestGuid } = user.rim;
-
-    const response = await rimRequest(
-      "GET",
-      `/applicants/${applicantExternalId}/identifications/${lastRequestGuid}`
-    );
-
-    const data = response.data;
-    const identification = data.identification || {};
-    const workflowData = data.workflowData || {};
-    const personalData = workflowData.personalData || {};
-    const optionalChecks = workflowData.optionalChecks || {};
-
-    const status = identification.status;
-
-    const updateFields = {
-      "rim.identificationStatus": status,
-      "rim.completedAt": new Date().toISOString(),
-      "rim.rawResult": data,
-    };
-
-    if (
-      status === "identificationSucceeded" ||
-      status === "personDataCollected"
-    ) {
-      const doc = personalData.documents?.[0] || personalData.passport || {};
-
-      const recognizedSeries = doc.series || "";
-      const recognizedNumber = doc.number || "";
-      const seriesNumber =
-        recognizedSeries && recognizedNumber
-          ? `${recognizedSeries} ${recognizedNumber}`
-          : recognizedSeries || recognizedNumber || "";
-
-      const fullName = [
-        doc.surname || personalData.surname || "",
-        doc.firstName || personalData.firstName || "",
-        doc.middleName || personalData.middleName || "",
-      ]
-        .filter(Boolean)
-        .join(" ");
-
-      const formatDateFromISO = (isoDate) => {
-        if (!isoDate) return "";
-        if (isoDate.includes(".") && !isoDate.includes("-")) return isoDate;
-        const parts = isoDate.split("-");
-        if (parts.length === 3) {
-          return `${parts[2]}.${parts[1]}.${parts[0]}`;
-        }
-        return isoDate;
-      };
-
-      const mapSex = (sex) => {
-        if (!sex) return "";
-        if (sex === "male") return "Мужской";
-        if (sex === "female") return "Женский";
-        return sex;
-      };
-
-      if (fullName) updateFields.fullName = fullName;
-      if (seriesNumber) updateFields["passport.series_number"] = seriesNumber;
-
-      const issuedDate = doc.issuedDate || "";
-      if (issuedDate)
-        updateFields["passport.date"] = formatDateFromISO(issuedDate);
-
-      const issuedBy = doc.issuedBy || doc.authority || "";
-      if (issuedBy) updateFields["passport.issued_by"] = issuedBy;
-
-      const divisionCode = doc.divisionCode || doc.authorityCode || "";
-      if (divisionCode) updateFields["passport.department_code"] = divisionCode;
-
-      const birthDate = doc.birthdate || personalData.birthdate || "";
-      if (birthDate)
-        updateFields["passport.birth"] = formatDateFromISO(birthDate);
-
-      const birthPlace = doc.birthplace || personalData.birthplace || "";
-      if (birthPlace) updateFields["passport.place_of_birth"] = birthPlace;
-
-      const gender = mapSex(doc.sex || personalData.sex || "");
-      if (gender) updateFields["passport.gender"] = gender;
-
-      if (personalData.selfiePhotoKey) {
-        updateFields["rim.selfiePhotoKey"] = personalData.selfiePhotoKey;
-      }
-      if (personalData.passport?.photoKey) {
-        updateFields["rim.passportPhotoKey"] = personalData.passport.photoKey;
-      }
-      if (personalData.registrationAddress?.photoKey) {
-        updateFields["rim.registrationPhotoKey"] =
-          personalData.registrationAddress.photoKey;
-      }
-
-      const regAddr = personalData.registrationAddress;
-      if (regAddr) {
-        const addressParts = [
-          regAddr.postalCode,
-          regAddr.region,
-          regAddr.district,
-          regAddr.city,
-          regAddr.street,
-          regAddr.house ? `д. ${regAddr.house}` : null,
-          regAddr.houseBuilding ? `стр. ${regAddr.houseBuilding}` : null,
-          regAddr.flat ? `кв. ${regAddr.flat}` : null,
-        ].filter(Boolean);
-
-        if (addressParts.length > 0) {
-          updateFields["address.street"] =
-            regAddr.summary || addressParts.join(", ");
-        }
-        if (regAddr.flat) {
-          updateFields["address.apartment"] = regAddr.flat;
-        }
-        if (regAddr.registrationDate) {
-          updateFields["address.registration_date"] = formatDateFromISO(regAddr.registrationDate);
-        }
-        if (regAddr.photoKey) {
-          updateFields["rim.registrationPhotoKey"] = regAddr.photoKey;
-          updateFields["photos.page_with_registration_stamp"] =
-            regAddr.photoKey;
-        }
-
-      }
-
-      if (optionalChecks.inn?.inn) {
-        updateFields["rim.inn"] = optionalChecks.inn.inn;
-        updateFields["inn"] = optionalChecks.inn.inn;
-      }
-      if (optionalChecks.verification !== undefined) {
-        updateFields["rim.isVerified"] =
-          optionalChecks.verification?.isVerified;
-      }
-      if (optionalChecks.rfm !== undefined) {
-        updateFields["rim.rfmFound"] = optionalChecks.rfm?.isFound;
-      }
-      if (optionalChecks.behaviourScoring) {
-        updateFields["rim.behaviourScoring"] = optionalChecks.behaviourScoring;
-      }
-
-      if (data.consents) {
-        updateFields["rim.consents"] = data.consents;
-      }
-    }
-
-    await User.findByIdAndUpdate(userId, { $set: updateFields });
+    const { status, identification, updateFields } =
+      await pullRimPersonalData(user);
 
     console.log(
       `[RIM] Идентификация завершена. User: ${userId}, Status: ${status}`
@@ -490,6 +498,25 @@ export const handleRimCallback = async (req, res) => {
       console.log(
         `[RIM Callback] Статус обновлён для пользователя: ${user._id}`
       );
+
+      // Сразу подтягиваем персональные данные из RIM, не дожидаясь фронтенда
+      if (
+        status === "completed" ||
+        status === "identificationSucceeded" ||
+        status === "personDataCollected"
+      ) {
+        try {
+          await pullRimPersonalData(user);
+          console.log(
+            `[RIM Callback] Персональные данные подтянуты для пользователя: ${user._id}`
+          );
+        } catch (pullError) {
+          console.error(
+            `[RIM Callback] Ошибка подтягивания данных:`,
+            pullError.message
+          );
+        }
+      }
     } else {
       console.warn(
         `[RIM Callback] Пользователь не найден для requestId: ${requestId}`
