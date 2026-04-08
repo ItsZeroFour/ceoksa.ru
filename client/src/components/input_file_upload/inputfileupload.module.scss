@@ -180,12 +180,11 @@ $dim: rgba(40, 40, 40, 0.75);
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  // Ширина — основа размера. Высота вычисляется из aspect-ratio.
-  // Рамка заполняет почти всю ширину экрана (как у МТС).
-  width: calc(100vw - 16px);
-  height: auto;
-  max-height: 65dvh;
-  aspect-ratio: 2.5 / 3;
+  // Высота фиксирована, ширина уже за счёт aspect-ratio.
+  height: 55dvh;
+  width: auto;
+  max-width: calc(100vw - 48px);
+  aspect-ratio: 2 / 3;
   border-radius: $frame-radius;
   z-index: 2;
   pointer-events: none;
