@@ -180,9 +180,12 @@ $dim: rgba(40, 40, 40, 0.75);
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: min(84vw, calc(100vw - 48px));
+  // Высота задаёт базовый размер, ширина считается через aspect-ratio —
+  // при появлении нижнего меню браузера рамка сжимается пропорционально
+  // (и по высоте, и по ширине), а не только по высоте.
+  height: min(65dvh, calc(80vw * 3 / 2.5));
+  max-width: min(84vw, calc(100vw - 48px));
   aspect-ratio: 2.5 / 3;
-  max-height: 65dvh;
   border-radius: $frame-radius;
   z-index: 2;
   pointer-events: none;
@@ -194,11 +197,11 @@ $dim: rgba(40, 40, 40, 0.75);
     inset 0 0 0 0.5px rgba(255, 255, 255, 0.1);
 
   @media (min-width: 425px) {
-    width: 80vw;
+    max-width: 80vw;
   }
 
   @media (max-height: 700px) {
-    height: 60dvh;
+    height: 55dvh;
   }
 }
 
@@ -245,15 +248,15 @@ $dim: rgba(40, 40, 40, 0.75);
 
 .overlay__capture_btn {
   width: 100%;
-  padding: 17px;
+  padding: 14px;
   border-radius: 28px;
   background: var(--color-blue);
   color: #fff;
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 500;
   font-family: "Inter", sans-serif;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
   border: none;
   cursor: pointer;
   pointer-events: auto;
@@ -302,13 +305,13 @@ $dim: rgba(40, 40, 40, 0.75);
 .overlay__retake_btn,
 .overlay__use_btn {
   flex: 1;
-  padding: 17px;
+  padding: 14px;
   border-radius: 28px;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 500;
   font-family: "Inter", sans-serif;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
   border: none;
   cursor: pointer;
 }

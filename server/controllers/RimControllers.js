@@ -398,7 +398,7 @@ export const completeIdentification = async (req, res) => {
           updateFields["address.apartment"] = regAddr.flat;
         }
         if (regAddr.registrationDate) {
-          updateFields["address.registration_date"] = regAddr.registrationDate;
+          updateFields["address.registration_date"] = formatDateFromISO(regAddr.registrationDate);
         }
         if (regAddr.photoKey) {
           updateFields["rim.registrationPhotoKey"] = regAddr.photoKey;
