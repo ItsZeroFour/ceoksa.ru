@@ -8,6 +8,7 @@ import {
   completeIdentification,
   resetRim,
 } from "../../../../redux/slices/rim/rimSlice";
+import useIsMobile from "../../../../hooks/useIsMobile";
 
 const STATUS_MAP = {
   identificationSucceeded: {
@@ -54,6 +55,8 @@ const Verification = () => {
 
   const user = useSelector((state) => state.auth);
   const userRim = user?.user?.data?.rim;
+  const isMobile = useIsMobile();
+
   useEffect(() => {
     dispatch(fetchCurrentIdentification()).then((action) => {
       // Если МТС завершил верификацию (callback пришёл), но данные ещё не подтянуты —
@@ -86,7 +89,6 @@ const Verification = () => {
   const isVerified =
     currentStatus === "identificationSucceeded" ||
     currentStatus === "completed" ||
-    currentStatus === "personDataCollected" ||
     isSucceeded;
 
   useEffect(() => {
@@ -98,7 +100,8 @@ const Verification = () => {
   const isFailed =
     currentStatus === "identificationFailed" || currentStatus === "systemError";
 
-  const isPending = currentStatus === "linkCreated";
+  const isPending =
+    currentStatus === "linkCreated" || currentStatus === "personDataCollected";
 
   return (
     <section className={style.verification}>
@@ -149,7 +152,7 @@ const Verification = () => {
               <button
                 className={style.verification__button}
                 onClick={handleStartVerification}
-                disabled={isLoading}
+                disabled={isLoading || !isMobile}
               >
                 {isLoading ? "Подготовка..." : "Пройти верификацию"}
               </button>
@@ -159,7 +162,7 @@ const Verification = () => {
               <button
                 className={style.verification__button}
                 onClick={handleStartVerification}
-                disabled={isLoading}
+                disabled={isLoading || !isMobile}
               >
                 {isLoading ? "Подготовка..." : "Продолжить верификацию"}
               </button>
@@ -169,7 +172,7 @@ const Verification = () => {
               <button
                 className={style.verification__button}
                 onClick={handleRetry}
-                disabled={isLoading}
+                disabled={isLoading || !isMobile}
               >
                 {isLoading ? "Подготовка..." : "Повторить верификацию"}
               </button>

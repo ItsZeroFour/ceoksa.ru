@@ -284,16 +284,22 @@ const pullRimPersonalData = async (user) => {
 
   const status = identification.status;
 
+  // Если данные успешно получены (personDataCollected / completed) —
+  // считаем идентификацию завершённой, чтобы фронтенд корректно показывал результат
+  const isDataPulled =
+    status === "identificationSucceeded" ||
+    status === "personDataCollected" ||
+    status === "completed";
+
+  const effectiveStatus = isDataPulled ? "identificationSucceeded" : status;
+
   const updateFields = {
-    "rim.identificationStatus": status,
+    "rim.identificationStatus": effectiveStatus,
     "rim.completedAt": new Date().toISOString(),
     "rim.rawResult": data,
   };
 
-  if (
-    status === "identificationSucceeded" ||
-    status === "personDataCollected"
-  ) {
+  if (isDataPulled) {
     const doc = personalData.documents?.[0] || personalData.passport || {};
 
     const recognizedSeries = doc.series || "";
@@ -414,7 +420,7 @@ const pullRimPersonalData = async (user) => {
 
   await User.findByIdAndUpdate(user._id, { $set: updateFields });
 
-  return { status, identification, updateFields };
+  return { status: effectiveStatus, identification, updateFields };
 };
 
 export const completeIdentification = async (req, res) => {
@@ -442,10 +448,7 @@ export const completeIdentification = async (req, res) => {
       `[RIM] Идентификация завершена. User: ${userId}, Status: ${status}`
     );
 
-    const isSucceeded =
-      status === "identificationSucceeded" ||
-      status === "personDataCollected" ||
-      status === "completed";
+    const isSucceeded = status === "identificationSucceeded";
 
     res.json({
       success: true,
