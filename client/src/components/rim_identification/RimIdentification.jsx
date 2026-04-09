@@ -8,6 +8,7 @@ const RimIdentification = () => {
   const dispatch = useDispatch();
   const { identificationUrl, isIframeOpen } = useSelector((state) => state.rim);
 
+  // ─── PostMessage от RIM iframe ───
   const handleMessage = useCallback(
     (event) => {
       if (!event.data || typeof event.data !== "object") return;
@@ -16,12 +17,15 @@ const RimIdentification = () => {
       console.log("[RIM iframe] PostMessage:", event.data);
 
       if (event.data.method === "flowFinished") {
+        // Просто закрываем iframe.
+        // Verification.jsx подхватит закрытие и начнёт polling completeIdentification.
         dispatch(closeIframe());
       }
     },
     [dispatch]
   );
 
+  // ─── Подписка на PostMessage ───
   useEffect(() => {
     if (!isIframeOpen) return;
 
@@ -34,6 +38,7 @@ const RimIdentification = () => {
     };
   }, [isIframeOpen, handleMessage]);
 
+  // ─── Закрытие по клику на overlay / кнопку ───
   const handleClose = () => {
     dispatch(closeIframe());
   };

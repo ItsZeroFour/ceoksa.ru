@@ -9,30 +9,13 @@ const FILE_PROXY_URLS = [
   "https://api.mts.ru/rim/2.0/api/v2/fileproxy",
 ];
 
-// ─── Иерархия статусов (только вперёд, никогда назад) ───
-const STATUS_PRIORITY = {
-  linkCreated: 1,
-  inProgress: 2,
-  personDataCollected: 3,
-  completed: 4,
-  identificationSucceeded: 5,
-  identificationFailed: 5,
-  systemError: 5,
-};
-
-const FINAL_SUCCESS_STATUSES = [
+// ─── Статусы при которых данные можно извлекать ───
+const DATA_READY_STATUSES = [
   "identificationSucceeded",
   "personDataCollected",
   "completed",
 ];
-const FINAL_FAILURE_STATUSES = ["identificationFailed", "systemError"];
-
-const isHigherPriority = (newStatus, currentStatus) => {
-  if (!currentStatus) return true;
-  return (
-    (STATUS_PRIORITY[newStatus] || 0) > (STATUS_PRIORITY[currentStatus] || 0)
-  );
-};
+const FAILURE_STATUSES = ["identificationFailed", "systemError"];
 
 // ─── Helpers ───
 
@@ -53,9 +36,12 @@ const rimRequest = async (method, path, data = null) => {
 const generateExternalId = (userId) => `oksa_${userId}`;
 
 // ─── Подтянуть данные из RIM и сохранить в БД ───
-// Возвращает { status, saved: boolean }
 const pullRimPersonalData = async (user) => {
   const { applicantExternalId, lastRequestGuid } = user.rim;
+
+  console.log(
+    `[RIM pullData] Запрос к API. externalId: ${applicantExternalId}, guid: ${lastRequestGuid}`
+  );
 
   const response = await rimRequest(
     "GET",
@@ -69,36 +55,39 @@ const pullRimPersonalData = async (user) => {
   const optionalChecks = workflowData.optionalChecks || {};
   const status = identification.status;
 
-  const canExtractData = FINAL_SUCCESS_STATUSES.includes(status);
-  const isFailed = FINAL_FAILURE_STATUSES.includes(status);
+  console.log(`[RIM pullData] Статус из API: "${status}". User: ${user._id}`);
 
-  // Если статус не финальный — ничего не сохраняем, возвращаем текущий статус
+  const canExtractData = DATA_READY_STATUSES.includes(status);
+  const isFailed = FAILURE_STATUSES.includes(status);
+
+  // Не финальный — ничего не сохраняем
   if (!canExtractData && !isFailed) {
+    console.log(
+      `[RIM pullData] Статус "${status}" не финальный. Пропускаем сохранение.`
+    );
     return { status, saved: false };
   }
 
-  // Для неудачных статусов — сохраняем только статус (если он выше текущего)
+  // Неудача — сохраняем только статус
   if (isFailed) {
-    const currentStatus = user.rim?.identificationStatus;
-    if (isHigherPriority(status, currentStatus)) {
-      await User.findByIdAndUpdate(user._id, {
-        $set: { "rim.identificationStatus": status },
-      });
-    }
+    console.log(`[RIM pullData] Провал: "${status}". Сохраняем статус.`);
+    await User.findByIdAndUpdate(user._id, {
+      $set: { "rim.identificationStatus": status },
+    });
     return { status, saved: true };
   }
 
-  // Данные готовы — извлекаем и сохраняем
-  const effectiveStatus = "identificationSucceeded";
-
   // Не перетираем уже успешный статус
-  const currentStatus = user.rim?.identificationStatus;
-  if (currentStatus === "identificationSucceeded") {
-    return { status: effectiveStatus, saved: false };
+  if (user.rim?.identificationStatus === "identificationSucceeded") {
+    console.log(`[RIM pullData] Уже identificationSucceeded. Пропускаем.`);
+    return { status: "identificationSucceeded", saved: false };
   }
 
+  // ─── Данные готовы — извлекаем и сохраняем ───
+  console.log(`[RIM pullData] Данные готовы (${status}). Извлекаем...`);
+
   const updateFields = {
-    "rim.identificationStatus": effectiveStatus,
+    "rim.identificationStatus": "identificationSucceeded",
     "rim.completedAt": new Date().toISOString(),
     "rim.rawResult": data,
   };
@@ -180,9 +169,7 @@ const pullRimPersonalData = async (user) => {
       updateFields["address.street"] =
         regAddr.summary || addressParts.join(", ");
     }
-    if (regAddr.flat) {
-      updateFields["address.apartment"] = regAddr.flat;
-    }
+    if (regAddr.flat) updateFields["address.apartment"] = regAddr.flat;
     if (regAddr.registrationDate) {
       updateFields["address.registration_date"] = formatDateFromISO(
         regAddr.registrationDate
@@ -211,13 +198,13 @@ const pullRimPersonalData = async (user) => {
     updateFields["rim.consents"] = data.consents;
   }
 
-  await User.findByIdAndUpdate(user._id, { $set: updateFields });
-
   console.log(
-    `[RIM] Данные сохранены. User: ${user._id}, Status: ${effectiveStatus}`
+    `[RIM pullData] Сохраняем данные. fullName: "${fullName}", passport: "${seriesNumber}"`
   );
 
-  return { status: effectiveStatus, saved: true };
+  await User.findByIdAndUpdate(user._id, { $set: updateFields });
+
+  return { status: "identificationSucceeded", saved: true };
 };
 
 // ════════════════════════════════════════════════════════════════════
@@ -237,7 +224,6 @@ export const startVerification = async (req, res) => {
 
     const externalId = generateExternalId(userId);
 
-    // Подготовка данных заявителя
     const passport = user.passport || {};
     const rawSN = String(passport.series_number || "").replace(/\s/g, "");
     const series = rawSN.slice(0, 4);
@@ -285,7 +271,6 @@ export const startVerification = async (req, res) => {
 
     const cleanApplicantData = JSON.parse(JSON.stringify(applicantData));
 
-    // Создание/обновление заявителя
     try {
       await rimRequest("POST", `/applicants`, cleanApplicantData);
     } catch (applicantError) {
@@ -305,7 +290,6 @@ export const startVerification = async (req, res) => {
       }
     }
 
-    // Создание запроса на идентификацию
     const redirectUrl =
       process.env.RIM_REDIRECT_URL ||
       `${
@@ -364,7 +348,7 @@ export const startVerification = async (req, res) => {
     });
 
     console.log(
-      `[RIM] Идентификация создана. User: ${userId}, RequestGuid: ${requestGuid}`
+      `[RIM] Идентификация создана. User: ${userId}, Guid: ${requestGuid}`
     );
 
     res.json({ success: true, identificationUrl, requestGuid });
@@ -382,9 +366,7 @@ export const startVerification = async (req, res) => {
 };
 
 // ─── completeIdentification ───
-// Вызывается фронтендом после закрытия iframe.
-// Идемпотентный: если уже завершён — возвращает кеш.
-// Если данные ещё не готовы — возвращает {status: "pending"}, фронтенд повторяет.
+// Идемпотентный. Если данные не готовы — возвращает pending и НЕ ТРОГАЕТ БД.
 export const completeIdentification = async (req, res) => {
   try {
     const userId = req.userId;
@@ -396,8 +378,11 @@ export const completeIdentification = async (req, res) => {
         .json({ success: false, message: "Пользователь не найден" });
     }
 
-    // Уже завершён — сразу возвращаем
+    // Уже завершён
     if (user.rim?.identificationStatus === "identificationSucceeded") {
+      console.log(
+        `[RIM complete] User: ${userId} — уже identificationSucceeded`
+      );
       return res.json({
         success: true,
         status: "identificationSucceeded",
@@ -405,8 +390,11 @@ export const completeIdentification = async (req, res) => {
       });
     }
 
-    // Уже провален — сразу возвращаем
-    if (FINAL_FAILURE_STATUSES.includes(user.rim?.identificationStatus)) {
+    // Уже провален
+    if (FAILURE_STATUSES.includes(user.rim?.identificationStatus)) {
+      console.log(
+        `[RIM complete] User: ${userId} — уже ${user.rim.identificationStatus}`
+      );
       return res.json({
         success: true,
         status: user.rim.identificationStatus,
@@ -415,33 +403,35 @@ export const completeIdentification = async (req, res) => {
     }
 
     if (!user.rim?.applicantExternalId || !user.rim?.lastRequestGuid) {
-      return res.status(400).json({
-        success: false,
-        message: "Идентификация не была запущена",
-      });
+      return res
+        .status(400)
+        .json({ success: false, message: "Идентификация не была запущена" });
     }
 
-    // Пытаемся вытянуть данные из RIM
+    console.log(
+      `[RIM complete] User: ${userId}. Текущий статус в БД: "${user.rim.identificationStatus}". Запрашиваем RIM API...`
+    );
+
+    // Запрашиваем данные у RIM
     const result = await pullRimPersonalData(user);
 
-    console.log(
-      `[RIM] completeIdentification. User: ${userId}, Status: ${result.status}, Saved: ${result.saved}`
-    );
-
     const isSucceeded = result.status === "identificationSucceeded";
-    const isFailed = FINAL_FAILURE_STATUSES.includes(result.status);
+    const isFailed = FAILURE_STATUSES.includes(result.status);
     const isPending = !isSucceeded && !isFailed;
 
-    res.json({
-      success: true,
-      status: isPending ? "pending" : result.status,
-      isSucceeded,
-    });
-  } catch (error) {
-    console.error(
-      "[RIM] Ошибка completeIdentification:",
-      error.response?.data || error.message
+    const responseStatus = isPending ? "pending" : result.status;
+
+    console.log(
+      `[RIM complete] User: ${userId}. Результат: status="${responseStatus}", saved=${result.saved}, isSucceeded=${isSucceeded}`
     );
+
+    res.json({ success: true, status: responseStatus, isSucceeded });
+  } catch (error) {
+    console.error(`[RIM complete] ОШИБКА. Детали:`, {
+      message: error.message,
+      responseStatus: error.response?.status,
+      responseData: error.response?.data,
+    });
     res.status(error.response?.status || 500).json({
       success: false,
       message: "Ошибка завершения идентификации",
@@ -450,7 +440,6 @@ export const completeIdentification = async (req, res) => {
 };
 
 // ─── Callback от MTS ───
-// Самый надёжный путь получения данных.
 export const handleRimCallback = async (req, res) => {
   try {
     const { requestId, status } = req.body;
@@ -469,12 +458,10 @@ export const handleRimCallback = async (req, res) => {
       return res.status(200).json({ received: true });
     }
 
-    // Обновляем статус callback'а
     await User.findByIdAndUpdate(user._id, {
       $set: { "rim.callbackReceivedAt": new Date().toISOString() },
     });
 
-    // Если финальный статус — подтягиваем данные
     if (
       status === "completed" ||
       status === "identificationSucceeded" ||
@@ -486,21 +473,14 @@ export const handleRimCallback = async (req, res) => {
           `[RIM Callback] Данные подтянуты. User: ${user._id}, Status: ${result.status}`
         );
       } catch (pullError) {
-        console.error(
-          `[RIM Callback] Ошибка подтягивания данных:`,
-          pullError.message
-        );
+        console.error(`[RIM Callback] Ошибка:`, pullError.message);
       }
     }
 
-    // Если провал — сохраняем статус
-    if (status === "identificationFailed" || status === "systemError") {
-      const currentStatus = user.rim?.identificationStatus;
-      if (isHigherPriority(status, currentStatus)) {
-        await User.findByIdAndUpdate(user._id, {
-          $set: { "rim.identificationStatus": status },
-        });
-      }
+    if (FAILURE_STATUSES.includes(status)) {
+      await User.findByIdAndUpdate(user._id, {
+        $set: { "rim.identificationStatus": status },
+      });
     }
 
     res.status(200).json({ received: true });
@@ -510,17 +490,12 @@ export const handleRimCallback = async (req, res) => {
   }
 };
 
-// ─── Получить текущий статус из БД (без вызовов RIM API) ───
+// ─── Текущий статус из БД ───
 export const getCurrentIdentification = async (req, res) => {
   try {
-    const userId = req.userId;
-    const user = await User.findById(userId);
-
-    if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Пользователь не найден" });
-    }
+    const user = await User.findById(req.userId);
+    if (!user)
+      return res.status(404).json({ success: false, message: "Не найден" });
 
     if (!user.rim?.lastRequestGuid) {
       return res.json({ success: true, hasIdentification: false });
@@ -534,33 +509,22 @@ export const getCurrentIdentification = async (req, res) => {
       requestGuid: user.rim.lastRequestGuid,
     });
   } catch (error) {
-    console.error("[RIM] Ошибка getCurrentIdentification:", error.message);
     res.status(500).json({ success: false, message: "Внутренняя ошибка" });
   }
 };
 
-// ─── Получить статус из RIM API (для отладки, не используется фронтом) ───
+// ─── Статус из БД (без вызовов RIM API) ───
 export const getIdentificationStatus = async (req, res) => {
   try {
-    const userId = req.userId;
-    const user = await User.findById(userId);
-
-    if (!user?.rim?.applicantExternalId || !user?.rim?.lastRequestGuid) {
+    const user = await User.findById(req.userId);
+    if (!user?.rim?.lastRequestGuid) {
       return res
         .status(400)
-        .json({ success: false, message: "Идентификация не была запущена" });
+        .json({ success: false, message: "Нет идентификации" });
     }
-
-    // Просто возвращаем статус из БД, НЕ перетираем его вызовом к RIM API
-    res.json({
-      success: true,
-      status: user.rim.identificationStatus,
-    });
+    res.json({ success: true, status: user.rim.identificationStatus });
   } catch (error) {
-    console.error("[RIM] Ошибка getIdentificationStatus:", error.message);
-    res
-      .status(500)
-      .json({ success: false, message: "Ошибка получения статуса" });
+    res.status(500).json({ success: false, message: "Ошибка" });
   }
 };
 
@@ -569,12 +533,10 @@ export const getRimPhoto = async (req, res) => {
   try {
     const raw = req.params.objectName || req.params[0];
     const objectName = Array.isArray(raw) ? raw.join("/") : raw;
-
-    if (!objectName) {
+    if (!objectName)
       return res
         .status(400)
         .json({ success: false, message: "objectName не указан" });
-    }
 
     const token = await getRimToken();
     const headers = {
@@ -584,16 +546,16 @@ export const getRimPhoto = async (req, res) => {
 
     let lastError = null;
     for (const baseUrl of FILE_PROXY_URLS) {
-      const fullUrl = `${baseUrl}/${objectName}`;
       try {
-        const response = await axios.get(fullUrl, {
+        const response = await axios.get(`${baseUrl}/${objectName}`, {
           headers,
           responseType: "arraybuffer",
           timeout: 15000,
         });
-
-        const contentType = response.headers["content-type"] || "image/jpeg";
-        res.setHeader("Content-Type", contentType);
+        res.setHeader(
+          "Content-Type",
+          response.headers["content-type"] || "image/jpeg"
+        );
         res.setHeader("Cache-Control", "private, max-age=3600");
         return res.send(response.data);
       } catch (err) {
@@ -601,10 +563,10 @@ export const getRimPhoto = async (req, res) => {
       }
     }
 
-    const errStatus = lastError?.response?.status || 500;
-    res.status(errStatus).json({ success: false, message: "Фото не найдено" });
+    res
+      .status(lastError?.response?.status || 500)
+      .json({ success: false, message: "Фото не найдено" });
   } catch (error) {
-    console.error("[RIM] Ошибка getRimPhoto:", error.message);
     res.status(500).json({ success: false, message: "Ошибка получения фото" });
   }
 };
