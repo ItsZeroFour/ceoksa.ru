@@ -103,7 +103,8 @@ app.use("/rim", RimRoutes);
 app.post("/logout", (req, res) => {
   res.clearCookie("app_token", {
     httpOnly: true,
-    sameSite: "strict",
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "Lax",
     path: "/",
   });
 

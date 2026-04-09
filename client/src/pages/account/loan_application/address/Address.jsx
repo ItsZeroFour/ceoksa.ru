@@ -181,6 +181,7 @@ const Address = ({ setIsChecked, isChecked }) => {
                   icon={Passport}
                   inputMode="numeric"
                   ref={registrationDateRef}
+                  readOnly={true}
                 />
               </div>
               {errors.registration_date && (

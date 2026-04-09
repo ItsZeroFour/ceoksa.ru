@@ -149,7 +149,7 @@ const RimIdentification = () => {
                   title="MTS RIM Идентификация"
                   className={style.rim_modal__iframe}
                   allow="camera; microphone"
-                  sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation"
+                  sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
                 />
               </div>
             )}
