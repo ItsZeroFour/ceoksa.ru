@@ -121,7 +121,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 22px 16px;
-  background: #2c2c2c;
+  background: var(--color-bg);
   flex-shrink: 0;
 }
 
@@ -190,9 +190,7 @@ $dim: rgba(40, 40, 40, 0.75);
   pointer-events: none;
 
   // Dark overlay + subtle glow — works on all devices
-  box-shadow:
-    0 0 0 200vmax $dim,
-    0 0 18px 2px rgba(255, 255, 255, 0.07),
+  box-shadow: 0 0 0 200vmax $dim, 0 0 18px 2px rgba(255, 255, 255, 0.07),
     inset 0 0 0 0.5px rgba(255, 255, 255, 0.1);
 }
 
@@ -270,10 +268,22 @@ $dim: rgba(40, 40, 40, 0.75);
   overflow: visible;
 }
 
-.corner_tl { top: 0; left: 0; }
-.corner_tr { top: 0; right: 0; }
-.corner_bl { bottom: 0; left: 0; }
-.corner_br { bottom: 0; right: 0; }
+.corner_tl {
+  top: 0;
+  left: 0;
+}
+.corner_tr {
+  top: 0;
+  right: 0;
+}
+.corner_bl {
+  bottom: 0;
+  left: 0;
+}
+.corner_br {
+  bottom: 0;
+  right: 0;
+}
 
 /* ======== Confirm overlay (over captured image) ======== */
 
