@@ -1,121 +1,167 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import style from "./verification.module.scss";
 import { ReactComponent as Shield } from "../../../../assets/icons/info.svg";
 import {
   startVerification,
-  fetchCurrentIdentification,
   completeIdentification,
   resetRim,
 } from "../../../../redux/slices/rim/rimSlice";
 import useIsMobile from "../../../../hooks/useIsMobile";
 
-const STATUS_MAP = {
-  identificationSucceeded: {
-    label: "Верификация пройдена",
-    color: "#27ae60",
-    icon: "✓",
-  },
-  identificationFailed: {
-    label: "Верификация не пройдена",
-    color: "#e74c3c",
-    icon: "✕",
-  },
-  systemError: {
-    label: "Системная ошибка",
-    color: "#e74c3c",
-    icon: "!",
-  },
-  personDataCollected: {
-    label: "Данные получены, идёт проверка",
-    color: "#f39c12",
-    icon: "⏳",
-  },
-  linkCreated: {
-    label: "Ожидает прохождения",
-    color: "#3498db",
-    icon: "→",
-  },
-  completed: {
-    label: "Обработка данных...",
-    color: "#3498db",
-    icon: "⏳",
-  },
-};
+const POLL_INTERVAL = 3000;
+const INITIAL_DELAY = 2000;
+const MAX_ATTEMPTS = 30;
 
 const Verification = () => {
   const dispatch = useDispatch();
-  const {
-    status: rimStatus,
-    identificationStatus,
-    isLoading,
-    error,
-    isSucceeded,
-    isIframeOpen,
-  } = useSelector((state) => state.rim);
+  const isMobile = useIsMobile();
 
+  const { isIframeOpen, isLoading, error } = useSelector((state) => state.rim);
   const user = useSelector((state) => state.auth);
   const userRim = user?.user?.data?.rim;
-  const isMobile = useIsMobile();
-  const wasIframeOpenRef = useRef(false);
 
-  // Когда iframe закрывается — пробуем дозавершить идентификацию.
-  // PostMessage от МТС мог не дойти из-за редиректа внутри iframe.
+  const savedStatus = userRim?.identificationStatus;
+  const isVerified = savedStatus === "identificationSucceeded";
+  const isFailed =
+    savedStatus === "identificationFailed" || savedStatus === "systemError";
+  const hasStarted = !!userRim?.lastRequestGuid;
+
+  const [processingState, setProcessingState] = useState(null);
+  const wasIframeOpenRef = useRef(false);
+  const pollingTimerRef = useRef(null);
+  const attemptCountRef = useRef(0);
+
+  const stopPolling = useCallback(() => {
+    if (pollingTimerRef.current) {
+      clearTimeout(pollingTimerRef.current);
+      pollingTimerRef.current = null;
+    }
+    attemptCountRef.current = 0;
+  }, []);
+
+  const startPolling = useCallback(() => {
+    stopPolling();
+    setProcessingState("polling");
+    attemptCountRef.current = 0;
+
+    const poll = async () => {
+      attemptCountRef.current += 1;
+
+      try {
+        const result = await dispatch(completeIdentification()).unwrap();
+
+        if (result.isSucceeded) {
+          setProcessingState("succeeded");
+          setTimeout(() => window.location.reload(), 500);
+          return;
+        }
+
+        if (
+          result.status === "identificationFailed" ||
+          result.status === "systemError"
+        ) {
+          setProcessingState("failed");
+          return;
+        }
+
+        if (attemptCountRef.current < MAX_ATTEMPTS) {
+          pollingTimerRef.current = setTimeout(poll, POLL_INTERVAL);
+        } else {
+          setProcessingState("timeout");
+        }
+      } catch {
+        if (attemptCountRef.current < MAX_ATTEMPTS) {
+          pollingTimerRef.current = setTimeout(poll, POLL_INTERVAL);
+        } else {
+          setProcessingState("timeout");
+        }
+      }
+    };
+
+    pollingTimerRef.current = setTimeout(poll, INITIAL_DELAY);
+  }, [dispatch, stopPolling]);
+
   useEffect(() => {
     if (isIframeOpen) {
       wasIframeOpenRef.current = true;
-    } else if (wasIframeOpenRef.current && !isSucceeded) {
-      wasIframeOpenRef.current = false;
-      // Даём МТС пару секунд на обработку, потом пробуем завершить
-      const timer = setTimeout(() => {
-        dispatch(completeIdentification());
-      }, 3000);
-      return () => clearTimeout(timer);
+      return;
     }
-  }, [isIframeOpen, isSucceeded, dispatch]);
+
+    if (wasIframeOpenRef.current) {
+      wasIframeOpenRef.current = false;
+      startPolling();
+    }
+  }, [isIframeOpen, startPolling]);
 
   useEffect(() => {
-    dispatch(fetchCurrentIdentification()).then((action) => {
-      // Если МТС завершил верификацию (callback пришёл), но данные ещё не подтянуты —
-      // сразу вызываем completeIdentification для загрузки паспортных данных
-      const serverStatus = action.payload?.status;
-      if (
-        action.payload?.hasIdentification &&
-        (serverStatus === "completed" ||
-          serverStatus === "personDataCollected") &&
-        serverStatus !== "identificationSucceeded"
-      ) {
-        dispatch(completeIdentification());
-      }
-    });
-  }, [dispatch]);
+    return () => stopPolling();
+  }, [stopPolling]);
 
-  const handleStartVerification = () => {
+  const handleStart = () => {
+    setProcessingState(null);
     dispatch(startVerification());
   };
 
   const handleRetry = () => {
+    setProcessingState(null);
     dispatch(resetRim());
     dispatch(startVerification());
   };
 
-  const currentStatus =
-    identificationStatus || userRim?.identificationStatus || null;
-  const statusInfo = currentStatus ? STATUS_MAP[currentStatus] : null;
+  if (processingState === "polling" || processingState === "succeeded") {
+    return (
+      <section className={style.verification}>
+        <div className={style.verification__wrapper}>
+          <h2>Верификация личности</h2>
+          <div className={style.verification__content}>
+            <div
+              className={style.verification__status}
+              style={{ borderColor: "#3498db" }}
+            >
+              <span className={style.verification__status__icon}>⏳</span>
+              <span className={style.verification__status__text}>
+                {processingState === "succeeded"
+                  ? "Данные получены, обновляем страницу..."
+                  : "Обработка результатов верификации..."}
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
-  const isVerified =
-    currentStatus === "identificationSucceeded" || isSucceeded;
-
-  useEffect(() => {
-    if (isSucceeded) {
-      window.location.reload();
-    }
-  }, [isSucceeded]);
-
-  const isFailed =
-    currentStatus === "identificationFailed" || currentStatus === "systemError";
-
-  const isPending = !!currentStatus && !isVerified && !isFailed;
+  if (processingState === "timeout") {
+    return (
+      <section className={style.verification}>
+        <div className={style.verification__wrapper}>
+          <h2>Верификация личности</h2>
+          <div className={style.verification__content}>
+            <div className={style.verification__info}>
+              <div className={style.verification__info__icon}>
+                <Shield />
+              </div>
+              <div className={style.verification__info__text}>
+                <p>
+                  Данные от МТС ещё обрабатываются. Обновите страницу через
+                  минуту — результаты появятся автоматически.
+                </p>
+              </div>
+            </div>
+            <div className={style.verification__actions}>
+              <button
+                className={style.verification__button}
+                onClick={() => window.location.reload()}
+              >
+                Обновить страницу
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className={style.verification}>
@@ -138,44 +184,27 @@ const Verification = () => {
             </div>
           )}
 
-          {statusInfo && (
-            <div
-              className={style.verification__status}
-              style={{ borderColor: statusInfo.color }}
-            >
-              <span
-                className={style.verification__status__icon}
-                // style={{ background: statusInfo.color }}
-              >
-                {statusInfo.icon}
-              </span>
-              <span className={style.verification__status__text}>
-                {statusInfo.label}
-              </span>
-            </div>
-          )}
-
-          {error && (
+          {(error || processingState === "failed") && (
             <div className={style.verification__error}>
-              <p>{error}</p>
+              <p>{error || "Верификация не пройдена. Попробуйте ещё раз."}</p>
             </div>
           )}
 
           <div className={style.verification__actions}>
-            {!currentStatus && (
+            {!isVerified && !isFailed && !hasStarted && (
               <button
                 className={style.verification__button}
-                onClick={handleStartVerification}
+                onClick={handleStart}
                 disabled={isLoading || !isMobile}
               >
                 {isLoading ? "Подготовка..." : "Пройти верификацию"}
               </button>
             )}
 
-            {isPending && (
+            {!isVerified && !isFailed && hasStarted && (
               <button
                 className={style.verification__button}
-                onClick={handleStartVerification}
+                onClick={handleStart}
                 disabled={isLoading || !isMobile}
               >
                 {isLoading ? "Подготовка..." : "Продолжить верификацию"}
