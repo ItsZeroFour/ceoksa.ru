@@ -88,7 +88,7 @@
 
         .auth__phone_wrapper {
           display: flex;
-          align-items: center;
+          align-items: baseline;
           background: var(--color-block-bg);
           border: 1px solid var(--color-input-border);
           border-radius: 15px;
@@ -100,7 +100,6 @@
             color: var(--color-black);
             white-space: nowrap;
             margin-right: 4px;
-            line-height: 1;
           }
 
           input {
@@ -108,6 +107,7 @@
             background: transparent;
             border: none;
             color: var(--color-black);
+            font-size: 15px;
             flex: 1;
             outline: none;
           }
