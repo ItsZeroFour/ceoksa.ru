@@ -21,17 +21,21 @@ const Verification = () => {
   const user = useSelector((state) => state.auth);
   const userRim = user?.user?.data?.rim;
 
+  // ─── Статус из данных пользователя (fetchMe) ───
   const savedStatus = userRim?.identificationStatus;
   const isVerified = savedStatus === "identificationSucceeded";
   const isFailed =
     savedStatus === "identificationFailed" || savedStatus === "systemError";
   const hasStarted = !!userRim?.lastRequestGuid;
 
+  // ─── Состояние ───
   const [processingState, setProcessingState] = useState(null);
   const wasIframeOpenRef = useRef(false);
   const pollingTimerRef = useRef(null);
   const attemptCountRef = useRef(0);
+  const mountCheckDoneRef = useRef(false);
 
+  // ─── Остановка polling ───
   const stopPolling = useCallback(() => {
     if (pollingTimerRef.current) {
       clearTimeout(pollingTimerRef.current);
@@ -40,6 +44,7 @@ const Verification = () => {
     attemptCountRef.current = 0;
   }, []);
 
+  // ─── Polling после закрытия iframe ───
   const startPolling = useCallback(() => {
     stopPolling();
     setProcessingState("polling");
@@ -82,6 +87,38 @@ const Verification = () => {
     pollingTimerRef.current = setTimeout(poll, INITIAL_DELAY);
   }, [dispatch, stopPolling]);
 
+  // ─── При загрузке страницы: проверяем незавершённые верификации ───
+  // Если пользователь перезагрузил страницу, а callback от MTS уже пришёл —
+  // бэкенд вернёт isSucceeded=true и данные будут сохранены.
+  useEffect(() => {
+    if (user.status !== "succeeded") return; // ждём загрузки данных
+    if (mountCheckDoneRef.current) return; // уже проверяли
+    if (isVerified || isFailed) return; // финальный статус — не трогаем
+    if (!hasStarted) return; // верификация не запускалась
+
+    mountCheckDoneRef.current = true;
+
+    // Есть незавершённая верификация — пробуем забрать данные
+    const checkOnce = async () => {
+      setProcessingState("checking");
+      try {
+        const result = await dispatch(completeIdentification()).unwrap();
+
+        if (result.isSucceeded) {
+          setProcessingState("succeeded");
+          setTimeout(() => window.location.reload(), 500);
+          return;
+        }
+      } catch {
+        // Ошибка — ничего страшного, покажем кнопку
+      }
+      setProcessingState(null);
+    };
+
+    checkOnce();
+  }, [user.status, isVerified, isFailed, hasStarted, dispatch]);
+
+  // ─── Закрытие iframe → polling ───
   useEffect(() => {
     if (isIframeOpen) {
       wasIframeOpenRef.current = true;
@@ -94,10 +131,12 @@ const Verification = () => {
     }
   }, [isIframeOpen, startPolling]);
 
+  // ─── Очистка ───
   useEffect(() => {
     return () => stopPolling();
   }, [stopPolling]);
 
+  // ─── Кнопки ───
   const handleStart = () => {
     setProcessingState(null);
     dispatch(startVerification());
@@ -109,7 +148,16 @@ const Verification = () => {
     dispatch(startVerification());
   };
 
-  if (processingState === "polling" || processingState === "succeeded") {
+  // ════════════════════════════════════════════════════════════════
+  // РЕНДЕР
+  // ════════════════════════════════════════════════════════════════
+
+  // Обработка / проверка
+  if (
+    processingState === "polling" ||
+    processingState === "succeeded" ||
+    processingState === "checking"
+  ) {
     return (
       <section className={style.verification}>
         <div className={style.verification__wrapper}>
@@ -132,6 +180,7 @@ const Verification = () => {
     );
   }
 
+  // Таймаут
   if (processingState === "timeout") {
     return (
       <section className={style.verification}>
@@ -163,6 +212,7 @@ const Verification = () => {
     );
   }
 
+  // Основной рендер
   return (
     <section className={style.verification}>
       <div className={style.verification__wrapper}>
