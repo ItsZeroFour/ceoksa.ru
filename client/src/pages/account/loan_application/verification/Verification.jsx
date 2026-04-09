@@ -37,9 +37,9 @@ const STATUS_MAP = {
     icon: "→",
   },
   completed: {
-    label: "Верификация завершена",
-    color: "#27ae60",
-    icon: "✓",
+    label: "Обработка данных...",
+    color: "#3498db",
+    icon: "⏳",
   },
 };
 
@@ -87,9 +87,7 @@ const Verification = () => {
   const statusInfo = currentStatus ? STATUS_MAP[currentStatus] : null;
 
   const isVerified =
-    currentStatus === "identificationSucceeded" ||
-    currentStatus === "completed" ||
-    isSucceeded;
+    currentStatus === "identificationSucceeded" || isSucceeded;
 
   useEffect(() => {
     if (isSucceeded) {
@@ -100,8 +98,7 @@ const Verification = () => {
   const isFailed =
     currentStatus === "identificationFailed" || currentStatus === "systemError";
 
-  const isPending =
-    currentStatus === "linkCreated" || currentStatus === "personDataCollected";
+  const isPending = !!currentStatus && !isVerified && !isFailed;
 
   return (
     <section className={style.verification}>
