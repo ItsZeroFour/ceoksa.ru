@@ -68,12 +68,11 @@ const Auth = ({ setOpenAuthMenu }) => {
   }, [dispatch]);
 
   // Авто-отправка при заполнении всех 4 цифр
-  const handleSubmitCodeRef = useRef(handleSubmitCode);
-  handleSubmitCodeRef.current = handleSubmitCode;
+  const handleSubmitCodeRef = useRef(null);
 
   useEffect(() => {
     codeInput.setOnComplete(() => {
-      handleSubmitCodeRef.current();
+      handleSubmitCodeRef.current?.();
     });
   }, []);
 
@@ -141,6 +140,7 @@ const Auth = ({ setOpenAuthMenu }) => {
 
     authPolling.startPolling(auth_req_id);
   };
+  handleSubmitCodeRef.current = handleSubmitCode;
 
   const handleBackToPhone = () => {
     codeInput.reset();
