@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import style from "./verification.module.scss";
 import { ReactComponent as Shield } from "../../../../assets/icons/info.svg";
@@ -51,11 +51,28 @@ const Verification = () => {
     isLoading,
     error,
     isSucceeded,
+    isIframeOpen,
   } = useSelector((state) => state.rim);
 
   const user = useSelector((state) => state.auth);
   const userRim = user?.user?.data?.rim;
   const isMobile = useIsMobile();
+  const wasIframeOpenRef = useRef(false);
+
+  // Когда iframe закрывается — пробуем дозавершить идентификацию.
+  // PostMessage от МТС мог не дойти из-за редиректа внутри iframe.
+  useEffect(() => {
+    if (isIframeOpen) {
+      wasIframeOpenRef.current = true;
+    } else if (wasIframeOpenRef.current && !isSucceeded) {
+      wasIframeOpenRef.current = false;
+      // Даём МТС пару секунд на обработку, потом пробуем завершить
+      const timer = setTimeout(() => {
+        dispatch(completeIdentification());
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [isIframeOpen, isSucceeded, dispatch]);
 
   useEffect(() => {
     dispatch(fetchCurrentIdentification()).then((action) => {
