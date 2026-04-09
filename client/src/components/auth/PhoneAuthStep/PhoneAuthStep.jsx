@@ -27,6 +27,7 @@ const PhoneAuthStep = ({
               type="tel"
               id="phone"
               placeholder="(9XX) XXX-XX-XX"
+              autoFocus
             />
           </div>
         </div>

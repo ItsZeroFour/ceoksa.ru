@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 const CodeAuthStep = ({
   phone,
@@ -17,6 +17,11 @@ const CodeAuthStep = ({
   styles,
   isLoading,
 }) => {
+  // Авто-фокус на первый input при появлении
+  useEffect(() => {
+    inputRefs.current[0]?.focus();
+  }, []);
+
   return (
     <>
       <div className={styles.auth__text}>

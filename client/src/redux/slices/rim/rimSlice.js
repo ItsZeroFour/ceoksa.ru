@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "../../../utils/axios";
 
-// ─── Запуск верификации ───
 export const startVerification = createAsyncThunk(
   "rim/startVerification",
   async (_, { rejectWithValue }) => {
@@ -16,8 +15,6 @@ export const startVerification = createAsyncThunk(
   }
 );
 
-// ─── Завершение идентификации (с поддержкой retry) ───
-// Возвращает { status: "pending" | "identificationSucceeded" | "identificationFailed" | ..., isSucceeded: boolean }
 export const completeIdentification = createAsyncThunk(
   "rim/completeIdentification",
   async (_, { rejectWithValue }) => {
@@ -56,7 +53,6 @@ const rimSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // startVerification
       .addCase(startVerification.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -70,8 +66,6 @@ const rimSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       })
-
-      // completeIdentification
       .addCase(completeIdentification.pending, (state) => {
         state.isLoading = true;
       })

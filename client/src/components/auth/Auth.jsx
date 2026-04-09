@@ -67,6 +67,16 @@ const Auth = ({ setOpenAuthMenu }) => {
     dispatch(fetchFiles("fajly?populate=*"));
   }, [dispatch]);
 
+  // Авто-отправка при заполнении всех 4 цифр
+  const handleSubmitCodeRef = useRef(handleSubmitCode);
+  handleSubmitCodeRef.current = handleSubmitCode;
+
+  useEffect(() => {
+    codeInput.setOnComplete(() => {
+      handleSubmitCodeRef.current();
+    });
+  }, []);
+
   useEffect(() => {
     if (flow === "sms" && currentStep === "push_wait") {
       authPolling.stopPolling();

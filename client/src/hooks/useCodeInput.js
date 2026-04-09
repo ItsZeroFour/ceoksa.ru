@@ -5,11 +5,18 @@ export const useCodeInput = (length = 4) => {
   const [hasError, setHasError] = useState(false);
   const inputRefs = useRef([]);
   const codeRef = useRef(Array(length).fill(""));
+  const onCompleteRef = useRef(null);
 
   const updateCode = useCallback((updater) => {
     setCode((prev) => {
       const next = typeof updater === "function" ? updater(prev) : updater;
       codeRef.current = next;
+
+      // Авто-отправка когда все цифры введены
+      if (next.every((d) => d !== "") && onCompleteRef.current) {
+        setTimeout(() => onCompleteRef.current?.(), 0);
+      }
+
       return next;
     });
   }, []);
@@ -106,6 +113,10 @@ export const useCodeInput = (length = 4) => {
   const setError = useCallback(() => setHasError(true), []);
   const clearError = useCallback(() => setHasError(false), []);
 
+  const setOnComplete = useCallback((fn) => {
+    onCompleteRef.current = fn;
+  }, []);
+
   return {
     code,
     hasError,
@@ -119,5 +130,6 @@ export const useCodeInput = (length = 4) => {
     reset,
     setError,
     clearError,
+    setOnComplete,
   };
 };
