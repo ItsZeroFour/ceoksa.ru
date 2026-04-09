@@ -8,7 +8,7 @@ import {
   fetchIdentificationStatus,
 } from "../../redux/slices/rim/rimSlice";
 
-const POLL_INTERVAL = 5000; // Проверяем статус каждые 5 секунд
+const POLL_INTERVAL = 2000; // Проверяем статус каждые 2 секунды
 
 const RimIdentification = () => {
   const dispatch = useDispatch();
@@ -94,6 +94,17 @@ const RimIdentification = () => {
 
   const handleClose = () => {
     if (isLoading) return;
+
+    // Перед закрытием пробуем завершить — МТС мог уже обработать данные,
+    // но postMessage не дошёл из-за редиректа внутри iframe
+    if (!completeCalled.current) {
+      completeCalled.current = true;
+      dispatch(completeIdentification()).finally(() => {
+        dispatch(closeIframe());
+      });
+      return;
+    }
+
     dispatch(closeIframe());
   };
 
