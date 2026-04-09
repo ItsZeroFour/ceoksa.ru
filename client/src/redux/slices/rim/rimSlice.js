@@ -146,7 +146,18 @@ const rimSlice = createSlice({
         state.isSucceeded = action.payload.isSucceeded;
         state.personalData = action.payload.personalData;
         state.statusReasons = action.payload.statusReasons || [];
-        state.status = action.payload.isSucceeded ? "succeeded" : "failed";
+
+        if (action.payload.isSucceeded) {
+          state.status = "succeeded";
+        } else if (
+          action.payload.status === "identificationFailed" ||
+          action.payload.status === "systemError"
+        ) {
+          state.status = "failed";
+        } else {
+          // Статус ещё не финальный — оставляем в completing, поллинг продолжит проверять
+          state.status = "completing";
+        }
       })
       .addCase(completeIdentification.rejected, (state, action) => {
         state.isLoading = false;

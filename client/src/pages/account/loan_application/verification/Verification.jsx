@@ -89,6 +89,7 @@ const Verification = () => {
   const isVerified =
     currentStatus === "identificationSucceeded" ||
     currentStatus === "completed" ||
+    currentStatus === "personDataCollected" ||
     isSucceeded;
 
   useEffect(() => {
@@ -100,8 +101,7 @@ const Verification = () => {
   const isFailed =
     currentStatus === "identificationFailed" || currentStatus === "systemError";
 
-  const isPending =
-    currentStatus === "linkCreated" || currentStatus === "personDataCollected";
+  const isPending = currentStatus === "linkCreated";
 
   return (
     <section className={style.verification}>
