@@ -100,8 +100,7 @@ const Verification = () => {
   const isFailed =
     currentStatus === "identificationFailed" || currentStatus === "systemError";
 
-  const isPending =
-    currentStatus === "linkCreated" || currentStatus === "personDataCollected";
+  const isPending = !!currentStatus && !isVerified && !isFailed;
 
   return (
     <section className={style.verification}>
