@@ -8,7 +8,6 @@ import {
   completeIdentification,
   resetRim,
 } from "../../../../redux/slices/rim/rimSlice";
-import useIsMobile from "../../../../hooks/useIsMobile";
 
 const STATUS_MAP = {
   identificationSucceeded: {
@@ -55,8 +54,6 @@ const Verification = () => {
 
   const user = useSelector((state) => state.auth);
   const userRim = user?.user?.data?.rim;
-  const isMobile = useIsMobile();
-
   useEffect(() => {
     dispatch(fetchCurrentIdentification()).then((action) => {
       // Если МТС завершил верификацию (callback пришёл), но данные ещё не подтянуты —
@@ -152,7 +149,7 @@ const Verification = () => {
               <button
                 className={style.verification__button}
                 onClick={handleStartVerification}
-                disabled={isLoading || !isMobile}
+                disabled={isLoading}
               >
                 {isLoading ? "Подготовка..." : "Пройти верификацию"}
               </button>
@@ -162,7 +159,7 @@ const Verification = () => {
               <button
                 className={style.verification__button}
                 onClick={handleStartVerification}
-                disabled={isLoading || !isMobile}
+                disabled={isLoading}
               >
                 {isLoading ? "Подготовка..." : "Продолжить верификацию"}
               </button>
@@ -172,7 +169,7 @@ const Verification = () => {
               <button
                 className={style.verification__button}
                 onClick={handleRetry}
-                disabled={isLoading || !isMobile}
+                disabled={isLoading}
               >
                 {isLoading ? "Подготовка..." : "Повторить верификацию"}
               </button>
