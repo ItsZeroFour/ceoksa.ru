@@ -100,11 +100,7 @@
             color: var(--color-black);
             white-space: nowrap;
             margin-right: 4px;
-            margin-bottom: 2px;
-
-            @media (max-width: 545px) {
-              margin-bottom: 0;
-            }
+            line-height: 1;
           }
 
           input {
