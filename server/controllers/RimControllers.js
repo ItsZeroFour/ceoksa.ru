@@ -442,26 +442,30 @@ export const completeIdentification = async (req, res) => {
       `[RIM] Идентификация завершена. User: ${userId}, Status: ${status}`
     );
 
+    const isSucceeded =
+      status === "identificationSucceeded" ||
+      status === "personDataCollected" ||
+      status === "completed";
+
     res.json({
       success: true,
       status,
       statusReasons: identification.statusReasons || [],
-      isSucceeded: status === "identificationSucceeded",
-      personalData:
-        status === "identificationSucceeded"
-          ? {
-              fullName: updateFields.fullName,
-              passport: {
-                seriesNumber: updateFields["passport.series_number"],
-                date: updateFields["passport.date"],
-                issuedBy: updateFields["passport.issued_by"],
-                departmentCode: updateFields["passport.department_code"],
-                birth: updateFields["passport.birth"],
-                placeOfBirth: updateFields["passport.place_of_birth"],
-                gender: updateFields["passport.gender"],
-              },
-            }
-          : null,
+      isSucceeded,
+      personalData: isSucceeded
+        ? {
+            fullName: updateFields.fullName,
+            passport: {
+              seriesNumber: updateFields["passport.series_number"],
+              date: updateFields["passport.date"],
+              issuedBy: updateFields["passport.issued_by"],
+              departmentCode: updateFields["passport.department_code"],
+              birth: updateFields["passport.birth"],
+              placeOfBirth: updateFields["passport.place_of_birth"],
+              gender: updateFields["passport.gender"],
+            },
+          }
+        : null,
     });
   } catch (error) {
     console.error(

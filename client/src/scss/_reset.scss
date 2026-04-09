@@ -453,3 +453,18 @@ p {
 li {
 	list-style: none;
 }
+
+/* Prevent iOS Safari from zooming in on input focus (requires font-size >= 16px) */
+@media screen and (max-width: 1024px) {
+	input[type="text"],
+	input[type="tel"],
+	input[type="email"],
+	input[type="number"],
+	input[type="password"],
+	input[type="search"],
+	input[type="url"],
+	select,
+	textarea {
+		font-size: 16px !important;
+	}
+}
