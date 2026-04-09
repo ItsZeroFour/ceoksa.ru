@@ -1,110 +1,40 @@
-import React, { useEffect, useCallback, useRef } from "react";
+import React, { useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
 import style from "./rimidentification.module.scss";
-import {
-  closeIframe,
-  completeIdentification,
-  fetchIdentificationStatus,
-} from "../../redux/slices/rim/rimSlice";
-
-const POLL_INTERVAL = 2000; // Проверяем статус каждые 2 секунды
+import { closeIframe } from "../../redux/slices/rim/rimSlice";
 
 const RimIdentification = () => {
   const dispatch = useDispatch();
-  const iframeRef = useRef(null);
-  const completeCalled = useRef(false);
-
-  const { identificationUrl, isIframeOpen, isLoading, status, identificationStatus } = useSelector(
-    (state) => state.rim
-  );
-
-  const tryComplete = useCallback(() => {
-    if (completeCalled.current) return;
-    completeCalled.current = true;
-    dispatch(completeIdentification());
-  }, [dispatch]);
+  const { identificationUrl, isIframeOpen } = useSelector((state) => state.rim);
 
   const handleMessage = useCallback(
     (event) => {
       if (!event.data || typeof event.data !== "object") return;
       if (event.data.app !== "rim") return;
 
-      console.log("[RIM iframe] PostMessage получен:", event.data);
+      console.log("[RIM iframe] PostMessage:", event.data);
 
       if (event.data.method === "flowFinished") {
-        console.log(
-          "[RIM iframe] Сценарий завершён. Контекст:",
-          event.data.context
-        );
-
-        tryComplete();
+        dispatch(closeIframe());
       }
     },
-    [tryComplete]
+    [dispatch]
   );
 
   useEffect(() => {
-    if (isIframeOpen) {
-      window.addEventListener("message", handleMessage);
-      completeCalled.current = false;
-    }
+    if (!isIframeOpen) return;
+
+    window.addEventListener("message", handleMessage);
+    document.body.style.overflow = "hidden";
 
     return () => {
       window.removeEventListener("message", handleMessage);
+      document.body.style.overflow = "";
     };
   }, [isIframeOpen, handleMessage]);
 
-  // Поллинг статуса — пока iframe открыт, проверяем каждые 5 секунд,
-  // не завершилась ли верификация на стороне МТС (через callback)
-  useEffect(() => {
-    if (!isIframeOpen) return;
-
-    const interval = setInterval(() => {
-      dispatch(fetchIdentificationStatus());
-    }, POLL_INTERVAL);
-
-    return () => clearInterval(interval);
-  }, [isIframeOpen, dispatch]);
-
-  // Если поллинг обнаружил что МТС завершил — сразу вызываем complete
-  useEffect(() => {
-    if (
-      isIframeOpen &&
-      !completeCalled.current &&
-      (identificationStatus === "identificationSucceeded" ||
-        identificationStatus === "completed" ||
-        identificationStatus === "personDataCollected")
-    ) {
-      tryComplete();
-    }
-  }, [isIframeOpen, identificationStatus, tryComplete]);
-
-  useEffect(() => {
-    if (isIframeOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isIframeOpen]);
-
   const handleClose = () => {
-    if (isLoading) return;
-
-    // Перед закрытием пробуем завершить — МТС мог уже обработать данные,
-    // но postMessage не дошёл из-за редиректа внутри iframe
-    if (!completeCalled.current) {
-      completeCalled.current = true;
-      dispatch(completeIdentification()).finally(() => {
-        dispatch(closeIframe());
-      });
-      return;
-    }
-
     dispatch(closeIframe());
   };
 
@@ -139,31 +69,19 @@ const RimIdentification = () => {
               <button
                 className={style.rim_modal__close}
                 onClick={handleClose}
-                disabled={isLoading}
                 aria-label="Закрыть"
               />
             </div>
 
-            {isLoading && status === "completing" ? (
-              <div className={style.rim_modal__loading}>
-                <div className={style.rim_modal__spinner} />
-                <p>Обработка результатов...</p>
-                <p className={style.rim_modal__loading__sub}>
-                  Пожалуйста, подождите. Данные паспорта сохраняются.
-                </p>
-              </div>
-            ) : (
-              <div className={style.rim_modal__iframe_container}>
-                <iframe
-                  ref={iframeRef}
-                  src={identificationUrl}
-                  title="MTS RIM Идентификация"
-                  className={style.rim_modal__iframe}
-                  allow="camera; microphone"
-                  sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-                />
-              </div>
-            )}
+            <div className={style.rim_modal__iframe_container}>
+              <iframe
+                src={identificationUrl}
+                title="MTS RIM Идентификация"
+                className={style.rim_modal__iframe}
+                allow="camera; microphone"
+                sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+              />
+            </div>
           </motion.div>
         </motion.div>
       )}

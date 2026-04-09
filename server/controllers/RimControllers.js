@@ -3,15 +3,38 @@ import User from "../models/User.js";
 import { getRimToken } from "../utils/mtsRimToken.js";
 
 const RIM_BASE_URL = "https://api.mts.ru/rim/2.0/api/v2";
-
-// ID приложения для доступа к fileproxy (из Postman-коллекции)
 const DC_APPLICATION_ID = "e11abd8c-b8f5-44de-8820-84b7ff602711";
-
-// Список URL для fileproxy (fallback)
 const FILE_PROXY_URLS = [
   "https://rim.idscan.mts.ru/api/v2/fileproxy",
   "https://api.mts.ru/rim/2.0/api/v2/fileproxy",
 ];
+
+// ─── Иерархия статусов (только вперёд, никогда назад) ───
+const STATUS_PRIORITY = {
+  linkCreated: 1,
+  inProgress: 2,
+  personDataCollected: 3,
+  completed: 4,
+  identificationSucceeded: 5,
+  identificationFailed: 5,
+  systemError: 5,
+};
+
+const FINAL_SUCCESS_STATUSES = [
+  "identificationSucceeded",
+  "personDataCollected",
+  "completed",
+];
+const FINAL_FAILURE_STATUSES = ["identificationFailed", "systemError"];
+
+const isHigherPriority = (newStatus, currentStatus) => {
+  if (!currentStatus) return true;
+  return (
+    (STATUS_PRIORITY[newStatus] || 0) > (STATUS_PRIORITY[currentStatus] || 0)
+  );
+};
+
+// ─── Helpers ───
 
 const rimRequest = async (method, path, data = null) => {
   const token = await getRimToken();
@@ -27,9 +50,179 @@ const rimRequest = async (method, path, data = null) => {
   return axios(config);
 };
 
-const generateExternalId = (userId) => {
-  return `oksa_${userId}`;
+const generateExternalId = (userId) => `oksa_${userId}`;
+
+// ─── Подтянуть данные из RIM и сохранить в БД ───
+// Возвращает { status, saved: boolean }
+const pullRimPersonalData = async (user) => {
+  const { applicantExternalId, lastRequestGuid } = user.rim;
+
+  const response = await rimRequest(
+    "GET",
+    `/applicants/${applicantExternalId}/identifications/${lastRequestGuid}`
+  );
+
+  const data = response.data;
+  const identification = data.identification || {};
+  const workflowData = data.workflowData || {};
+  const personalData = workflowData.personalData || {};
+  const optionalChecks = workflowData.optionalChecks || {};
+  const status = identification.status;
+
+  const canExtractData = FINAL_SUCCESS_STATUSES.includes(status);
+  const isFailed = FINAL_FAILURE_STATUSES.includes(status);
+
+  // Если статус не финальный — ничего не сохраняем, возвращаем текущий статус
+  if (!canExtractData && !isFailed) {
+    return { status, saved: false };
+  }
+
+  // Для неудачных статусов — сохраняем только статус (если он выше текущего)
+  if (isFailed) {
+    const currentStatus = user.rim?.identificationStatus;
+    if (isHigherPriority(status, currentStatus)) {
+      await User.findByIdAndUpdate(user._id, {
+        $set: { "rim.identificationStatus": status },
+      });
+    }
+    return { status, saved: true };
+  }
+
+  // Данные готовы — извлекаем и сохраняем
+  const effectiveStatus = "identificationSucceeded";
+
+  // Не перетираем уже успешный статус
+  const currentStatus = user.rim?.identificationStatus;
+  if (currentStatus === "identificationSucceeded") {
+    return { status: effectiveStatus, saved: false };
+  }
+
+  const updateFields = {
+    "rim.identificationStatus": effectiveStatus,
+    "rim.completedAt": new Date().toISOString(),
+    "rim.rawResult": data,
+  };
+
+  const doc = personalData.documents?.[0] || personalData.passport || {};
+
+  const recognizedSeries = doc.series || "";
+  const recognizedNumber = doc.number || "";
+  const seriesNumber =
+    recognizedSeries && recognizedNumber
+      ? `${recognizedSeries} ${recognizedNumber}`
+      : recognizedSeries || recognizedNumber || "";
+
+  const fullName = [
+    doc.surname || personalData.surname || "",
+    doc.firstName || personalData.firstName || "",
+    doc.middleName || personalData.middleName || "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const formatDateFromISO = (isoDate) => {
+    if (!isoDate) return "";
+    if (isoDate.includes(".") && !isoDate.includes("-")) return isoDate;
+    const parts = isoDate.split("-");
+    if (parts.length === 3) return `${parts[2]}.${parts[1]}.${parts[0]}`;
+    return isoDate;
+  };
+
+  const mapSex = (sex) => {
+    if (!sex) return "";
+    if (sex === "male") return "Мужской";
+    if (sex === "female") return "Женский";
+    return sex;
+  };
+
+  if (fullName) updateFields.fullName = fullName;
+  if (seriesNumber) updateFields["passport.series_number"] = seriesNumber;
+
+  const issuedDate = doc.issuedDate || "";
+  if (issuedDate) updateFields["passport.date"] = formatDateFromISO(issuedDate);
+
+  const issuedBy = doc.issuedBy || doc.authority || "";
+  if (issuedBy) updateFields["passport.issued_by"] = issuedBy;
+
+  const divisionCode = doc.divisionCode || doc.authorityCode || "";
+  if (divisionCode) updateFields["passport.department_code"] = divisionCode;
+
+  const birthDate = doc.birthdate || personalData.birthdate || "";
+  if (birthDate) updateFields["passport.birth"] = formatDateFromISO(birthDate);
+
+  const birthPlace = doc.birthplace || personalData.birthplace || "";
+  if (birthPlace) updateFields["passport.place_of_birth"] = birthPlace;
+
+  const gender = mapSex(doc.sex || personalData.sex || "");
+  if (gender) updateFields["passport.gender"] = gender;
+
+  if (personalData.selfiePhotoKey) {
+    updateFields["rim.selfiePhotoKey"] = personalData.selfiePhotoKey;
+  }
+  if (personalData.passport?.photoKey) {
+    updateFields["rim.passportPhotoKey"] = personalData.passport.photoKey;
+  }
+
+  const regAddr = personalData.registrationAddress;
+  if (regAddr) {
+    const addressParts = [
+      regAddr.postalCode,
+      regAddr.region,
+      regAddr.district,
+      regAddr.city,
+      regAddr.street,
+      regAddr.house ? `д. ${regAddr.house}` : null,
+      regAddr.houseBuilding ? `стр. ${regAddr.houseBuilding}` : null,
+      regAddr.flat ? `кв. ${regAddr.flat}` : null,
+    ].filter(Boolean);
+
+    if (addressParts.length > 0) {
+      updateFields["address.street"] =
+        regAddr.summary || addressParts.join(", ");
+    }
+    if (regAddr.flat) {
+      updateFields["address.apartment"] = regAddr.flat;
+    }
+    if (regAddr.registrationDate) {
+      updateFields["address.registration_date"] = formatDateFromISO(
+        regAddr.registrationDate
+      );
+    }
+    if (regAddr.photoKey) {
+      updateFields["rim.registrationPhotoKey"] = regAddr.photoKey;
+      updateFields["photos.page_with_registration_stamp"] = regAddr.photoKey;
+    }
+  }
+
+  if (optionalChecks.inn?.inn) {
+    updateFields["rim.inn"] = optionalChecks.inn.inn;
+    updateFields["inn"] = optionalChecks.inn.inn;
+  }
+  if (optionalChecks.verification !== undefined) {
+    updateFields["rim.isVerified"] = optionalChecks.verification?.isVerified;
+  }
+  if (optionalChecks.rfm !== undefined) {
+    updateFields["rim.rfmFound"] = optionalChecks.rfm?.isFound;
+  }
+  if (optionalChecks.behaviourScoring) {
+    updateFields["rim.behaviourScoring"] = optionalChecks.behaviourScoring;
+  }
+  if (data.consents) {
+    updateFields["rim.consents"] = data.consents;
+  }
+
+  await User.findByIdAndUpdate(user._id, { $set: updateFields });
+
+  console.log(
+    `[RIM] Данные сохранены. User: ${user._id}, Status: ${effectiveStatus}`
+  );
+
+  return { status: effectiveStatus, saved: true };
 };
+
+// ════════════════════════════════════════════════════════════════════
+// ENDPOINTS
+// ════════════════════════════════════════════════════════════════════
 
 export const startVerification = async (req, res) => {
   try {
@@ -37,14 +230,14 @@ export const startVerification = async (req, res) => {
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "Пользователь не найден",
-      });
+      return res
+        .status(404)
+        .json({ success: false, message: "Пользователь не найден" });
     }
 
     const externalId = generateExternalId(userId);
 
+    // Подготовка данных заявителя
     const passport = user.passport || {};
     const rawSN = String(passport.series_number || "").replace(/\s/g, "");
     const series = rawSN.slice(0, 4);
@@ -59,9 +252,7 @@ export const startVerification = async (req, res) => {
       if (!dateStr) return null;
       if (dateStr.includes("-") && dateStr.length === 10) return dateStr;
       const parts = dateStr.split(".");
-      if (parts.length === 3) {
-        return `${parts[2]}-${parts[1]}-${parts[0]}`;
-      }
+      if (parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`;
       return null;
     };
 
@@ -88,30 +279,23 @@ export const startVerification = async (req, res) => {
             }
           : undefined,
       registrationAddress: user.address?.street
-        ? {
-            city: user.address.street,
-          }
+        ? { city: user.address.street }
         : undefined,
     };
 
     const cleanApplicantData = JSON.parse(JSON.stringify(applicantData));
 
+    // Создание/обновление заявителя
     try {
       await rimRequest("POST", `/applicants`, cleanApplicantData);
-      console.log(`[RIM] Заявитель создан/обновлён: ${externalId}`);
     } catch (applicantError) {
       if (applicantError.response?.status !== 202) {
-        console.error(
-          "[RIM] Ошибка создания заявителя:",
-          applicantError.response?.data || applicantError.message
-        );
         try {
           await rimRequest(
             "PUT",
             `/applicants/${externalId}`,
             cleanApplicantData
           );
-          console.log(`[RIM] Заявитель обновлён: ${externalId}`);
         } catch (updateError) {
           console.error(
             "[RIM] Ошибка обновления заявителя:",
@@ -121,6 +305,7 @@ export const startVerification = async (req, res) => {
       }
     }
 
+    // Создание запроса на идентификацию
     const redirectUrl =
       process.env.RIM_REDIRECT_URL ||
       `${
@@ -131,15 +316,9 @@ export const startVerification = async (req, res) => {
       linkLifetimeInMinutes: 460,
       redirectUrl,
       workflowPreferences: {
-        smsNotification: {
-          isActive: false,
-        },
-        manualInput: {
-          isActive: false,
-        },
-        mobileId: {
-          isActive: false,
-        },
+        smsNotification: { isActive: false },
+        manualInput: { isActive: false },
+        mobileId: { isActive: false },
         bio: {
           isActive: true,
           allowedDocuments: ["rus.passport"],
@@ -154,15 +333,9 @@ export const startVerification = async (req, res) => {
           deepfakeCheck: true,
           lastSelfieMatching: false,
         },
-        verification: {
-          isActive: false,
-        },
-        inn: {
-          isActive: true,
-        },
-        rfm: {
-          isActive: true,
-        },
+        verification: { isActive: false },
+        inn: { isActive: true },
+        rfm: { isActive: true },
       },
     };
 
@@ -185,6 +358,8 @@ export const startVerification = async (req, res) => {
         "rim.identificationUrl": identificationUrl,
         "rim.identificationStatus": "linkCreated",
         "rim.startedAt": registeredAt || new Date().toISOString(),
+        "rim.completedAt": null,
+        "rim.rawResult": null,
       },
     });
 
@@ -192,11 +367,7 @@ export const startVerification = async (req, res) => {
       `[RIM] Идентификация создана. User: ${userId}, RequestGuid: ${requestGuid}`
     );
 
-    res.json({
-      success: true,
-      identificationUrl,
-      requestGuid,
-    });
+    res.json({ success: true, identificationUrl, requestGuid });
   } catch (error) {
     console.error(
       "[RIM] Ошибка startVerification:",
@@ -205,227 +376,15 @@ export const startVerification = async (req, res) => {
     res.status(error.response?.status || 500).json({
       success: false,
       message:
-        error.response?.data?.message ||
-        error.response?.data?.error ||
-        "Ошибка при запуске верификации",
-      details: error.response?.data,
+        error.response?.data?.message || "Ошибка при запуске верификации",
     });
   }
 };
 
-export const getIdentificationStatus = async (req, res) => {
-  try {
-    const userId = req.userId;
-    const user = await User.findById(userId);
-
-    if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Пользователь не найден" });
-    }
-
-    if (!user.rim?.applicantExternalId || !user.rim?.lastRequestGuid) {
-      return res.status(400).json({
-        success: false,
-        message: "Идентификация не была запущена",
-      });
-    }
-
-    const { applicantExternalId, lastRequestGuid } = user.rim;
-
-    const response = await rimRequest(
-      "GET",
-      `/applicants/${applicantExternalId}/identifications/${lastRequestGuid}`
-    );
-
-    const data = response.data;
-    const status = data.identification?.status;
-
-    // Не перетираем нормализованный identificationSucceeded сырым статусом МТС
-    if (user.rim.identificationStatus !== "identificationSucceeded") {
-      await User.findByIdAndUpdate(userId, {
-        $set: {
-          "rim.identificationStatus": status,
-        },
-      });
-    }
-
-    res.json({
-      success: true,
-      status,
-      statusReasons: data.identification?.statusReasons || [],
-      errors: data.identification?.errors || [],
-      data,
-    });
-  } catch (error) {
-    console.error(
-      "[RIM] Ошибка getIdentificationStatus:",
-      error.response?.data || error.message
-    );
-    res.status(error.response?.status || 500).json({
-      success: false,
-      message: "Ошибка получения статуса идентификации",
-    });
-  }
-};
-
-// Вспомогательная функция — подтягивает персональные данные из RIM API и сохраняет в БД.
-// Используется как из completeIdentification (фронтенд), так и из handleRimCallback (сервер).
-const pullRimPersonalData = async (user) => {
-  const { applicantExternalId, lastRequestGuid } = user.rim;
-
-  const response = await rimRequest(
-    "GET",
-    `/applicants/${applicantExternalId}/identifications/${lastRequestGuid}`
-  );
-
-  const data = response.data;
-  const identification = data.identification || {};
-  const workflowData = data.workflowData || {};
-  const personalData = workflowData.personalData || {};
-  const optionalChecks = workflowData.optionalChecks || {};
-
-  const status = identification.status;
-
-  // Если данные успешно получены (personDataCollected / completed) —
-  // считаем идентификацию завершённой, чтобы фронтенд корректно показывал результат
-  const isDataPulled =
-    status === "identificationSucceeded" ||
-    status === "personDataCollected" ||
-    status === "completed";
-
-  const effectiveStatus = isDataPulled ? "identificationSucceeded" : status;
-
-  const updateFields = {
-    "rim.identificationStatus": effectiveStatus,
-    "rim.completedAt": new Date().toISOString(),
-    "rim.rawResult": data,
-  };
-
-  if (isDataPulled) {
-    const doc = personalData.documents?.[0] || personalData.passport || {};
-
-    const recognizedSeries = doc.series || "";
-    const recognizedNumber = doc.number || "";
-    const seriesNumber =
-      recognizedSeries && recognizedNumber
-        ? `${recognizedSeries} ${recognizedNumber}`
-        : recognizedSeries || recognizedNumber || "";
-
-    const fullName = [
-      doc.surname || personalData.surname || "",
-      doc.firstName || personalData.firstName || "",
-      doc.middleName || personalData.middleName || "",
-    ]
-      .filter(Boolean)
-      .join(" ");
-
-    const formatDateFromISO = (isoDate) => {
-      if (!isoDate) return "";
-      if (isoDate.includes(".") && !isoDate.includes("-")) return isoDate;
-      const parts = isoDate.split("-");
-      if (parts.length === 3) {
-        return `${parts[2]}.${parts[1]}.${parts[0]}`;
-      }
-      return isoDate;
-    };
-
-    const mapSex = (sex) => {
-      if (!sex) return "";
-      if (sex === "male") return "Мужской";
-      if (sex === "female") return "Женский";
-      return sex;
-    };
-
-    if (fullName) updateFields.fullName = fullName;
-    if (seriesNumber) updateFields["passport.series_number"] = seriesNumber;
-
-    const issuedDate = doc.issuedDate || "";
-    if (issuedDate)
-      updateFields["passport.date"] = formatDateFromISO(issuedDate);
-
-    const issuedBy = doc.issuedBy || doc.authority || "";
-    if (issuedBy) updateFields["passport.issued_by"] = issuedBy;
-
-    const divisionCode = doc.divisionCode || doc.authorityCode || "";
-    if (divisionCode) updateFields["passport.department_code"] = divisionCode;
-
-    const birthDate = doc.birthdate || personalData.birthdate || "";
-    if (birthDate)
-      updateFields["passport.birth"] = formatDateFromISO(birthDate);
-
-    const birthPlace = doc.birthplace || personalData.birthplace || "";
-    if (birthPlace) updateFields["passport.place_of_birth"] = birthPlace;
-
-    const gender = mapSex(doc.sex || personalData.sex || "");
-    if (gender) updateFields["passport.gender"] = gender;
-
-    if (personalData.selfiePhotoKey) {
-      updateFields["rim.selfiePhotoKey"] = personalData.selfiePhotoKey;
-    }
-    if (personalData.passport?.photoKey) {
-      updateFields["rim.passportPhotoKey"] = personalData.passport.photoKey;
-    }
-    if (personalData.registrationAddress?.photoKey) {
-      updateFields["rim.registrationPhotoKey"] =
-        personalData.registrationAddress.photoKey;
-    }
-
-    const regAddr = personalData.registrationAddress;
-    if (regAddr) {
-      const addressParts = [
-        regAddr.postalCode,
-        regAddr.region,
-        regAddr.district,
-        regAddr.city,
-        regAddr.street,
-        regAddr.house ? `д. ${regAddr.house}` : null,
-        regAddr.houseBuilding ? `стр. ${regAddr.houseBuilding}` : null,
-        regAddr.flat ? `кв. ${regAddr.flat}` : null,
-      ].filter(Boolean);
-
-      if (addressParts.length > 0) {
-        updateFields["address.street"] =
-          regAddr.summary || addressParts.join(", ");
-      }
-      if (regAddr.flat) {
-        updateFields["address.apartment"] = regAddr.flat;
-      }
-      if (regAddr.registrationDate) {
-        updateFields["address.registration_date"] = formatDateFromISO(regAddr.registrationDate);
-      }
-      if (regAddr.photoKey) {
-        updateFields["rim.registrationPhotoKey"] = regAddr.photoKey;
-        updateFields["photos.page_with_registration_stamp"] =
-          regAddr.photoKey;
-      }
-    }
-
-    if (optionalChecks.inn?.inn) {
-      updateFields["rim.inn"] = optionalChecks.inn.inn;
-      updateFields["inn"] = optionalChecks.inn.inn;
-    }
-    if (optionalChecks.verification !== undefined) {
-      updateFields["rim.isVerified"] =
-        optionalChecks.verification?.isVerified;
-    }
-    if (optionalChecks.rfm !== undefined) {
-      updateFields["rim.rfmFound"] = optionalChecks.rfm?.isFound;
-    }
-    if (optionalChecks.behaviourScoring) {
-      updateFields["rim.behaviourScoring"] = optionalChecks.behaviourScoring;
-    }
-
-    if (data.consents) {
-      updateFields["rim.consents"] = data.consents;
-    }
-  }
-
-  await User.findByIdAndUpdate(user._id, { $set: updateFields });
-
-  return { status: effectiveStatus, identification, updateFields };
-};
-
+// ─── completeIdentification ───
+// Вызывается фронтендом после закрытия iframe.
+// Идемпотентный: если уже завершён — возвращает кеш.
+// Если данные ещё не готовы — возвращает {status: "pending"}, фронтенд повторяет.
 export const completeIdentification = async (req, res) => {
   try {
     const userId = req.userId;
@@ -437,6 +396,24 @@ export const completeIdentification = async (req, res) => {
         .json({ success: false, message: "Пользователь не найден" });
     }
 
+    // Уже завершён — сразу возвращаем
+    if (user.rim?.identificationStatus === "identificationSucceeded") {
+      return res.json({
+        success: true,
+        status: "identificationSucceeded",
+        isSucceeded: true,
+      });
+    }
+
+    // Уже провален — сразу возвращаем
+    if (FINAL_FAILURE_STATUSES.includes(user.rim?.identificationStatus)) {
+      return res.json({
+        success: true,
+        status: user.rim.identificationStatus,
+        isSucceeded: false,
+      });
+    }
+
     if (!user.rim?.applicantExternalId || !user.rim?.lastRequestGuid) {
       return res.status(400).json({
         success: false,
@@ -444,34 +421,21 @@ export const completeIdentification = async (req, res) => {
       });
     }
 
-    const { status, identification, updateFields } =
-      await pullRimPersonalData(user);
+    // Пытаемся вытянуть данные из RIM
+    const result = await pullRimPersonalData(user);
 
     console.log(
-      `[RIM] Идентификация завершена. User: ${userId}, Status: ${status}`
+      `[RIM] completeIdentification. User: ${userId}, Status: ${result.status}, Saved: ${result.saved}`
     );
 
-    const isSucceeded = status === "identificationSucceeded";
+    const isSucceeded = result.status === "identificationSucceeded";
+    const isFailed = FINAL_FAILURE_STATUSES.includes(result.status);
+    const isPending = !isSucceeded && !isFailed;
 
     res.json({
       success: true,
-      status,
-      statusReasons: identification.statusReasons || [],
+      status: isPending ? "pending" : result.status,
       isSucceeded,
-      personalData: isSucceeded
-        ? {
-            fullName: updateFields.fullName,
-            passport: {
-              seriesNumber: updateFields["passport.series_number"],
-              date: updateFields["passport.date"],
-              issuedBy: updateFields["passport.issued_by"],
-              departmentCode: updateFields["passport.department_code"],
-              birth: updateFields["passport.birth"],
-              placeOfBirth: updateFields["passport.place_of_birth"],
-              gender: updateFields["passport.gender"],
-            },
-          }
-        : null,
     });
   } catch (error) {
     console.error(
@@ -485,10 +449,11 @@ export const completeIdentification = async (req, res) => {
   }
 };
 
+// ─── Callback от MTS ───
+// Самый надёжный путь получения данных.
 export const handleRimCallback = async (req, res) => {
   try {
     const { requestId, status } = req.body;
-
     console.log(`[RIM Callback] requestId: ${requestId}, status: ${status}`);
 
     if (!requestId) {
@@ -497,40 +462,45 @@ export const handleRimCallback = async (req, res) => {
 
     const user = await User.findOne({ "rim.lastRequestGuid": requestId });
 
-    if (user) {
-      await User.findByIdAndUpdate(user._id, {
-        $set: {
-          "rim.identificationStatus":
-            status === "completed" ? "completed" : status,
-          "rim.callbackReceivedAt": new Date().toISOString(),
-        },
-      });
-      console.log(
-        `[RIM Callback] Статус обновлён для пользователя: ${user._id}`
-      );
-
-      // Сразу подтягиваем персональные данные из RIM, не дожидаясь фронтенда
-      if (
-        status === "completed" ||
-        status === "identificationSucceeded" ||
-        status === "personDataCollected"
-      ) {
-        try {
-          await pullRimPersonalData(user);
-          console.log(
-            `[RIM Callback] Персональные данные подтянуты для пользователя: ${user._id}`
-          );
-        } catch (pullError) {
-          console.error(
-            `[RIM Callback] Ошибка подтягивания данных:`,
-            pullError.message
-          );
-        }
-      }
-    } else {
+    if (!user) {
       console.warn(
         `[RIM Callback] Пользователь не найден для requestId: ${requestId}`
       );
+      return res.status(200).json({ received: true });
+    }
+
+    // Обновляем статус callback'а
+    await User.findByIdAndUpdate(user._id, {
+      $set: { "rim.callbackReceivedAt": new Date().toISOString() },
+    });
+
+    // Если финальный статус — подтягиваем данные
+    if (
+      status === "completed" ||
+      status === "identificationSucceeded" ||
+      status === "personDataCollected"
+    ) {
+      try {
+        const result = await pullRimPersonalData(user);
+        console.log(
+          `[RIM Callback] Данные подтянуты. User: ${user._id}, Status: ${result.status}`
+        );
+      } catch (pullError) {
+        console.error(
+          `[RIM Callback] Ошибка подтягивания данных:`,
+          pullError.message
+        );
+      }
+    }
+
+    // Если провал — сохраняем статус
+    if (status === "identificationFailed" || status === "systemError") {
+      const currentStatus = user.rim?.identificationStatus;
+      if (isHigherPriority(status, currentStatus)) {
+        await User.findByIdAndUpdate(user._id, {
+          $set: { "rim.identificationStatus": status },
+        });
+      }
     }
 
     res.status(200).json({ received: true });
@@ -540,6 +510,7 @@ export const handleRimCallback = async (req, res) => {
   }
 };
 
+// ─── Получить текущий статус из БД (без вызовов RIM API) ───
 export const getCurrentIdentification = async (req, res) => {
   try {
     const userId = req.userId;
@@ -552,10 +523,7 @@ export const getCurrentIdentification = async (req, res) => {
     }
 
     if (!user.rim?.lastRequestGuid) {
-      return res.json({
-        success: true,
-        hasIdentification: false,
-      });
+      return res.json({ success: true, hasIdentification: false });
     }
 
     res.json({
@@ -571,33 +539,49 @@ export const getCurrentIdentification = async (req, res) => {
   }
 };
 
-/**
- * Получение фото из RIM через fileproxy
- * Пробует несколько URL (fallback) пока не получит 200
- */
+// ─── Получить статус из RIM API (для отладки, не используется фронтом) ───
+export const getIdentificationStatus = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+
+    if (!user?.rim?.applicantExternalId || !user?.rim?.lastRequestGuid) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Идентификация не была запущена" });
+    }
+
+    // Просто возвращаем статус из БД, НЕ перетираем его вызовом к RIM API
+    res.json({
+      success: true,
+      status: user.rim.identificationStatus,
+    });
+  } catch (error) {
+    console.error("[RIM] Ошибка getIdentificationStatus:", error.message);
+    res
+      .status(500)
+      .json({ success: false, message: "Ошибка получения статуса" });
+  }
+};
+
+// ─── Фото из RIM ───
 export const getRimPhoto = async (req, res) => {
   try {
-    // Express 5 wildcard возвращает массив сегментов пути
     const raw = req.params.objectName || req.params[0];
     const objectName = Array.isArray(raw) ? raw.join("/") : raw;
 
     if (!objectName) {
-      return res.status(400).json({
-        success: false,
-        message: "objectName не указан",
-      });
+      return res
+        .status(400)
+        .json({ success: false, message: "objectName не указан" });
     }
 
     const token = await getRimToken();
-
     const headers = {
       Authorization: `Bearer ${token}`,
       "dc-application-id": DC_APPLICATION_ID,
     };
 
-    console.log(`[RIM Photo] Запрос фото: ${objectName}`);
-
-    // Пробуем каждый URL по очереди
     let lastError = null;
     for (const baseUrl of FILE_PROXY_URLS) {
       const fullUrl = `${baseUrl}/${objectName}`;
@@ -608,49 +592,19 @@ export const getRimPhoto = async (req, res) => {
           timeout: 15000,
         });
 
-        console.log(
-          `[RIM Photo] Успех: ${baseUrl} => ${response.status} (${response.headers["content-type"]})`
-        );
-
         const contentType = response.headers["content-type"] || "image/jpeg";
         res.setHeader("Content-Type", contentType);
         res.setHeader("Cache-Control", "private, max-age=3600");
         return res.send(response.data);
       } catch (err) {
-        const status = err.response?.status || "N/A";
-        console.warn(`[RIM Photo] ${baseUrl} => ${status}`);
         lastError = err;
       }
     }
 
-    // Все URL вернули ошибку
     const errStatus = lastError?.response?.status || 500;
-    const errData = lastError?.response?.data;
-    let errMessage = "Фото не найдено";
-
-    if (errData) {
-      try {
-        const parsed =
-          typeof errData === "string"
-            ? errData
-            : Buffer.isBuffer(errData)
-            ? errData.toString("utf-8")
-            : JSON.stringify(errData);
-        console.error(`[RIM Photo] Ответ MTS:`, parsed);
-      } catch (_) {
-        console.error(`[RIM Photo] Ответ MTS: не удалось прочитать`);
-      }
-    }
-
-    res.status(errStatus).json({
-      success: false,
-      message: errMessage,
-    });
+    res.status(errStatus).json({ success: false, message: "Фото не найдено" });
   } catch (error) {
     console.error("[RIM] Ошибка getRimPhoto:", error.message);
-    res.status(500).json({
-      success: false,
-      message: "Ошибка получения фото",
-    });
+    res.status(500).json({ success: false, message: "Ошибка получения фото" });
   }
 };
