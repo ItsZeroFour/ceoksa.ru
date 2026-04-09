@@ -241,11 +241,14 @@ export const getIdentificationStatus = async (req, res) => {
     const data = response.data;
     const status = data.identification?.status;
 
-    await User.findByIdAndUpdate(userId, {
-      $set: {
-        "rim.identificationStatus": status,
-      },
-    });
+    // Не перетираем нормализованный identificationSucceeded сырым статусом МТС
+    if (user.rim.identificationStatus !== "identificationSucceeded") {
+      await User.findByIdAndUpdate(userId, {
+        $set: {
+          "rim.identificationStatus": status,
+        },
+      });
+    }
 
     res.json({
       success: true,
