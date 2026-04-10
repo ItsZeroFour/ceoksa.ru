@@ -261,6 +261,13 @@
   margin-top: 5px !important ;
 }
 
+.auth__code__loading {
+  font-size: 14px;
+  color: var(--color-gray);
+  margin-top: 10px;
+  text-align: center;
+}
+
 .auth__code__newcode {
   width: 100%;
   padding: 20px;
