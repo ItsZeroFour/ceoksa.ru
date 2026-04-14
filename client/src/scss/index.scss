@@ -576,13 +576,13 @@ button {
   background: var(--color-gray-secondary);
   padding: 2px;
   width: 385px;
-  border-radius: 20px;
+  border-radius: 80px;
   margin-top: 30px;
 
   button {
     width: 50%;
     padding: 10px;
-    border-radius: 18px;
+    border-radius: 80px;
     background: none;
     color: var(--color-credits-nav);
   }
