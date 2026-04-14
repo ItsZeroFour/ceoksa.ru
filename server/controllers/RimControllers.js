@@ -177,12 +177,7 @@ const pullRimPersonalData = async (user) => {
   if (optionalChecks.verification !== undefined) {
     updateFields["rim.isVerified"] = optionalChecks.verification?.isVerified;
   }
-  if (optionalChecks.rfm !== undefined) {
-    updateFields["rim.rfmFound"] = optionalChecks.rfm?.isFound;
-  }
-  if (optionalChecks.behaviourScoring) {
-    updateFields["rim.behaviourScoring"] = optionalChecks.behaviourScoring;
-  }
+
   if (data.consents) {
     updateFields["rim.consents"] = data.consents;
   }
@@ -304,7 +299,7 @@ export const startVerification = async (req, res) => {
         },
         verification: { isActive: false },
         inn: { isActive: true },
-        rfm: { isActive: true },
+        rfm: { isActive: false },
       },
     };
 
