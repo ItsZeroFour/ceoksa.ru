@@ -23,10 +23,8 @@ const EMPLOYMENT_TYPES = [
 ];
 
 const dateMask = {
-  mask: Date,
-  pattern: "d{.}`m{.}`Y",
+  mask: "m{.}`Y",
   blocks: {
-    d: { mask: IMask.MaskedRange, from: 1, to: 31, maxLength: 2 },
     m: { mask: IMask.MaskedRange, from: 1, to: 12, maxLength: 2 },
     Y: { mask: IMask.MaskedRange, from: 1900, to: 2099, maxLength: 4 },
   },
@@ -157,7 +155,7 @@ const PlaceOfWork = () => {
   const startDateInitialized = useRef(false);
 
   const [startDateRef] = useIMask(dateMask, (value) => {
-    const err = value && value.length < 10 ? "Введите полную дату" : "";
+    const err = value && value.length < 7 ? "Введите месяц и год" : "";
     setErrors((prev) => ({ ...prev, start_date: err }));
     if (!err) {
       const newFormData = { ...formDataRef.current, start_date: value };
@@ -241,7 +239,7 @@ const PlaceOfWork = () => {
                   <InputField
                     icon={Work}
                     label="Начало работы"
-                    placeholder="Дата начала работы"
+                    placeholder="ММ.ГГГГ"
                     id="start_date"
                     type="text"
                     inputMode="numeric"
