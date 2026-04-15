@@ -1,4 +1,5 @@
 import bodyParser from "body-parser";
+import compression from "compression";
 import cors from "cors";
 import dotenv from "dotenv";
 
@@ -34,6 +35,7 @@ const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 
 /* MIDDLEWARES */
+app.use(compression());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.json({ limit: "50mb" }));
@@ -58,8 +60,8 @@ app.use(
     parameterLimit: 1000000,
   })
 );
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-app.use("/files", express.static(path.join(__dirname, "files")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads"), { maxAge: "7d" }));
+app.use("/files", express.static(path.join(__dirname, "files"), { maxAge: "30d" }));
 
 /**
  * Загрузка изображений
