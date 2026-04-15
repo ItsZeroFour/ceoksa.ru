@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /d/PACK/Programming/React/ceoksa.ru/client/public -type f -exec ls -lh {} \\\\;)",
+      "Bash(find /d/PACK/Programming/React/ceoksa.ru/client/src/assets -type f -exec ls -lh {} \\\\;)",
+      "Bash(sort -k5 -h)",
+      "Bash(find /d/PACK/Programming/React/ceoksa.ru/client/src/scss -name \"*.scss\" -exec wc -l {} +)",
+      "Bash(find:*)",
+      "Bash(xargs -I {} wc -l {})",
+      "Bash(npm install:*)"
+    ]
+  }
+}

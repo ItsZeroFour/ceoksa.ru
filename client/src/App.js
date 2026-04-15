@@ -1,24 +1,24 @@
-import { lazy, Suspense, useState, useEffect, useRef } from "react";
+import { lazy, Suspense, useState, useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
-import LoanApplication from "./pages/account/loan_application/LoanApplication";
 import useDisableScroll from "./hooks/useDisableScroll";
-import Credits from "./pages/account/credits/Credits";
-import Rating from "./pages/account/rating/Rating";
-import Profile from "./pages/account/profile/Profile";
 import { ThemeProvider } from "./context/ThemeContext";
 import Auth from "./components/auth/Auth";
-import Policy from "./pages/policy/Policy";
-import UserAgreement from "./pages/user_agreement/UserAgreement";
-import PersonalData from "./pages/account/files/PersonalData";
-import ADS from "./pages/account/files/ADS";
 import Cookies from "./components/cookies/Cookies";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMe } from "./redux/slices/auth/authSlice";
 import ScrollToTop from "./components/ScrollToTop/ScrollToTop";
-
 import Header from "./components/header/Header";
+
 const Main = lazy(() => import("./pages/main/Main"));
 const Footer = lazy(() => import("./components/footer/Footer"));
+const LoanApplication = lazy(() => import("./pages/account/loan_application/LoanApplication"));
+const Credits = lazy(() => import("./pages/account/credits/Credits"));
+const Rating = lazy(() => import("./pages/account/rating/Rating"));
+const Profile = lazy(() => import("./pages/account/profile/Profile"));
+const Policy = lazy(() => import("./pages/policy/Policy"));
+const UserAgreement = lazy(() => import("./pages/user_agreement/UserAgreement"));
+const PersonalData = lazy(() => import("./pages/account/files/PersonalData"));
+const ADS = lazy(() => import("./pages/account/files/ADS"));
 
 const ProtectedRoute = ({ children, userData, userStatus }) => {
   if (userStatus === "idle" || userStatus === "loading") {
