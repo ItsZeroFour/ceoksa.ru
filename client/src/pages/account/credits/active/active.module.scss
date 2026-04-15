@@ -262,7 +262,8 @@
       }
 
       &:last-child {
-        background: var(--color-blue);
+        // background: var(--color-blue);
+        background: red;
         color: var(--color-white);
         border: 1px solid var(--color-blue);
 
