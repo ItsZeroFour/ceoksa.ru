@@ -49,10 +49,10 @@ const Header = ({
           </div>
 
           <div className={style.header__buttons}>
-            <button className={style.header__button_business}>
+            {/* <button className={style.header__button_business}>
               <Business />
               <p>Бизнесу</p>
-            </button>
+            </button> */}
 
             {userStatus === "succeeded" && userData ? (
               <Link

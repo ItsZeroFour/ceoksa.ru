@@ -13,7 +13,7 @@ import { Link, useLocation } from "react-router-dom";
 const personalItems = [
   { icon: <List />, text: "Заявка на кредит", path: "/loan_applications" },
   { icon: <Money />, text: "Кредиты", path: "/credits" },
-  { icon: <Rate />, text: "Кредитный рейтинг", path: "#" },
+  // { icon: <Rate />, text: "Кредитный рейтинг", path: "#" },
   { icon: <Profile />, text: "Профиль", path: "#" },
 ];
 
@@ -76,7 +76,7 @@ const LeftPanel = () => {
             </motion.div>
           </li>
 
-          <li>
+          {/* <li>
             <motion.button
               className={`${style.left_panel__item} ${
                 isBusinessOpen ? style.left_panel__item__active : ""
@@ -123,7 +123,7 @@ const LeftPanel = () => {
                 ))}
               </ul>
             </motion.div>
-          </li>
+          </li> */}
         </ul>
       </div>
     </section>
