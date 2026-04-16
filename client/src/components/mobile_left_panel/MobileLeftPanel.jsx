@@ -18,7 +18,7 @@ import axios from "../../utils/axios";
 const personalItems = [
   { icon: <List />, text: "Заявка на кредит", path: "/loan_applications" },
   { icon: <Money />, text: "Кредиты", path: "/credits" },
-  { icon: <Rate />, text: "Кредитный рейтинг", path: "#" },
+  // { icon: <Rate />, text: "Кредитный рейтинг", path: "#" },
   { icon: <Profile />, text: "Профиль", path: "/profile" },
 ];
 
@@ -152,7 +152,7 @@ const MobileLeftPanel = ({ setOpenMenu, openMenu }) => {
                       </ul>
                     </motion.div>
                   </li>
-
+{/* 
                   <li>
                     <motion.button
                       className={`${style.left_panel__item} ${
@@ -203,7 +203,7 @@ const MobileLeftPanel = ({ setOpenMenu, openMenu }) => {
                         ))}
                       </ul>
                     </motion.div>
-                  </li>
+                  </li> */}
                 </ul>
 
                 <button
