@@ -17,7 +17,7 @@ import axios from "../../utils/axios";
 
 const personalItems = [
   { icon: <List />, text: "Заявка на кредит", path: "/loan_applications" },
-  { icon: <Money />, text: "Кредиты", path: "/credits" },
+  { icon: <Money />, text: "Предложение банков", path: "/credits" },
   // { icon: <Rate />, text: "Кредитный рейтинг", path: "#" },
   { icon: <Profile />, text: "Профиль", path: "/profile" },
 ];
@@ -127,18 +127,8 @@ const MobileLeftPanel = ({ setOpenMenu, openMenu }) => {
                     >
                       <ul>
                         {personalItems.map((item, index) => (
-                          <motion.li
+                          <li
                             key={index}
-                            initial={{ x: -20, opacity: 0 }}
-                            animate={{
-                              x: 0,
-                              opacity: isPersonalOpen ? 1 : 0,
-                            }}
-                            transition={{
-                              duration: 0.25,
-                              delay: isPersonalOpen ? 0.1 + index * 0.04 : 0,
-                              ease: "easeOut",
-                            }}
                             className={isActive(item.path) ? style.active : ""}
                           >
                             {item.path === "#" ? (
@@ -155,12 +145,12 @@ const MobileLeftPanel = ({ setOpenMenu, openMenu }) => {
                                 <p>{item.text}</p>
                               </Link>
                             )}
-                          </motion.li>
+                          </li>
                         ))}
                       </ul>
                     </motion.div>
                   </li>
-{/* 
+{/*
                   <li>
                     <motion.button
                       className={`${style.left_panel__item} ${
