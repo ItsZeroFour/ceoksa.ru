@@ -77,6 +77,14 @@ const MobileLeftPanel = ({ setOpenMenu, openMenu }) => {
                 ease: "easeIn",
               },
             }}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={{ left: 0.4, right: 0 }}
+            onDragEnd={(event, info) => {
+              if (info.offset.x < -50 || info.velocity.x < -300) {
+                setOpenMenu(false);
+              }
+            }}
           >
             <div className={style.mobile_left_panel__container}>
               <div className={style.mobile_left_panel__logo}>
