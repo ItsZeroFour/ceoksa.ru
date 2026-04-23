@@ -159,6 +159,15 @@ button {
 
 .loan_application__main {
   width: 100%;
+
+  h1 {
+    font-size: 40px;
+    font-weight: 600;
+
+    @media (max-width: 480px) {
+      font-size: 32px;
+    }
+  }
 }
 
 .animated-wrapper {
