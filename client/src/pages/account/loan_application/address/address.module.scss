@@ -89,9 +89,11 @@
     margin-top: 2px;
     font-weight: 300;
     width: 85%;
+    font-size: 16px;
 
     @media (max-width: 480px) {
       margin-top: -5px;
+      font-size: 14px;
     }
   }
 
