@@ -115,10 +115,10 @@
   align-items: end;
 
   button {
-    padding: 14px 50px;
+    padding: 20px 50px;
     background: var(--color-blue);
-    font-size: 15px;
-    font-weight: 500;
+    font-size: 17px;
+    font-weight: 600;
     color: var(--color-white);
     border-radius: 60px;
 
@@ -128,8 +128,13 @@
       opacity: 0.8;
     }
 
+    @media (max-width: 1024px) {
+      font-size: 14px;
+    }
+
     @media (max-width: 550px) {
       width: 100%;
+      padding: 15px;
     }
   }
 
