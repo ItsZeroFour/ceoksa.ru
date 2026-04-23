@@ -10,19 +10,36 @@
   p {
     margin-top: 15px;
     font-weight: 300;
+
+    @media (max-width: 550px) {
+      font-size: 14px;
+    }
   }
 
   h2 {
     font-size: 26px;
     font-weight: 500;
+
+    @media (max-width: 550px) {
+      font-size: 20px;
+    }
   }
 
   button {
     margin-top: 50px;
-    padding: 15px 60px;
+    padding: 20px 60px;
     font-size: 17px;
     border-radius: 50px;
     background: var(--color-blue);
     color: var(--color-white);
+
+    @media (max-width: 1024px) {
+      font-size: 14px;
+    }
+
+    @media (max-width: 550px) {
+      padding: 15px;
+      width: 100%;
+    }
   }
 }
