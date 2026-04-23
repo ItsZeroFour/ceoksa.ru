@@ -1,7 +1,7 @@
 .button {
   width: 100%;
   padding: 20px;
-  border-radius: 16px;
+  border-radius: 60px;
 
   background: #d9d9d9;
   color: #b7b7b7;
@@ -15,7 +15,18 @@
 
   img {
     width: 24px;
-    height: auto;
+    height: 24px;
+    object-fit: contain;
     filter: grayscale(100%);
+  }
+
+  @media (max-width: 430px) {
+    font-size: 14px;
+    padding: 18px;
+
+    img {
+      width: 1em;
+      height: 1em;
+    }
   }
 }
