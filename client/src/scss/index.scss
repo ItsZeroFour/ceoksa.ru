@@ -225,6 +225,9 @@ button {
     color: var(--color-white);
     border-radius: 60px;
     font-size: 17px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   @media (max-width: 860px) {
@@ -479,7 +482,8 @@ button {
 
   img {
     width: 24px;
-    height: auto;
+    height: 24px;
+    object-fit: contain;
     filter: grayscale(100%);
   }
 
