@@ -485,6 +485,11 @@ button {
     height: 24px;
     object-fit: contain;
     filter: grayscale(100%);
+
+    @media (max-width: 860px) {
+      width: 1em;
+      height: 1em;
+    }
   }
 
   @media (max-width: 1450px) {
