@@ -30,9 +30,7 @@ body {
   overflow-x: hidden !important;
 
   -webkit-tap-highlight-color: transparent;
-  transition:
-    background-color 0.3s,
-    color 0.3s;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 html {
@@ -618,6 +616,16 @@ button {
 .rating__main,
 .profile__main {
   width: 100%;
+}
+
+.credits__main {
+  h1 {
+    font-size: 40px;
+
+    @media (max-width: 480px) {
+      font-size: 32px;
+    }
+  }
 }
 
 .circle-progress {

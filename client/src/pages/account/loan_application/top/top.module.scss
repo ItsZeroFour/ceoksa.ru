@@ -30,11 +30,19 @@
 }
 
 .top {
+  h1 {
+    font-size: 40px;
+
+    @media (max-width: 480px) {
+      font-size: 32px;
+    }
+  }
+
   @media (max-width: 1200px) {
     margin-top: 30px;
   }
 
-  @media (max-width: 550px) {
+  @media (max-width: 420px) {
     h1 {
       font-size: 28px;
     }
