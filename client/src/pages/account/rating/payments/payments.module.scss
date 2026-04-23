@@ -96,7 +96,7 @@
   align-items: center;
 
   button {
-    padding: 14px 59px;
+    padding: 20px 59px;
     background: var(--color-payments-button-bg);
     border-radius: 14px;
     font-weight: 600;
@@ -116,7 +116,7 @@
     }
 
     @media (max-width: 480px) {
-      padding: 14px;
+      padding: 15px;
     }
   }
 
