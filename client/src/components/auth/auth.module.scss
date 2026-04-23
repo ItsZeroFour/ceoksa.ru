@@ -126,9 +126,10 @@
         width: 100%;
         margin-top: 12px;
         padding: 20px;
-        border-radius: 14px;
+        border-radius: 60px;
         background: var(--color-blue);
         color: var(--color-white);
+        font-size: 17px;
         transition: all 0.2s ease;
 
         &:hover {
@@ -137,6 +138,7 @@
 
         @media (max-width: 430px) {
           font-size: 14px;
+          padding: 18px;
         }
       }
 
