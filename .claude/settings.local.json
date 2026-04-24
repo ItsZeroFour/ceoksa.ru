@@ -7,7 +7,8 @@
       "Bash(find /d/PACK/Programming/React/ceoksa.ru/client/src/scss -name \"*.scss\" -exec wc -l {} +)",
       "Bash(find:*)",
       "Bash(xargs -I {} wc -l {})",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(xargs ls *)"
     ]
   }
 }
