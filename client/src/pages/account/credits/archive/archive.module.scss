@@ -33,12 +33,12 @@
     background: var(--color-blue);
     color: var(--color-white);
 
-    @media (max-width: 1024px) {
+    @media (max-width: 860px) {
       font-size: 14px;
     }
 
-    @media (max-width: 550px) {
-      padding: 15px;
+    @media (max-width: 768px) {
+      padding: 18px;
       width: 100%;
     }
   }
