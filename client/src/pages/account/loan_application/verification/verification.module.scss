@@ -130,6 +130,10 @@
   font-weight: 600;
   transition: opacity 0.2s;
   cursor: pointer;
+  min-height: 64px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
   &:hover {
     opacity: 0.85;
@@ -140,13 +144,19 @@
     cursor: not-allowed;
   }
 
-  @media (max-width: 1024px) {
+  @media (max-width: 860px) {
     font-size: 14px;
+    min-height: 54px;
+  }
+
+  @media (max-width: 768px) {
+    padding: 18px 40px;
+    min-height: 50px;
   }
 
   @media (max-width: 550px) {
     width: 100%;
-    padding: 15px;
+    padding: 18px;
   }
 }
 

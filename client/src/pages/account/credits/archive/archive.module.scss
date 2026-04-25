@@ -32,14 +32,20 @@
     border-radius: 50px;
     background: var(--color-blue);
     color: var(--color-white);
+    min-height: 64px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
     @media (max-width: 860px) {
       font-size: 14px;
+      min-height: 54px;
     }
 
     @media (max-width: 768px) {
       padding: 18px;
       width: 100%;
+      min-height: 50px;
     }
   }
 }

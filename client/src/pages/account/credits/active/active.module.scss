@@ -247,19 +247,22 @@
       padding: 20px;
       border-radius: 50px;
       font-size: 17px;
+      min-height: 64px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
 
       @media (max-width: 860px) {
         font-size: 14px;
+        min-height: 54px;
       }
 
       @media (max-width: 768px) {
         padding: 18px;
+        min-height: 50px;
       }
 
       &:first-child {
-        display: flex;
-        align-items: center;
-        justify-content: center;
         gap: 10px;
         background: var(--color-credits-bg);
         border: 1px solid var(--color-credits-border);
@@ -267,6 +270,9 @@
 
         svg {
           color: var(--color-black);
+          width: 1em;
+          height: 1em;
+          flex-shrink: 0;
         }
       }
 
