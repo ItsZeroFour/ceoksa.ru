@@ -121,6 +121,10 @@
     font-weight: 600;
     color: var(--color-white);
     border-radius: 60px;
+    min-height: 64px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
     transition: all 0.2s ease;
 
@@ -130,11 +134,13 @@
 
     @media (max-width: 860px) {
       font-size: 14px;
+      min-height: 54px;
     }
 
     @media (max-width: 768px) {
       width: 100%;
       padding: 18px;
+      min-height: 50px;
     }
   }
 

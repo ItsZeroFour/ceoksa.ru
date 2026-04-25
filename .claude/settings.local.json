@@ -8,7 +8,10 @@
       "Bash(find:*)",
       "Bash(xargs -I {} wc -l {})",
       "Bash(npm install:*)",
-      "Bash(xargs ls *)"
+      "Bash(xargs ls *)",
+      "Bash(BROWSER=none npm start)",
+      "Bash(ls -la /tmp/)",
+      "Read(//c/Users/lanin/AppData/Local/Temp/claude/D--PACK-Programming-React-ceoksa-ru/c57be5fa-d01a-4387-87bb-dfe6f5aa9309/tasks//**)"
     ]
   }
 }
