@@ -11,6 +11,8 @@ export const ThemeProvider = ({ children }) => {
   const [isSystemTheme, setIsSystemTheme] = useState(!savedTheme);
 
   useEffect(() => {
+    document.documentElement.style.removeProperty("--color-bg");
+    document.documentElement.style.removeProperty("--color-text");
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
 
