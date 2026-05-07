@@ -23,7 +23,7 @@
 
   background: var(--color-gray-secondary);
   padding: 20px;
-  border-radius: 16px;
+  border-radius: 35px;
   width: 100%;
 
   h4 {
@@ -89,7 +89,7 @@
   padding: 20px;
   background: var(--color-gray-secondary);
   margin-top: 17px;
-  border-radius: 16px;
+  border-radius: 35px;
 
   display: flex;
   justify-content: space-between;
@@ -175,7 +175,7 @@
 .modal__wrapper {
   width: 720px;
   background: var(--color-payments-modal-bg);
-  border-radius: 16px;
+  border-radius: 35px;
   padding: 35px;
 
   position: relative;
@@ -212,7 +212,7 @@
 
       padding: 10px 15px;
       background: var(--color-block-bg);
-      border-radius: 16px;
+      border-radius: 35px;
 
       label {
         font-size: 13px;
