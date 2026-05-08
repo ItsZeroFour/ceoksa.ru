@@ -1,0 +1,75 @@
+.archive {
+  background: var(--color-gray-secondary);
+  border-radius: 50px;
+  padding: 22px;
+  margin-top: 25px;
+
+  @media (max-width: 768px) {
+    padding: 16px;
+    border-radius: 35px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 12px;
+    border-radius: 28px;
+    margin-top: 18px;
+  }
+}
+
+.archive__list {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+
+  @media (max-width: 480px) {
+    gap: 18px;
+  }
+}
+
+/* пустой стейт */
+.archive_empty {
+  background: var(--color-gray-secondary);
+  border-radius: 50px;
+  padding: 22px;
+  margin-top: 25px;
+
+  @media (max-width: 768px) {
+    padding: 16px;
+    border-radius: 35px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 12px;
+    border-radius: 28px;
+    margin-top: 18px;
+  }
+}
+
+.archive_empty__inner {
+  background: var(--color-block-bg);
+  border-radius: 28px;
+  padding: 35px;
+
+  h2 {
+    font-size: 22px;
+    font-weight: 500;
+
+    @media (max-width: 550px) {
+      font-size: 18px;
+    }
+  }
+
+  p {
+    margin-top: 12px;
+    font-weight: 300;
+
+    @media (max-width: 550px) {
+      font-size: 14px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 22px;
+    border-radius: 22px;
+  }
+}
