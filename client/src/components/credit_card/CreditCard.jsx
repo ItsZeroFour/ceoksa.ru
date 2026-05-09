@@ -4,6 +4,7 @@ import style from "./creditcard.module.scss";
 import { ReactComponent as Calendar } from "../../assets/icons/profile/calendar.svg";
 import { ReactComponent as Angle } from "../../assets/icons/angle.svg";
 import { useNavigate } from "react-router-dom";
+import EarlyRepaymentModal from "../early_repayment_modal/EarlyRepaymentModal";
 
 const formatMoney = (value) => {
   if (value === null || value === undefined || isNaN(value)) return "—";
@@ -41,6 +42,7 @@ const ARCHIVE_DETAIL_ITEMS = [
 
 const CreditCard = ({ credit, archived = false }) => {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isEarlyOpen, setIsEarlyOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -50,8 +52,12 @@ const CreditCard = ({ credit, archived = false }) => {
   const detailItems = archived ? ARCHIVE_DETAIL_ITEMS : ACTIVE_DETAIL_ITEMS;
   const details = credit.details ?? {};
 
-  const handleEarlyPayment = () => {};
-  const handleCertificate = () => {};
+  const handleEarlyPayment = () => setIsEarlyOpen(true);
+  const handleCertificate = () => {
+    navigate("/account/my-credits/certificates", {
+      state: { creditId: credit.id },
+    });
+  };
   const handleTariff = () => {};
   const handleSchedule = () => {
     navigate("/account/my-credits/schedule", {
@@ -228,6 +234,12 @@ const CreditCard = ({ credit, archived = false }) => {
           )}
         </AnimatePresence>
       </div>
+
+      <EarlyRepaymentModal
+        isOpen={isEarlyOpen}
+        onClose={() => setIsEarlyOpen(false)}
+        credit={credit}
+      />
     </article>
   );
 };

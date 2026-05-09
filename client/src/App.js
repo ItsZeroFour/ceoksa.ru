@@ -33,6 +33,9 @@ const CardTransfer = lazy(() =>
 const PaymentSchedule = lazy(() =>
   import("./pages/account/payment_schedule/PaymentSchedule")
 );
+const CertificateOrder = lazy(() =>
+  import("./pages/account/certificate_order/CertificateOrder")
+);
 
 const ProtectedRoute = ({ children, userData, userStatus }) => {
   if (userStatus === "idle" || userStatus === "loading") {
@@ -192,6 +195,22 @@ function App() {
                       <PaymentSchedule
                         setOpenMenu={setOpenMenu}
                         openMenu={openMenu}
+                      />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/account/my-credits/certificates"
+                  element={
+                    <ProtectedRoute
+                      userData={userData}
+                      userStatus={user.status}
+                    >
+                      <CertificateOrder
+                        setOpenMenu={setOpenMenu}
+                        openMenu={openMenu}
+                        userData={userData}
                       />
                     </ProtectedRoute>
                   }
