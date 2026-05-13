@@ -37,6 +37,21 @@ const CertificateOrder = lazy(() =>
   import("./pages/account/certificate_order/CertificateOrder")
 );
 
+const PartialRepayment = lazy(() =>
+  import("./pages/account/partial_repayment/PartialRepayment")
+);
+
+const FullRepayment = lazy(() =>
+  import("./pages/account/full_repayment/FullRepayment")
+);
+
+const Notifications = lazy(() =>
+  import("./pages/account/notifications/Notifications")
+);
+const NotificationDetail = lazy(() =>
+  import("./pages/account/notification_detail/NotificationDetail")
+);
+
 const ProtectedRoute = ({ children, userData, userStatus }) => {
   if (userStatus === "idle" || userStatus === "loading") {
     return (
@@ -272,6 +287,66 @@ function App() {
                     />
                   }
                 />
+
+                <Route
+                  path="/account/my-credits/partial-repayment"
+                  element={
+                    <ProtectedRoute
+                      userData={userData}
+                      userStatus={user.status}
+                    >
+                      <PartialRepayment
+                        setOpenMenu={setOpenMenu}
+                        openMenu={openMenu}
+                      />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/account/notifications"
+                  element={
+                    <ProtectedRoute
+                      userData={userData}
+                      userStatus={user.status}
+                    >
+                      <Notifications
+                        setOpenMenu={setOpenMenu}
+                        openMenu={openMenu}
+                      />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/account/notifications/:id"
+                  element={
+                    <ProtectedRoute
+                      userData={userData}
+                      userStatus={user.status}
+                    >
+                      <NotificationDetail
+                        setOpenMenu={setOpenMenu}
+                        openMenu={openMenu}
+                      />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/account/my-credits/full-repayment"
+                  element={
+                    <ProtectedRoute
+                      userData={userData}
+                      userStatus={user.status}
+                    >
+                      <FullRepayment
+                        setOpenMenu={setOpenMenu}
+                        openMenu={openMenu}
+                      />
+                    </ProtectedRoute>
+                  }
+                />
+
                 <Route
                   path="/soglasie-na-poluchenie-reklamy"
                   element={

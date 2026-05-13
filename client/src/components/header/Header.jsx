@@ -7,6 +7,8 @@ import { ReactComponent as Business } from "../../assets/icons/business.svg";
 import signin from "../../assets/icons/signin.svg";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../hooks/useTheme";
+import NotificationBell from "../notification_bell/NotificationBell";
+import { getUnreadCount } from "../../pages/account/notifications/notificationsMock";
 
 const Header = ({
   setOpenMenu,
@@ -53,6 +55,12 @@ const Header = ({
               <Business />
               <p>Бизнесу</p>
             </button> */}
+
+            {userData && (
+              <NotificationBell
+                count={getUnreadCount("banks") + getUnreadCount("oksa")}
+              />
+            )}
 
             {userStatus === "succeeded" && userData ? (
               <Link

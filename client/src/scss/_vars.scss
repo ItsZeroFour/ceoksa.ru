@@ -77,6 +77,8 @@
 
   --color-schedule-shadow: 0 2px 29px rgba(0, 0, 32, 0.035),
     0 11px 181px rgba(0, 0, 32, 0.07);
+
+  --color-bell: #ade5fb;
 }
 
 [data-theme="dark"] {
@@ -145,4 +147,6 @@
   --color-checkbox-thumb: #242528;
 
   --color-avatar: rgba(255, 255, 255, 0.6);
+
+  --color-bell: #c5c5c7;
 }
