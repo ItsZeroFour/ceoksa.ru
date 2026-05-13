@@ -8,17 +8,49 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchMe } from "./redux/slices/auth/authSlice";
 import ScrollToTop from "./components/ScrollToTop/ScrollToTop";
 import Header from "./components/header/Header";
+import SbpTransfer from "./pages/account/sbp_transfer/SbpTransfer";
 
 const Main = lazy(() => import("./pages/main/Main"));
 const Footer = lazy(() => import("./components/footer/Footer"));
-const LoanApplication = lazy(() => import("./pages/account/loan_application/LoanApplication"));
+const LoanApplication = lazy(() =>
+  import("./pages/account/loan_application/LoanApplication")
+);
 const Credits = lazy(() => import("./pages/account/credits/Credits"));
+const MyCredits = lazy(() => import("./pages/account/my_credits/MyCredits"));
 const Rating = lazy(() => import("./pages/account/rating/Rating"));
 const Profile = lazy(() => import("./pages/account/profile/Profile"));
 const Policy = lazy(() => import("./pages/policy/Policy"));
-const UserAgreement = lazy(() => import("./pages/user_agreement/UserAgreement"));
+const UserAgreement = lazy(() =>
+  import("./pages/user_agreement/UserAgreement")
+);
 const PersonalData = lazy(() => import("./pages/account/files/PersonalData"));
 const ADS = lazy(() => import("./pages/account/files/ADS"));
+const Repayment = lazy(() => import("./pages/account/repayment/Repayment"));
+
+const CardTransfer = lazy(() =>
+  import("./pages/account/card_transfer/CardTransfer")
+);
+const PaymentSchedule = lazy(() =>
+  import("./pages/account/payment_schedule/PaymentSchedule")
+);
+const CertificateOrder = lazy(() =>
+  import("./pages/account/certificate_order/CertificateOrder")
+);
+
+const PartialRepayment = lazy(() =>
+  import("./pages/account/partial_repayment/PartialRepayment")
+);
+
+const FullRepayment = lazy(() =>
+  import("./pages/account/full_repayment/FullRepayment")
+);
+
+const Notifications = lazy(() =>
+  import("./pages/account/notifications/Notifications")
+);
+const NotificationDetail = lazy(() =>
+  import("./pages/account/notification_detail/NotificationDetail")
+);
 
 const ProtectedRoute = ({ children, userData, userStatus }) => {
   if (userStatus === "idle" || userStatus === "loading") {
@@ -123,6 +155,97 @@ function App() {
                   }
                 />
                 <Route
+                  path="/account/my-credits/repayment"
+                  element={
+                    <ProtectedRoute
+                      userData={userData}
+                      userStatus={user.status}
+                    >
+                      <Repayment
+                        setOpenMenu={setOpenMenu}
+                        openMenu={openMenu}
+                      />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/account/my-credits/sbp-transfer"
+                  element={
+                    <ProtectedRoute
+                      userData={userData}
+                      userStatus={user.status}
+                    >
+                      <SbpTransfer
+                        setOpenMenu={setOpenMenu}
+                        openMenu={openMenu}
+                        userData={userData}
+                      />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/account/my-credits/card-transfer"
+                  element={
+                    <ProtectedRoute
+                      userData={userData}
+                      userStatus={user.status}
+                    >
+                      <CardTransfer
+                        setOpenMenu={setOpenMenu}
+                        openMenu={openMenu}
+                      />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/account/my-credits/schedule"
+                  element={
+                    <ProtectedRoute
+                      userData={userData}
+                      userStatus={user.status}
+                    >
+                      <PaymentSchedule
+                        setOpenMenu={setOpenMenu}
+                        openMenu={openMenu}
+                      />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/account/my-credits/certificates"
+                  element={
+                    <ProtectedRoute
+                      userData={userData}
+                      userStatus={user.status}
+                    >
+                      <CertificateOrder
+                        setOpenMenu={setOpenMenu}
+                        openMenu={openMenu}
+                        userData={userData}
+                      />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/account/my-credits"
+                  element={
+                    <ProtectedRoute
+                      userData={userData}
+                      userStatus={user.status}
+                    >
+                      <MyCredits
+                        setOpenMenu={setOpenMenu}
+                        openMenu={openMenu}
+                      />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
                   path="/account/rating"
                   element={
                     <ProtectedRoute
@@ -164,6 +287,66 @@ function App() {
                     />
                   }
                 />
+
+                <Route
+                  path="/account/my-credits/partial-repayment"
+                  element={
+                    <ProtectedRoute
+                      userData={userData}
+                      userStatus={user.status}
+                    >
+                      <PartialRepayment
+                        setOpenMenu={setOpenMenu}
+                        openMenu={openMenu}
+                      />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/account/notifications"
+                  element={
+                    <ProtectedRoute
+                      userData={userData}
+                      userStatus={user.status}
+                    >
+                      <Notifications
+                        setOpenMenu={setOpenMenu}
+                        openMenu={openMenu}
+                      />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/account/notifications/:id"
+                  element={
+                    <ProtectedRoute
+                      userData={userData}
+                      userStatus={user.status}
+                    >
+                      <NotificationDetail
+                        setOpenMenu={setOpenMenu}
+                        openMenu={openMenu}
+                      />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/account/my-credits/full-repayment"
+                  element={
+                    <ProtectedRoute
+                      userData={userData}
+                      userStatus={user.status}
+                    >
+                      <FullRepayment
+                        setOpenMenu={setOpenMenu}
+                        openMenu={openMenu}
+                      />
+                    </ProtectedRoute>
+                  }
+                />
+
                 <Route
                   path="/soglasie-na-poluchenie-reklamy"
                   element={

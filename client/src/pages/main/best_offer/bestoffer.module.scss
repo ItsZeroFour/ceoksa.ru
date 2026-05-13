@@ -9,7 +9,7 @@
 .best_offer__wrapper {
   background: var(--color-head);
   padding: 40px;
-  border-radius: 20px;
+  border-radius: 50px;
 
   overflow: hidden;
 
@@ -157,7 +157,7 @@
   width: 100%;
   background: var(--color-block-bg);
   padding: 25px;
-  border-radius: 16px;
+  border-radius: 35px;
 
   position: relative;
   transform-style: preserve-3d;
@@ -250,7 +250,7 @@
     background: var(--color-gray-secondary);
 
     padding: 5px 20px;
-    border-radius: 16px;
+    border-radius: 35px;
 
     p {
       &:first-child {
@@ -329,7 +329,7 @@
 
     width: 95%;
     height: 100%;
-    border-radius: 16px;
+    border-radius: 35px;
 
     background: var(--color-card-bg);
     left: 3%;
@@ -344,7 +344,7 @@
 
     width: 90%;
     height: 100%;
-    border-radius: 16px;
+    border-radius: 35px;
 
     background: var(--color-card-bg);
     -webkit-filter: blur(0.5px);

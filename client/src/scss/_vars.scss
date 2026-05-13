@@ -74,6 +74,15 @@
   --color-checkbox-thumb: #22c0ff;
 
   --color-avatar: rgb(34, 192, 255, 0.4);
+
+  --color-schedule-shadow: 0 2px 29px rgba(0, 0, 32, 0.015),
+    0 11px 181px rgba(0, 0, 32, 0.07);
+
+  --color-bell: #ade5fb;
+
+  --color-modal-option-bg: var(--color-gray-secondary);
+
+  --color-modal-option-border: rgba(30, 30, 30, 0.08);
 }
 
 [data-theme="dark"] {
@@ -142,4 +151,9 @@
   --color-checkbox-thumb: #242528;
 
   --color-avatar: rgba(255, 255, 255, 0.6);
+
+  --color-bell: #c5c5c7;
+
+  --color-modal-option-bg: var(--color-block-bg);
+  --color-modal-option-border: transparent;
 }
