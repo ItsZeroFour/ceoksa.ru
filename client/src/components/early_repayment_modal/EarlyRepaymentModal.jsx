@@ -17,32 +17,31 @@ const ChevronRight = () => (
 );
 
 const PartialIcon = () => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+  <svg
+    width="22"
+    height="22"
+    viewBox="0 0 22 22"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
     <path
-      d="M20 12a8 8 0 1 1-2.34-5.66"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-    />
-    <path
-      d="M20 4v3.5h-3.5"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      d="M10.0834 1.87891L10.0835 4.64861C6.97389 5.09342 4.5835 7.7677 4.5835 11.0003C4.5835 14.5441 7.45634 17.417 11.0002 17.417C12.4414 17.417 13.7718 16.9418 14.843 16.1395L16.8017 18.0979C15.2214 19.3911 13.2014 20.167 11.0002 20.167C5.93755 20.167 1.8335 16.0629 1.8335 11.0003C1.8335 6.2471 5.45123 2.33886 10.0834 1.87891ZM20.1215 11.9171C19.9385 13.7605 19.2094 15.4432 18.0982 16.8013L16.1394 14.8432C16.7684 14.0032 17.1964 13.004 17.3518 11.917L20.1215 11.9171ZM11.9178 1.879C16.2481 2.30941 19.6915 5.75321 20.1215 10.0835L17.3518 10.0835C16.9498 7.27362 14.7274 5.05107 11.9177 4.64875L11.9178 1.879Z"
+      fill="currentColor"
     />
   </svg>
 );
 
 const CheckIcon = () => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.7" />
+  <svg
+    width="22"
+    height="22"
+    viewBox="0 0 22 22"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
     <path
-      d="M8 12.5l2.5 2.5L16 9.5"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      d="M11.0002 20.1673C16.0627 20.1673 20.1668 16.0632 20.1668 11.0007C20.1668 5.93804 16.0627 1.83398 11.0002 1.83398C5.93755 1.83398 1.8335 5.93804 1.8335 11.0007C1.8335 16.0632 5.93755 20.1673 11.0002 20.1673ZM16.0025 8.66967L10.0835 14.5887L6.22698 10.7322L7.52335 9.43581L10.0835 11.996L14.7062 7.3733L16.0025 8.66967Z"
+      fill="currentColor"
     />
   </svg>
 );

@@ -17,18 +17,16 @@ const Chevron = () => (
 );
 
 const DocIcon = () => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
     <path
-      d="M5 3h10l4 4v14H5V3z"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M14 3v5h5"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinejoin="round"
+      d="M21 9V20.9925C21 21.5511 20.5552 22 20.0066 22H3.9934C3.44495 22 3 21.556 3 21.0082V2.9918C3 2.45531 3.44694 2 3.99826 2H14V8C14 8.55228 14.4477 9 15 9H21ZM21 7H16V2.00318L21 7Z"
+      fill="currentColor"
     />
   </svg>
 );
