@@ -199,9 +199,9 @@
 
 .toggle__track {
   position: relative;
-  width: 44px;
-  height: 24px;
-  background: var(--color-gray-third);
+  width: 50px;
+  height: 30px;
+  background: var(--color-block-bg);
   border-radius: var(--radius-button);
   transition: background 0.2s ease;
   flex-shrink: 0;
@@ -209,11 +209,12 @@
 
 .toggle__thumb {
   position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 18px;
-  height: 18px;
+  top: 2px;
+  left: 2px;
+  width: 26px;
+  height: 26px;
   background: var(--color-white);
+  border: 2px solid #f6f7f8;
   border-radius: 50%;
   transition: transform 0.2s ease;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);

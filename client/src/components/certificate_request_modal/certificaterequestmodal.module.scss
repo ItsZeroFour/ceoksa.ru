@@ -18,7 +18,7 @@
 
   background: var(--color-payments-modal-bg);
   border: 1px solid var(--color-modal-border);
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-outer);
   padding: 28px;
 
   display: flex;
@@ -68,8 +68,8 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 18px;
-    height: 1.6px;
+    width: 25px;
+    height: 1px;
     background: var(--color-black);
     border-radius: 2px;
   }
