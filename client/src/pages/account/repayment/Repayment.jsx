@@ -126,7 +126,11 @@ const Repayment = ({ setOpenMenu, openMenu }) => {
                   <h2>Из другого банка</h2>
                   <SbpBadge />
                 </header>
-                <p className={style.col__subtitle}>Без комиссии</p>
+                <p
+                  className={`${style.col__subtitle} ${style.col__subtitle__first}`}
+                >
+                  Без комиссии
+                </p>
 
                 <ul className={style.banks}>
                   {SBP_BANKS.map((bank) => (
