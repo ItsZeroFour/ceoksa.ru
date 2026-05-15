@@ -16,8 +16,8 @@ import axios from "../../utils/axios";
 
 const personalItems = [
   { icon: <List />, text: "Заявка на кредит", path: "/loan_applications" },
-  { icon: <Money />, text: "Кредиты", path: "/my-credits" },
   { icon: <Rate />, text: "Предложения банков", path: "/credits" },
+  { icon: <Money />, text: "Кредиты", path: "/my-credits" },
   { icon: <Profile />, text: "Профиль", path: "/profile" },
 ];
 
