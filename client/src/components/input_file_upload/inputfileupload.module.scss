@@ -1,7 +1,7 @@
 .input_file_upload {
   background: var(--color-block-bg);
   padding: 20px;
-  border-radius: 14px;
+  border-radius: var(--radius-inner);
   width: 100%;
 
   & > p {
@@ -121,7 +121,7 @@
   height: 85dvh;
 
   background: #000;
-  border-radius: 35px;
+  border-radius: var(--radius-card);
   overflow: hidden;
 
   display: flex;
@@ -262,7 +262,7 @@ $dim: rgba(40, 40, 40, 0.75);
 .overlay__capture_btn {
   width: 100%;
   padding: 14px;
-  border-radius: 28px;
+  border-radius: var(--radius-button);
   background: var(--color-blue);
   color: #fff;
   font-size: 15px;
@@ -331,7 +331,7 @@ $dim: rgba(40, 40, 40, 0.75);
 .overlay__use_btn {
   flex: 1;
   padding: 14px;
-  border-radius: 28px;
+  border-radius: var(--radius-button);
   font-size: 15px;
   font-weight: 500;
   font-family: "Inter", sans-serif;

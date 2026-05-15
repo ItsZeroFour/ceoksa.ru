@@ -9,7 +9,7 @@
 .credit__wrapper {
   background: var(--color-gray-secondary);
   padding: 40px;
-  border-radius: 50px;
+  border-radius: var(--radius-outer);
 
   .credit__title {
     font-size: 24px;
@@ -50,7 +50,7 @@
 
 .credit__main {
   background: var(--color-block-bg);
-  border-radius: 18px;
+  border-radius: var(--radius-inner);
   padding: 25px;
   margin-top: 20px;
 
@@ -120,7 +120,7 @@
     font-size: 17px;
     font-weight: 600;
     color: var(--color-white);
-    border-radius: 60px;
+    border-radius: var(--radius-button);
     min-height: 64px;
     display: inline-flex;
     align-items: center;
@@ -174,7 +174,7 @@
 
     .credit__main__form__item__total__con {
       width: 100% !important;
-      border-radius: 14px;
+      border-radius: var(--radius-inner);
       padding: 20px;
     }
 

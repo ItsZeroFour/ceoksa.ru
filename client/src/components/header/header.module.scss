@@ -50,7 +50,7 @@
     align-items: center;
     gap: 10px;
     padding: 10px 25px;
-    border-radius: 60px;
+    border-radius: var(--radius-button);
     cursor: pointer;
     flex-shrink: 0;
 

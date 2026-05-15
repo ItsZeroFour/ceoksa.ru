@@ -17,7 +17,7 @@
 .cookies__wrapper {
   width: 430px;
   padding: 15px;
-  border-radius: 35px;
+  border-radius: var(--radius-card);
 
   display: flex;
   align-items: center;
@@ -48,7 +48,7 @@
 
   button {
     padding: 13px 32px;
-    border-radius: 12px;
+    border-radius: var(--radius-button);
     background: var(--color-blue);
     color: var(--color-white);
 

@@ -24,7 +24,7 @@
   height: 85dvh;
 
   background: var(--color-payments-modal-bg);
-  border-radius: 35px;
+  border-radius: var(--radius-card);
   overflow: hidden;
 
   display: flex;

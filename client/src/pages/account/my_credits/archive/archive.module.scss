@@ -1,17 +1,17 @@
 .archive {
   background: var(--color-gray-secondary);
-  border-radius: 50px;
+  border-radius: var(--radius-outer);
   padding: 35px;
   margin-top: 25px;
 
   @media (max-width: 768px) {
     padding: 28px;
-    border-radius: 35px;
+    border-radius: var(--radius-card);
   }
 
   @media (max-width: 480px) {
     padding: 22px;
-    border-radius: 28px;
+    border-radius: var(--radius-card);
     margin-top: 18px;
   }
 
@@ -33,25 +33,25 @@
 /* пустой стейт */
 .archive_empty {
   background: var(--color-gray-secondary);
-  border-radius: 50px;
+  border-radius: var(--radius-outer);
   padding: 22px;
   margin-top: 25px;
 
   @media (max-width: 768px) {
     padding: 16px;
-    border-radius: 35px;
+    border-radius: var(--radius-card);
   }
 
   @media (max-width: 480px) {
     padding: 12px;
-    border-radius: 28px;
+    border-radius: var(--radius-card);
     margin-top: 18px;
   }
 }
 
 .archive_empty__inner {
   background: var(--color-block-bg);
-  border-radius: 28px;
+  border-radius: var(--radius-card);
   padding: 35px;
 
   h2 {
@@ -74,6 +74,6 @@
 
   @media (max-width: 480px) {
     padding: 22px;
-    border-radius: 22px;
+    border-radius: var(--radius-inner);
   }
 }

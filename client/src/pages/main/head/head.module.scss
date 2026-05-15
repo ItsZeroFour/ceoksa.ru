@@ -5,7 +5,7 @@
 
 .head__wrapper {
   background: var(--color-head);
-  border-radius: 50px;
+  border-radius: var(--radius-outer);
 
   // padding-bottom: 40px;
 
@@ -101,7 +101,7 @@
     display: block;
     margin-top: 100px;
     background: var(--color-red);
-    border-radius: 60px;
+    border-radius: var(--radius-button);
 
     color: var(--color-white);
     font-weight: 600;
@@ -136,7 +136,7 @@
     display: block;
 
     background: var(--color-red);
-    border-radius: 60px;
+    border-radius: var(--radius-button);
     color: var(--color-white);
     font-weight: 600;
     padding: 15px;
