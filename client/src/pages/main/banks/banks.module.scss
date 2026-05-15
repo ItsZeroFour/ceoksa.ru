@@ -39,7 +39,7 @@
       padding: 30px 14px;
       width: 250px;
       height: 130px;
-      border-radius: 12px;
+      border-radius: var(--radius-card);
       background: var(--color-block-bg);
       box-shadow: 0px 4px 20px rgba(0, 0, 32, 0.15);
 

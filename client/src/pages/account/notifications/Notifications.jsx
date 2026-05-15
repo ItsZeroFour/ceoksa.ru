@@ -105,7 +105,7 @@ const Notifications = ({ setOpenMenu, openMenu }) => {
                     </div>
 
                     <div className={style.item__body}>
-                      <h3 className={style.item__title}>{n.title}</h3>
+                      <h3 className={`${style.item__title} ${!n.unread && style.item__title__unread}`}>{n.title}</h3>
                       <p className={style.item__preview}>
                         {n.preview.split("\n").map((line, i) => (
                           <React.Fragment key={i}>

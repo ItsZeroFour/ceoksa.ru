@@ -27,11 +27,17 @@ const formatMoney = (value) =>
     maximumFractionDigits: 2,
   }).format(value) + " ₽";
 
+const CURRENT_YEAR = 2026;
+
 const generatePayments = (year, currentMonth) => {
-  const startMonth = year === 2026 ? 1 : 0;
+  const startMonth = year === CURRENT_YEAR ? 1 : 0;
   return Array.from({ length: 12 - startMonth }, (_, i) => {
     const monthIdx = startMonth + i;
     const isFifthMonth = monthIdx === 4;
+    const isCurrent = year === CURRENT_YEAR && monthIdx === currentMonth;
+    const isPast =
+      year < CURRENT_YEAR ||
+      (year === CURRENT_YEAR && monthIdx < currentMonth);
     return {
       id: `${year}-${monthIdx}`,
       date: `24 ${MONTHS[monthIdx]}`,
@@ -39,7 +45,8 @@ const generatePayments = (year, currentMonth) => {
       residual: 1937453.45,
       principal: isFifthMonth ? 80000 : 30000,
       interest: isFifthMonth ? 20000 : 7453.45,
-      isCurrent: year === 2026 && monthIdx === currentMonth,
+      isCurrent,
+      isPast,
     };
   });
 };
@@ -101,7 +108,7 @@ const PaymentSchedule = ({ setOpenMenu, openMenu }) => {
                     key={p.id}
                     className={`${style.item} ${isOpen ? style.item_open : ""} ${
                       p.isCurrent ? style.item_current : ""
-                    }`}
+                    } ${p.isPast ? style.item_past : ""}`}
                   >
                     <div
                       className={style.item__row}

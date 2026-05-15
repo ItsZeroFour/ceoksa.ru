@@ -157,7 +157,7 @@
   width: 100%;
   background: var(--color-block-bg);
   padding: 25px;
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-inner);
 
   position: relative;
   transform-style: preserve-3d;
@@ -250,7 +250,7 @@
     background: var(--color-gray-secondary);
 
     padding: 5px 20px;
-    border-radius: var(--radius-card);
+    border-radius: var(--radius-inner);
 
     p {
       &:first-child {

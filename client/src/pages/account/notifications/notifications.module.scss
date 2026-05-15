@@ -180,8 +180,8 @@
   position: absolute;
   top: -3px;
   right: -3px;
-  width: 10px;
-  height: 10px;
+  width: 13px;
+  height: 13px;
   background: var(--color-red);
   border-radius: 50%;
   border: 2px solid var(--color-block-bg);
@@ -190,6 +190,10 @@
     width: 9px;
     height: 9px;
   }
+}
+
+.item__title__unread {
+  opacity: 0.6;
 }
 
 .item__body {

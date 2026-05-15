@@ -207,6 +207,11 @@ button {
   }
 }
 
+.credit__main__form__item,
+.credit__main__form__cash {
+  padding: 10px 20px;
+}
+
 .credit__buttons {
   display: flex;
   align-items: stretch;
@@ -261,8 +266,8 @@ button {
 
     &:first-child {
       justify-content: space-between;
-      border-bottom-left-radius: 16px;
-      border-top-left-radius: 16px;
+      border-bottom-left-radius: var(--radius-card);
+      border-top-left-radius: var(--radius-card);
 
       padding-right: 16px;
 
@@ -276,7 +281,7 @@ button {
       }
 
       @media (max-width: 550px) {
-        border-radius: var(--radius-inner);
+        border-radius: var(--radius-card);
         padding: 20px 15px;
       }
     }
@@ -284,8 +289,8 @@ button {
     &:last-child {
       border-bottom-left-radius: 0;
       border-top-left-radius: 0;
-      border-bottom-right-radius: 16px;
-      border-top-right-radius: 16px;
+      border-bottom-right-radius: var(--radius-card);
+      border-top-right-radius: var(--radius-card);
       padding-left: 16px;
 
       padding: 15px;
@@ -412,7 +417,7 @@ button {
   display: flex;
   justify-content: space-between;
   // width: 250px;
-  border-radius: var(--radius-inner);
+  border-radius: var(--radius-card);
 
   position: relative;
 
@@ -514,7 +519,7 @@ button {
 }
 
 .credit__main__form__cash {
-  border-radius: var(--radius-inner);
+  border-radius: var(--radius-card);
 
   position: relative;
 
@@ -563,7 +568,7 @@ button {
 .credit__main__form__item__special__con {
   .credit__main__form__item {
     &:last-child {
-      border-radius: var(--radius-inner);
+      border-radius: var(--radius-card);
     }
 
     &::before {
