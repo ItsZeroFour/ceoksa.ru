@@ -50,14 +50,12 @@
 
   @media (max-width: 768px) {
     padding: 28px;
-    border-radius: var(--radius-card);
     margin-top: 22px;
     gap: 18px;
   }
 
   @media (max-width: 480px) {
     padding: 22px;
-    border-radius: var(--radius-inner);
     margin-top: 18px;
     gap: 16px;
   }
@@ -177,7 +175,6 @@
 
   @media (max-width: 480px) {
     padding: 22px;
-    border-radius: var(--radius-inner);
     margin-top: 18px;
   }
 }
