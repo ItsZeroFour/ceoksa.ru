@@ -1,7 +1,7 @@
 .card {
   position: relative;
   background: var(--color-block-bg);
-  border-radius: 28px;
+  border-radius: var(--radius-card);
   padding: 24px;
   display: flex;
   flex-direction: column;
@@ -13,7 +13,7 @@
 
   @media (max-width: 480px) {
     padding: 18px;
-    border-radius: 22px;
+    border-radius: var(--radius-inner);
     gap: 12px;
   }
 }
@@ -142,7 +142,7 @@
   gap: 2px;
 
   @media (max-width: 480px) {
-    border-radius: 22px;
+    border-radius: var(--radius-inner);
     padding: 12px;
   }
 }
@@ -210,7 +210,7 @@
 .card__btn_primary,
 .card__btn_secondary {
   padding: 16px 20px;
-  border-radius: 60px;
+  border-radius: var(--radius-button);
   font-size: 15px;
   font-weight: 500;
   min-height: 50px;
@@ -255,7 +255,7 @@
 
 .card__details {
   background: var(--color-gray-secondary);
-  border-radius: 18px;
+  border-radius: var(--radius-inner);
   overflow: hidden;
 }
 

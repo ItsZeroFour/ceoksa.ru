@@ -22,7 +22,7 @@
   margin-top: 20px;
   background: var(--color-gray-secondary);
   border: none;
-  border-radius: 60px;
+  border-radius: var(--radius-button);
   color: var(--color-black);
   font-size: 14px;
   font-weight: 500;
@@ -105,22 +105,22 @@
 .list {
   margin-top: 22px;
   background: var(--color-gray-secondary);
-  border-radius: 28px;
-  padding: 22px;
+  border-radius: var(--radius-outer);
+  padding: 35px;
   display: flex;
   flex-direction: column;
   gap: 10px;
 
   @media (max-width: 768px) {
-    padding: 18px;
+    padding: 28px;
     margin-top: 20px;
-    border-radius: 24px;
+    // border-radius: var(--radius-card);
   }
 
   @media (max-width: 480px) {
-    padding: 14px;
+    padding: 22px;
     margin-top: 18px;
-    border-radius: 22px;
+    // border-radius: var(--radius-inner);
     gap: 8px;
   }
 }
@@ -132,7 +132,7 @@
   gap: 16px;
   padding: 22px 24px;
   background: var(--color-block-bg);
-  border-radius: 22px;
+  border-radius: var(--radius-inner);
   cursor: pointer;
   transition: opacity 0.2s ease, transform 0.15s ease;
 
@@ -151,7 +151,7 @@
   @media (max-width: 480px) {
     padding: 16px 18px;
     gap: 12px;
-    border-radius: 18px;
+    // border-radius: var(--radius-inner);
   }
 }
 
@@ -238,7 +238,7 @@
 .empty {
   margin-top: 22px;
   background: var(--color-gray-secondary);
-  border-radius: 28px;
+  border-radius: var(--radius-card);
   padding: 30px;
   display: flex;
   flex-direction: column;
@@ -247,13 +247,13 @@
   @media (max-width: 768px) {
     padding: 24px;
     margin-top: 20px;
-    border-radius: 24px;
+    border-radius: var(--radius-inner);
   }
 
   @media (max-width: 480px) {
     padding: 20px;
     margin-top: 18px;
-    border-radius: 22px;
+    border-radius: var(--radius-inner);
     gap: 10px;
   }
 

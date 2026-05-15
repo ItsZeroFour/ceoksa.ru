@@ -36,7 +36,7 @@
   background: var(--color-payments-modal-bg);
   width: 720px;
   padding: 35px;
-  border-radius: 35px;
+  border-radius: var(--radius-card);
 
   h2 {
     font-size: 26px;
@@ -66,7 +66,7 @@
       display: flex;
       flex-direction: column;
       padding: 10px;
-      border-radius: 35px;
+      border-radius: var(--radius-card);
       gap: 10px;
       background: var(--color-block-4-bg);
 
@@ -100,7 +100,7 @@
     button {
       padding: 20px;
       background: var(--color-blue);
-      border-radius: 50px;
+      border-radius: var(--radius-button);
       color: var(--color-white);
       margin-top: 25px;
 

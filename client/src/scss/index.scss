@@ -223,7 +223,7 @@ button {
     padding: 20px;
     background: var(--color-blue);
     color: var(--color-white);
-    border-radius: 60px;
+    border-radius: var(--radius-button);
     font-size: 17px;
     display: flex;
     align-items: center;
@@ -276,7 +276,7 @@ button {
       }
 
       @media (max-width: 550px) {
-        border-radius: 16px;
+        border-radius: var(--radius-inner);
         padding: 20px 15px;
       }
     }
@@ -309,7 +309,7 @@ button {
         top: 110%;
         left: 0;
 
-        border-radius: 16px;
+        border-radius: var(--radius-inner);
 
         gap: 4px;
         padding: 16px;
@@ -412,7 +412,7 @@ button {
   display: flex;
   justify-content: space-between;
   // width: 250px;
-  border-radius: 16px;
+  border-radius: var(--radius-inner);
 
   position: relative;
 
@@ -438,7 +438,7 @@ button {
     top: 110%;
     left: 0;
 
-    border-radius: 16px;
+    border-radius: var(--radius-inner);
 
     gap: 4px;
     padding: 16px;
@@ -468,7 +468,7 @@ button {
 .credit__main__form__auth {
   width: 100%;
   padding: 20px;
-  border-radius: 60px;
+  border-radius: var(--radius-button);
 
   background: #d9d9d9;
   color: #b7b7b7;
@@ -514,7 +514,7 @@ button {
 }
 
 .credit__main__form__cash {
-  border-radius: 16px;
+  border-radius: var(--radius-inner);
 
   position: relative;
 
@@ -563,7 +563,7 @@ button {
 .credit__main__form__item__special__con {
   .credit__main__form__item {
     &:last-child {
-      border-radius: 16px;
+      border-radius: var(--radius-inner);
     }
 
     &::before {

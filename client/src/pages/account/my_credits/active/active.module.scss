@@ -1,17 +1,17 @@
 .active {
   background: var(--color-gray-secondary);
-  border-radius: 50px;
+  border-radius: var(--radius-outer);
   padding: 35px;
   margin-top: 25px;
 
   @media (max-width: 768px) {
     padding: 28px;
-    border-radius: 35px;
+    border-radius: var(--radius-card);
   }
 
   @media (max-width: 480px) {
     padding: 22px;
-    border-radius: 28px;
+    border-radius: var(--radius-card);
     margin-top: 18px;
   }
 

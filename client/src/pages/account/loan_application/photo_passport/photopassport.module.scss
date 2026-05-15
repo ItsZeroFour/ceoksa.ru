@@ -8,7 +8,7 @@
 
 .photopassport__wrappe {
   padding: 35px;
-  border-radius: 50px;
+  border-radius: var(--radius-outer);
   background: var(--color-gray-secondary);
 
   h2 {

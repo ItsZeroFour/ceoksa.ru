@@ -83,7 +83,48 @@
   --color-modal-option-bg: var(--color-gray-secondary);
 
   --color-modal-option-border: rgba(30, 30, 30, 0.08);
+  --radius-outer: 52px;
+  --radius-card: 34px;
+  --radius-inner: 24px;
+  --radius-button: 40px;
 }
+
+@media (max-width: 1024px) {
+  :root {
+    --radius-outer: 50px;
+    --radius-card: 32px;
+    --radius-inner: 20px;
+    --radius-button: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --radius-outer: 50px;
+    --radius-card: 30px;
+    --radius-inner: 20px;
+    --radius-button: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --radius-outer: 40px;
+    --radius-card: 30px;
+    --radius-inner: 20px;
+    --radius-button: 40px;
+  }
+}
+
+@media (max-width: 360px) {
+  :root {
+    --radius-outer: 34px;
+    --radius-card: 24px;
+    --radius-inner: 18px;
+    --radius-button: 40px;
+  }
+}
+
 
 [data-theme="dark"] {
   --color-bg: #141414;

@@ -1,7 +1,7 @@
 .top__main {
   padding: 35px;
   background: var(--color-gray-secondary);
-  border-radius: 50px;
+  border-radius: var(--radius-outer);
   margin-top: 30px;
 
   @media (max-width: 480px) {
@@ -66,7 +66,7 @@
 
   padding: 20px;
   background: var(--color-block-2-bg);
-  border-radius: 35px;
+  border-radius: var(--radius-card);
 
   @media (max-width: 480px) {
     align-items: start;
@@ -171,7 +171,7 @@
       width: 100%;
       background: var(--color-block-bg);
       padding: 20px;
-      border-radius: 14px;
+      border-radius: var(--radius-inner);
 
       display: flex;
       align-items: center;

@@ -31,7 +31,7 @@
 .accept__wrapper {
   padding: 35px;
   background: var(--color-gray-secondary);
-  border-radius: 50px;
+  border-radius: var(--radius-outer);
   width: 100%;
 
   h2 {
@@ -62,7 +62,7 @@
         gap: 15px;
         background: var(--color-block-bg);
         padding: 20px;
-        border-radius: 14px;
+        border-radius: var(--radius-inner);
 
         text-align: left;
         color: var(--color-black);

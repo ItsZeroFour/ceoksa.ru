@@ -22,7 +22,7 @@
   margin-top: 20px;
   background: var(--color-gray-secondary);
   border: none;
-  border-radius: 60px;
+  border-radius: var(--radius-button);
   color: var(--color-black);
   font-size: 14px;
   font-weight: 500;
@@ -75,7 +75,7 @@
 .col {
   min-width: 0;
   background: var(--color-gray-secondary);
-  border-radius: 35px;
+  border-radius: var(--radius-card);
   padding: 30px;
   display: flex;
   flex-direction: column;
@@ -84,12 +84,12 @@
 
   @media (max-width: 768px) {
     padding: 24px;
-    border-radius: 28px;
+    border-radius: var(--radius-card);
   }
 
   @media (max-width: 480px) {
     padding: 20px;
-    border-radius: 22px;
+    border-radius: var(--radius-inner);
   }
 }
 
@@ -176,7 +176,7 @@
   gap: 14px;
   padding: 16px;
   background: var(--color-block-bg);
-  border-radius: 18px;
+  border-radius: var(--radius-inner);
   cursor: pointer;
   transition: opacity 0.2s ease, transform 0.15s ease;
 
@@ -197,7 +197,7 @@
     padding: 14px;
     width: 124px;
     height: 124px;
-    border-radius: 22px;
+    border-radius: var(--radius-inner);
     scroll-snap-align: start;
   }
 
@@ -295,7 +295,7 @@
   gap: 14px;
   padding: 14px 18px;
   background: var(--color-block-bg);
-  border-radius: 18px;
+  border-radius: var(--radius-inner);
   cursor: pointer;
   transition: opacity 0.2s ease;
   min-width: 0;

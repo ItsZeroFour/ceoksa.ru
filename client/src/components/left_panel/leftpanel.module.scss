@@ -10,7 +10,7 @@
 .mobile_left_panel__wrapper {
   padding: 15px;
   background: var(--color-gray-secondary);
-  border-radius: 50px;
+  border-radius: var(--radius-outer);
 
   ul {
     li {
