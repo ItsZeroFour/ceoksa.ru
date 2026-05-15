@@ -135,7 +135,7 @@
 
 .card__pill {
   background: var(--color-gray-secondary);
-  border-radius: 80px;
+  border-radius: var(--radius-inner);
   padding: 12px 24px;
   display: flex;
   flex-direction: column;
