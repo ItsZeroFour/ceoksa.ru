@@ -60,7 +60,7 @@
 .col {
   margin-top: 30px;
   background: var(--color-gray-secondary);
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-outer);
   padding: 30px;
   display: flex;
   flex-direction: column;
@@ -219,7 +219,7 @@
   margin-top: 16px;
   padding: 18px 30px;
   background: var(--color-gray-secondary);
-  border-radius: var(--radius-inner);
+  border-radius: var(--radius-outer);
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -232,7 +232,6 @@
   @media (max-width: 480px) {
     padding: 14px 20px;
     margin-top: 12px;
-    border-radius: var(--radius-inner);
   }
 }
 
