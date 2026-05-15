@@ -66,14 +66,12 @@
 
   @media (max-width: 768px) {
     padding: 24px;
-    border-radius: var(--radius-card);
     margin-top: 22px;
     gap: 14px;
   }
 
   @media (max-width: 480px) {
     padding: 20px;
-    border-radius: var(--radius-inner);
     margin-top: 18px;
   }
 }
