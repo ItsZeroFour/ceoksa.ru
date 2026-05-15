@@ -106,6 +106,43 @@
   }
 }
 
+.credit__button {
+  display: flex;
+  justify-content: end;
+  align-items: end;
+}
+
+.credit__buttons__continue {
+  padding: 20px 50px;
+  background: var(--color-blue);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--color-white);
+  border-radius: var(--radius-button);
+  min-height: 64px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+
+  transition: all 0.2s ease;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  @media (max-width: 860px) {
+    font-size: 14px;
+    min-height: 54px;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    padding: 18px;
+    min-height: 50px;
+  }
+}
+
 .credit__bottom {
   margin-top: 25px;
 

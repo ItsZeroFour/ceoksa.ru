@@ -149,6 +149,14 @@
   background: var(--color-block-bg);
 }
 
+.item_past {
+  .item__date,
+  .item__amount,
+  .item__residual {
+    opacity: 0.45;
+  }
+}
+
 .item__row {
   display: flex;
   align-items: center;
@@ -197,8 +205,9 @@
 
 .item__date {
   font-size: 14px;
-  font-weight: 300;
-  opacity: 0.6;
+  font-weight: 500;
+  color: var(--color-black);
+  opacity: 1;
   font-family: "Inter", sans-serif;
 
   @media (max-width: 480px) {
@@ -216,20 +225,20 @@
 
 .item__amount {
   font-size: 18px;
-  font-weight: 500;
+  font-weight: 600;
   font-family: "Inter", sans-serif;
   color: var(--color-black);
-  opacity: 0.6;
+  opacity: 1;
 
   @media (max-width: 480px) {
     font-size: 15px;
-    font-weight: 500;
+    font-weight: 600;
     opacity: 1;
   }
 
   @media (max-width: 360px) {
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
   }
 }
 
