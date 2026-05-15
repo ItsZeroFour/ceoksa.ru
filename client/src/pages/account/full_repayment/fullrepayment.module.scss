@@ -58,7 +58,7 @@
 .col {
   margin-top: 30px;
   background: var(--color-gray-secondary);
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-outer);
   padding: 30px;
   display: flex;
   flex-direction: column;
@@ -81,6 +81,7 @@
 .col__head h2 {
   font-size: 22px;
   font-weight: 600;
+
   font-family: "Inter", sans-serif;
 
   @media (max-width: 768px) {
@@ -117,10 +118,11 @@
 }
 
 .amount__value {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 500;
   font-family: "Inter", sans-serif;
   color: var(--color-black);
+  opacity: 0.6;
 
   @media (max-width: 480px) {
     font-size: 16px;

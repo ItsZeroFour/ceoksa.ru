@@ -8,7 +8,7 @@ import tbank from "../../../assets/icons/tbank.png";
 import sovcombank from "../../../assets/icons/sovcombank.png";
 import sber from "../../../assets/icons/sber.svg";
 import sbp from "../../../assets/icons/account/sbp.png";
-import Requisites from "../../../pages/account/credits/requisites/Requisites";
+import RequisitesModal from "../../../components/requisites_modal/RequisitesModal";
 
 const Chevron = () => (
   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -94,6 +94,7 @@ const Repayment = ({ setOpenMenu, openMenu }) => {
   const handleOtherBank = () => setIsModalOpen(true);
   const handleCardPayment = () => navigate("/account/my-credits/card-transfer");
   const handleRequisitesPayment = () => setIsRequisitesOpen(true);
+
   const handleBankSelect = (bank) => {
     setIsModalOpen(false);
     navigate("/account/my-credits/sbp-transfer", {
@@ -187,9 +188,13 @@ const Repayment = ({ setOpenMenu, openMenu }) => {
       </div>
 
       {isRequisitesOpen && (
-        <Requisites
-          showRequisites={isRequisitesOpen}
+        <RequisitesModal
+          isOpen={isRequisitesOpen}
           setShowRequisites={setIsRequisitesOpen}
+          onClose={() => setIsRequisitesOpen(false)}
+          onSubmit={(data) => {
+            setIsRequisitesOpen(false);
+          }}
         />
       )}
 
