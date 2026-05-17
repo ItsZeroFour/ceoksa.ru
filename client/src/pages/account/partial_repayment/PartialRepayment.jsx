@@ -6,7 +6,13 @@ import InfoModal from "../../../components/info_modal/InfoModal";
 
 const Chevron = () => (
   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-    <path d="M9 12L4 7l5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    <path
+      d="M9 12L4 7l5-5"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
   </svg>
 );
 
@@ -22,12 +28,32 @@ const formatAmount = (raw) => {
 };
 
 const MONTHS_GEN = [
-  "января", "февраля", "марта", "апреля", "мая", "июня",
-  "июля", "августа", "сентября", "октября", "ноября", "декабря",
+  "января",
+  "февраля",
+  "марта",
+  "апреля",
+  "мая",
+  "июня",
+  "июля",
+  "августа",
+  "сентября",
+  "октября",
+  "ноября",
+  "декабря",
 ];
 const MONTHS_NOM = [
-  "январь", "февраль", "март", "апрель", "май", "июнь",
-  "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь",
+  "январь",
+  "февраль",
+  "март",
+  "апрель",
+  "май",
+  "июнь",
+  "июль",
+  "август",
+  "сентябрь",
+  "октябрь",
+  "ноябрь",
+  "декабрь",
 ];
 
 const PartialRepayment = ({ setOpenMenu, openMenu }) => {
@@ -49,7 +75,9 @@ const PartialRepayment = ({ setOpenMenu, openMenu }) => {
   }, [recalc]);
 
   const today = new Date();
-  const todayString = `${today.getDate()} ${MONTHS_GEN[today.getMonth()]} ${today.getFullYear()} г.`;
+  const todayString = `${today.getDate()} ${
+    MONTHS_GEN[today.getMonth()]
+  } ${today.getFullYear()} г.`;
 
   const handleSubmit = () => {
     if (!hasAmount) return;
@@ -58,7 +86,7 @@ const PartialRepayment = ({ setOpenMenu, openMenu }) => {
 
   const handleCloseSubmit = () => {
     setIsSubmitOpen(false);
-    navigate("/account/my-credits");
+    navigate("/account/my-credits/repayment");
   };
 
   return (
@@ -68,7 +96,11 @@ const PartialRepayment = ({ setOpenMenu, openMenu }) => {
           <MobileLeftPanel setOpenMenu={setOpenMenu} openMenu={openMenu} />
 
           <section className={style.main}>
-            <button type="button" className={style.back} onClick={() => navigate(-1)}>
+            <button
+              type="button"
+              className={style.back}
+              onClick={() => navigate(-1)}
+            >
               <Chevron />
               <span>Назад</span>
             </button>
@@ -100,7 +132,9 @@ const PartialRepayment = ({ setOpenMenu, openMenu }) => {
                 {RECALC_OPTIONS.map((opt) => (
                   <label
                     key={opt.id}
-                    className={`${style.option} ${recalc === opt.id ? style.option_active : ""}`}
+                    className={`${style.option} ${
+                      recalc === opt.id ? style.option_active : ""
+                    }`}
                   >
                     <input
                       type="radio"

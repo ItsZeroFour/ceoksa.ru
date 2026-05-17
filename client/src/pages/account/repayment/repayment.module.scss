@@ -205,10 +205,10 @@
     flex-direction: column;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 22px;
+    gap: 10px;
     padding: 14px;
-    width: 110px;
-    height: 110px;
+    width: 95px;
+    height: 95px;
     border-radius: var(--radius-inner);
     scroll-snap-align: start;
   }
@@ -257,7 +257,7 @@
   color: var(--color-black);
 
   @media (max-width: 480px) {
-    font-size: 15px;
+    font-size: 12px;
   }
 }
 

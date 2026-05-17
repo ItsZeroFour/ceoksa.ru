@@ -64,7 +64,7 @@ const SbpTransfer = ({ setOpenMenu, openMenu, userData }) => {
   const location = useLocation();
   const sourceBank = location.state?.sourceBank ?? null;
 
-  const [amount, setAmount] = useState("100 000 ₽");
+  const [amount, setAmount] = useState("0 ₽");
 
   // Если пользователь зашёл на /sbp-transfer без выбранного банка — отправляем его выбирать
   useEffect(() => {

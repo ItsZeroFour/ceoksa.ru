@@ -33,13 +33,14 @@
   @media (max-width: 480px) {
     top: -11px;
     right: 18px;
-    font-size: 14px;
+    font-size: 15px;
     padding: 3px 12px;
   }
 
   @media (max-width: 360px) {
     right: 50%;
     transform: translateX(50%);
+    font-size: 14px;
   }
 }
 

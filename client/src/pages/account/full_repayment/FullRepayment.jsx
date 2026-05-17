@@ -40,7 +40,7 @@ const FullRepayment = ({ setOpenMenu, openMenu }) => {
 
   const handleCloseSuccess = () => {
     setIsSuccessOpen(false);
-    navigate("/account/my-credits");
+    navigate("/account/my-credits/repayment");
   };
 
   return (
