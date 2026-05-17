@@ -165,7 +165,7 @@
 
   @media (max-width: 480px) {
     flex-direction: row;
-    gap: 10px;
+    gap: 6px;
     overflow-x: auto;
     overflow-y: hidden;
     padding-bottom: 4px;
@@ -207,8 +207,8 @@
     justify-content: space-between;
     gap: 22px;
     padding: 14px;
-    width: 124px;
-    height: 124px;
+    width: 110px;
+    height: 110px;
     border-radius: var(--radius-inner);
     scroll-snap-align: start;
   }
@@ -263,31 +263,36 @@
 
 @media (max-width: 480px) {
   .bank_vtb {
-    background: #1c2c50;
+    background: rgba(28, 44, 80, 0.4);
+    border: 1px solid #1c2c50;
     .bank__name {
       color: #fff;
     }
   }
   .bank_tbank {
-    background: #e3b100;
+    background: rgba(227, 177, 0, 0.4);
+    border: 1px solid #e3b100;
     .bank__name {
-      color: #000;
+      color: #fff;
     }
   }
   .bank_sovcom {
-    background: #a5a5a5;
+    background: rgba(165, 165, 165, 0.4);
+    border: 1px solid #a5a5a5;
     .bank__name {
       color: #fff;
     }
   }
   .bank_sber {
-    background: #21a038;
+    background: rgba(33, 160, 56, 0.4);
+    border: 1px solid #21a038;
     .bank__name {
       color: #fff;
     }
   }
   .bank_other {
     background: var(--color-block-bg);
+    border: 1px solid var(--color-block-bg);
     .bank__name {
       color: var(--color-black);
     }

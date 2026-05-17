@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import style from "./sbptransfer.module.scss";
 import MobileLeftPanel from "../../../components/mobile_left_panel/MobileLeftPanel";
-import PaymentConfirmModal from "../../../components/payment_confirm_modal/PaymentConfirmModal";
 import tbank from "../../../assets/icons/tbank.png";
 import sbp from "../../../assets/icons/account/sbp.png";
 
@@ -66,7 +65,6 @@ const SbpTransfer = ({ setOpenMenu, openMenu, userData }) => {
   const sourceBank = location.state?.sourceBank ?? null;
 
   const [amount, setAmount] = useState("100 000 ₽");
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   // Если пользователь зашёл на /sbp-transfer без выбранного банка — отправляем его выбирать
   useEffect(() => {
@@ -92,7 +90,7 @@ const SbpTransfer = ({ setOpenMenu, openMenu, userData }) => {
 
   const handleTransfer = () => {
     if (!amount.trim()) return;
-    setIsConfirmOpen(true);
+    navigate("/account/my-credits");
   };
 
   const handleChangeSourceBank = () => {
@@ -199,11 +197,6 @@ const SbpTransfer = ({ setOpenMenu, openMenu, userData }) => {
           </section>
         </div>
       </div>
-
-      <PaymentConfirmModal
-        isOpen={isConfirmOpen}
-        onClose={() => setIsConfirmOpen(false)}
-      />
     </div>
   );
 };

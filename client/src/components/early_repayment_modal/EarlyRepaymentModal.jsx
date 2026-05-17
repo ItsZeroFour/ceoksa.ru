@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import style from "./earlyrepaymentmodal.module.scss";
-import InfoModal from "../info_modal/InfoModal";
 
 const ChevronRight = () => (
   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -57,7 +56,6 @@ const formatMoney = (value) => {
 };
 
 const EarlyRepaymentModal = ({ isOpen, onClose, credit }) => {
-  const [isInfoOpen, setIsInfoOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -80,21 +78,16 @@ const EarlyRepaymentModal = ({ isOpen, onClose, credit }) => {
   };
 
   const handlePartial = () => {
-    setIsInfoOpen(true);
+    onClose();
+    navigate("/account/my-credits/partial-repayment", {
+      state: { creditId: credit?.id },
+    });
   };
 
   const handleFullClose = () => {
     onClose();
     navigate("/account/my-credits/full-repayment", {
       state: { creditId: credit?.id, balance: credit?.balance },
-    });
-  };
-
-  const handleInfoClose = () => {
-    setIsInfoOpen(false);
-    onClose();
-    navigate("/account/my-credits/partial-repayment", {
-      state: { creditId: credit?.id },
     });
   };
 
@@ -177,19 +170,6 @@ const EarlyRepaymentModal = ({ isOpen, onClose, credit }) => {
           </motion.div>
         </motion.div>
       )}
-
-      <InfoModal
-        isOpen={isInfoOpen}
-        onClose={handleInfoClose}
-        title="Как работает частичное погашение"
-      >
-        <p>
-          В первую очередь будет погашен ближайший платёж. Оставшаяся сумма
-          пойдёт на уменьшение основного долга. Вы сможете снизить ежемесячный
-          платёж или сократить срок кредита. Введите сумму — и мы покажем, как
-          изменятся условия.
-        </p>
-      </InfoModal>
     </AnimatePresence>
   );
 };
