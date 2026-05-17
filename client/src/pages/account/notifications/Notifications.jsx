@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 import style from "./notifications.module.scss";
 import MobileLeftPanel from "../../../components/mobile_left_panel/MobileLeftPanel";
 import { NOTIFICATIONS } from "./notificationsMock";
@@ -66,24 +65,18 @@ const Notifications = ({ setOpenMenu, openMenu }) => {
 
             {items.length === 0 ? (
               <section className={style.empty}>
-                <h2>У вас нет уведомлений</h2>
-                <p>
-                  Здесь будут отображаться ваши уведомления от{" "}
-                  {activeTab === "banks" ? "Банков" : "ОКСА"}
-                </p>
+                <div className={style.empty__wrapper}>
+                  <h2>У вас нет уведомлений</h2>
+                  <p>
+                    Здесь будут отображаться ваши уведомления от{" "}
+                    {activeTab === "banks" ? "Банков" : "ОКСА"}
+                  </p>
+                </div>
               </section>
             ) : (
-              <motion.ul
-                className={style.list}
-                initial="hidden"
-                animate="show"
-                variants={{
-                  hidden: {},
-                  show: { transition: { staggerChildren: 0.05 } },
-                }}
-              >
+              <ul className={style.list}>
                 {items.map((n) => (
-                  <motion.li
+                  <li
                     key={n.id}
                     className={style.item}
                     onClick={() =>
@@ -91,11 +84,6 @@ const Notifications = ({ setOpenMenu, openMenu }) => {
                         state: { notification: n },
                       })
                     }
-                    variants={{
-                      hidden: { opacity: 0, y: 10 },
-                      show: { opacity: 1, y: 0 },
-                    }}
-                    transition={{ duration: 0.25 }}
                   >
                     <div className={style.item__logo}>
                       {n.bank?.logo && (
@@ -105,7 +93,13 @@ const Notifications = ({ setOpenMenu, openMenu }) => {
                     </div>
 
                     <div className={style.item__body}>
-                      <h3 className={`${style.item__title} ${!n.unread && style.item__title__unread}`}>{n.title}</h3>
+                      <h3
+                        className={`${style.item__title} ${
+                          !n.unread && style.item__title__unread
+                        }`}
+                      >
+                        {n.title}
+                      </h3>
                       <p className={style.item__preview}>
                         {n.preview.split("\n").map((line, i) => (
                           <React.Fragment key={i}>
@@ -118,9 +112,9 @@ const Notifications = ({ setOpenMenu, openMenu }) => {
                         {n.date} · {n.time}
                       </p>
                     </div>
-                  </motion.li>
+                  </li>
                 ))}
-              </motion.ul>
+              </ul>
             )}
           </section>
         </div>
