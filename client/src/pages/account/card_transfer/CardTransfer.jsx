@@ -41,7 +41,7 @@ const CardTransfer = ({ setOpenMenu, openMenu }) => {
   const [expiry, setExpiry] = useState("");
   const [cvc, setCvc] = useState("");
   const [remember, setRemember] = useState(false);
-  const [amount, setAmount] = useState("100 000 ₽");
+  const [amount, setAmount] = useState("0 ₽");
 
   const targetCredit = {
     bank: { name: "Т-Банк", logo: tbank },
