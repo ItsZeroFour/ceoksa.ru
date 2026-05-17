@@ -266,8 +266,8 @@ button {
 
     &:first-child {
       justify-content: space-between;
-      border-bottom-left-radius: var(--radius-card);
-      border-top-left-radius: var(--radius-card);
+      border-bottom-left-radius: var(--radius-inner);
+      border-top-left-radius: var(--radius-inner);
 
       padding-right: 16px;
 
@@ -281,7 +281,7 @@ button {
       }
 
       @media (max-width: 550px) {
-        border-radius: var(--radius-card);
+        border-radius: var(--radius-inner);
         padding: 20px 15px;
       }
     }
@@ -289,8 +289,8 @@ button {
     &:last-child {
       border-bottom-left-radius: 0;
       border-top-left-radius: 0;
-      border-bottom-right-radius: var(--radius-card);
-      border-top-right-radius: var(--radius-card);
+      border-bottom-right-radius: var(--radius-inner);
+      border-top-right-radius: var(--radius-inner);
       padding-left: 16px;
 
       padding: 15px;
@@ -356,8 +356,8 @@ button {
       }
 
       @media (max-width: 550px) {
-        border-bottom-left-radius: 16px;
-        border-top-left-radius: 16px;
+        border-bottom-left-radius: var(--radius-inner);
+        border-top-left-radius: var(--radius-inner);
       }
     }
 
@@ -417,7 +417,7 @@ button {
   display: flex;
   justify-content: space-between;
   // width: 250px;
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-inner);
 
   position: relative;
 
@@ -519,7 +519,7 @@ button {
 }
 
 .credit__main__form__cash {
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-inner);
 
   position: relative;
 

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import style from "./cardtransfer.module.scss";
 import MobileLeftPanel from "../../../components/mobile_left_panel/MobileLeftPanel";
-import PaymentConfirmModal from "../../../components/payment_confirm_modal/PaymentConfirmModal";
 import tbank from "../../../assets/icons/tbank.png";
 
 const Chevron = () => (
@@ -43,7 +42,6 @@ const CardTransfer = ({ setOpenMenu, openMenu }) => {
   const [cvc, setCvc] = useState("");
   const [remember, setRemember] = useState(false);
   const [amount, setAmount] = useState("100 000 ₽");
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   const targetCredit = {
     bank: { name: "Т-Банк", logo: tbank },
@@ -59,7 +57,7 @@ const CardTransfer = ({ setOpenMenu, openMenu }) => {
 
   const handleTransfer = () => {
     if (!isValid) return;
-    setIsConfirmOpen(true);
+    navigate("/account/my-credits");
   };
 
   return (
@@ -196,11 +194,6 @@ const CardTransfer = ({ setOpenMenu, openMenu }) => {
           </section>
         </div>
       </div>
-
-      <PaymentConfirmModal
-        isOpen={isConfirmOpen}
-        onClose={() => setIsConfirmOpen(false)}
-      />
     </div>
   );
 };

@@ -29,7 +29,7 @@
     position: absolute;
     width: 100%;
     padding: 10px;
-    border-radius: 6px;
+    border-radius: var(--radius-inner);
     background: var(--color-block-bg);
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
     top: 100%;
@@ -62,7 +62,7 @@
   width: 320px;
 
   background: var(--color-block-bg);
-  border-radius: 8px;
+  border-radius: var(--radius-inner);
   padding: 10px 15px;
 
   svg {

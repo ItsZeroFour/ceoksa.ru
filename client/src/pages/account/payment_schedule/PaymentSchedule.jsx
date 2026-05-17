@@ -6,19 +6,41 @@ import MobileLeftPanel from "../../../components/mobile_left_panel/MobileLeftPan
 
 const Chevron = () => (
   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-    <path d="M9 12L4 7l5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    <path
+      d="M9 12L4 7l5-5"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
   </svg>
 );
 
 const Angle = () => (
   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-    <path d="M3 5l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    <path
+      d="M3 5l4 4 4-4"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
   </svg>
 );
 
 const MONTHS = [
-  "января", "февраля", "марта", "апреля", "мая", "июня",
-  "июля", "августа", "сентября", "октября", "ноября", "декабря",
+  "января",
+  "февраля",
+  "марта",
+  "апреля",
+  "мая",
+  "июня",
+  "июля",
+  "августа",
+  "сентября",
+  "октября",
+  "ноября",
+  "декабря",
 ];
 
 const formatMoney = (value) =>
@@ -36,8 +58,7 @@ const generatePayments = (year, currentMonth) => {
     const isFifthMonth = monthIdx === 4;
     const isCurrent = year === CURRENT_YEAR && monthIdx === currentMonth;
     const isPast =
-      year < CURRENT_YEAR ||
-      (year === CURRENT_YEAR && monthIdx < currentMonth);
+      year < CURRENT_YEAR || (year === CURRENT_YEAR && monthIdx < currentMonth);
     return {
       id: `${year}-${monthIdx}`,
       date: `24 ${MONTHS[monthIdx]}`,
@@ -80,7 +101,11 @@ const PaymentSchedule = ({ setOpenMenu, openMenu }) => {
           <MobileLeftPanel setOpenMenu={setOpenMenu} openMenu={openMenu} />
 
           <section className={style.main}>
-            <button type="button" className={style.back} onClick={() => navigate(-1)}>
+            <button
+              type="button"
+              className={style.back}
+              onClick={() => navigate(-1)}
+            >
               <Chevron />
               <span>Назад</span>
             </button>
@@ -92,7 +117,9 @@ const PaymentSchedule = ({ setOpenMenu, openMenu }) => {
                 <button
                   key={year}
                   type="button"
-                  className={`${style.tab} ${activeYear === year ? style.tab_active : ""}`}
+                  className={`${style.tab} ${
+                    activeYear === year ? style.tab_active : ""
+                  }`}
                   onClick={() => handleYearChange(year)}
                 >
                   {year}
@@ -106,9 +133,11 @@ const PaymentSchedule = ({ setOpenMenu, openMenu }) => {
                 return (
                   <li
                     key={p.id}
-                    className={`${style.item} ${isOpen ? style.item_open : ""} ${
-                      p.isCurrent ? style.item_current : ""
-                    } ${p.isPast ? style.item_past : ""}`}
+                    className={`${style.item} ${
+                      isOpen ? style.item_open : ""
+                    } ${p.isCurrent ? style.item_current : ""} ${
+                      p.isPast ? style.item_past : ""
+                    }`}
                   >
                     <div
                       className={style.item__row}
@@ -124,7 +153,9 @@ const PaymentSchedule = ({ setOpenMenu, openMenu }) => {
                     >
                       <div className={style.item__left}>
                         <p className={style.item__date}>{p.date}</p>
-                        <p className={style.item__amount}>{formatMoney(p.amount)}</p>
+                        <p className={style.item__amount}>
+                          {formatMoney(p.amount)}
+                        </p>
                         {p.isCurrent && (
                           <button
                             type="button"
@@ -157,13 +188,17 @@ const PaymentSchedule = ({ setOpenMenu, openMenu }) => {
                         >
                           <div className={style.item__details__inner}>
                             <div className={style.item__detail}>
-                              <p className={style.item__detail__label}>Основной долг</p>
+                              <p className={style.item__detail__label}>
+                                Основной долг
+                              </p>
                               <p className={style.item__detail__value}>
                                 {formatMoney(p.principal)}
                               </p>
                             </div>
                             <div className={style.item__detail}>
-                              <p className={style.item__detail__label}>Проценты</p>
+                              <p className={style.item__detail__label}>
+                                Проценты
+                              </p>
                               <p className={style.item__detail__value}>
                                 {formatMoney(p.interest)}
                               </p>
