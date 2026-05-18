@@ -145,3 +145,39 @@
     top: 35%;
   }
 }
+
+.requisites__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+}
+
+.close {
+  width: 28px;
+  height: 28px;
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 25px;
+    height: 1px;
+    background: #666666;
+    border-radius: 60px;
+  }
+
+  &::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  &::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
+}
