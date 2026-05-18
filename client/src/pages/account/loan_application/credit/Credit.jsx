@@ -202,12 +202,12 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
   return (
     <section className={style.credit} id="credit">
       <div className={style.credit__wrapper}>
-        <h2 className={style.credit__title}>{data.title}</h2>
+        <h2 className={style.credit__title}>
+          Укажите сумму, сроки и цель вашего кредита
+        </h2>
         {/* <p className={style.credit__desc}>{data.description}</p> */}
 
         <div className={style.credit__main}>
-          <h3 className={style.credit__main__title}>{data.subtitle}</h3>
-
           <form
             className="credit__main__form"
             onSubmit={(e) => e.preventDefault()}
