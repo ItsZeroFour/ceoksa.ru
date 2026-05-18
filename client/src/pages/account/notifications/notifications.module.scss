@@ -180,8 +180,8 @@
   position: absolute;
   top: -3px;
   right: -3px;
-  width: 15px;
-  height: 15px;
+  width: 17px;
+  height: 17px;
   background: var(--color-red);
   border-radius: 50%;
   border: 2px solid var(--color-block-bg);
@@ -240,25 +240,10 @@
 /* Empty */
 
 .empty {
+  margin-top: 20px;
   padding: 35px;
   background: var(--color-gray-secondary);
   border-radius: var(--radius-outer);
-  margin-top: 20px;
-
-  @media (max-width: 768px) {
-    padding: 28px;
-  }
-
-  @media (max-width: 480px) {
-    padding: 22px;
-    margin-top: 18px;
-  }
-}
-
-.empty__wrapper {
-  padding: 22px 24px;
-  background: var(--color-block-bg);
-  border-radius: var(--radius-inner);
   display: flex;
   flex-direction: column;
   gap: 14px;

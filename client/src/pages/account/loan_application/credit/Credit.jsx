@@ -190,9 +190,7 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
   if (status === "loading" || status === "failed") {
     return (
       <section className={style.credit} id="credit">
-        <div className="container">
-          <CreditSceleton />
-        </div>
+        <CreditSceleton />
       </section>
     );
   }
@@ -203,80 +201,78 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
 
   return (
     <section className={style.credit} id="credit">
-      <div className="container">
-        <div className={style.credit__wrapper}>
-          <h2 className={style.credit__title}>{data.title}</h2>
-          <p className={style.credit__desc}>{data.description}</p>
+      <div className={style.credit__wrapper}>
+        <h2 className={style.credit__title}>{data.title}</h2>
+        {/* <p className={style.credit__desc}>{data.description}</p> */}
 
-          <div className={style.credit__main}>
-            <h3 className={style.credit__main__title}>{data.subtitle}</h3>
+        <div className={style.credit__main}>
+          <h3 className={style.credit__main__title}>{data.subtitle}</h3>
 
-            <form
-              className="credit__main__form"
-              onSubmit={(e) => e.preventDefault()}
-            >
-              <div className="credit__main__form__elem">
-                <CreditAmountInput
-                  value={creditAmount.displayAmount}
-                  onChange={creditAmount.handleAmountChange}
-                  onFocus={creditAmount.handleAmountFocus}
-                  onBlur={creditAmount.handleAmountBlur}
-                  onIncrement={creditAmount.increment}
-                  onDecrement={creditAmount.decrement}
-                />
+          <form
+            className="credit__main__form"
+            onSubmit={(e) => e.preventDefault()}
+          >
+            <div className="credit__main__form__elem">
+              <CreditAmountInput
+                value={creditAmount.displayAmount}
+                onChange={creditAmount.handleAmountChange}
+                onFocus={creditAmount.handleAmountFocus}
+                onBlur={creditAmount.handleAmountBlur}
+                onIncrement={creditAmount.increment}
+                onDecrement={creditAmount.decrement}
+              />
 
-                <div className="credit__main__data">
-                  <DropdownSelector
-                    ref={termRef}
-                    label="На срок"
-                    selected={selectedTerm}
-                    options={TERMS}
-                    isOpen={openDropdown}
-                    onToggle={() => toggleDropdown("term")}
-                    onSelect={handleTermSelect}
-                    dropdownType="term"
-                    ariaLabel="Выбрать срок кредита"
-                  />
-                </div>
-              </div>
-
-              <div className="credit__main__form__other">
+              <div className="credit__main__data">
                 <DropdownSelector
-                  ref={targetRef}
-                  label="Цель кредита"
-                  selected={selectedTarget}
-                  options={TARGETS}
+                  ref={termRef}
+                  label="На срок"
+                  selected={selectedTerm}
+                  options={TERMS}
                   isOpen={openDropdown}
-                  onToggle={() => toggleDropdown("target")}
-                  onSelect={handleTargetSelect}
-                  dropdownType="target"
-                  ariaLabel="Выбрать цель кредита"
-                />
-
-                <SalaryInput
-                  value={salary.displaySalary}
-                  error={salary.salaryError}
-                  onChange={salary.handleSalaryChange}
-                  onFocus={salary.handleSalaryFocus}
-                  onBlur={salary.handleSalaryBlur}
-                  onKeyDown={salary.handleKeyDown}
+                  onToggle={() => toggleDropdown("term")}
+                  onSelect={handleTermSelect}
+                  dropdownType="term"
+                  ariaLabel="Выбрать срок кредита"
                 />
               </div>
+            </div>
 
-              <div className={style.credit__button}>
-                <button
-                  type="button"
-                  className={style.credit__buttons__continue}
-                  onMouseDown={handleMouseDown}
-                  onClick={handleContinue}
-                >
-                  Продолжить
-                </button>
-              </div>
-            </form>
+            <div className="credit__main__form__other">
+              <DropdownSelector
+                ref={targetRef}
+                label="Цель кредита"
+                selected={selectedTarget}
+                options={TARGETS}
+                isOpen={openDropdown}
+                onToggle={() => toggleDropdown("target")}
+                onSelect={handleTargetSelect}
+                dropdownType="target"
+                ariaLabel="Выбрать цель кредита"
+              />
 
-            {/* <Notification text="Авторизация через Госуслуги находится в процессе разработки и скоро будет доступна" /> */}
-          </div>
+              <SalaryInput
+                value={salary.displaySalary}
+                error={salary.salaryError}
+                onChange={salary.handleSalaryChange}
+                onFocus={salary.handleSalaryFocus}
+                onBlur={salary.handleSalaryBlur}
+                onKeyDown={salary.handleKeyDown}
+              />
+            </div>
+
+            <div className={style.credit__button}>
+              <button
+                type="button"
+                className={style.credit__buttons__continue}
+                onMouseDown={handleMouseDown}
+                onClick={handleContinue}
+              >
+                Продолжить
+              </button>
+            </div>
+          </form>
+
+          {/* <Notification text="Авторизация через Госуслуги находится в процессе разработки и скоро будет доступна" /> */}
         </div>
       </div>
     </section>
