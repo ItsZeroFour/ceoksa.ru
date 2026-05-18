@@ -48,28 +48,37 @@ const Archive = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
     >
-      <motion.ul
-        className={style.archive__list}
-        initial="hidden"
-        animate="show"
-        variants={{
-          hidden: {},
-          show: { transition: { staggerChildren: 0.07 } },
-        }}
+      <motion.div
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.2, duration: 0.4 }}
       >
-        {credits.map((credit) => (
-          <motion.li
-            key={credit.id}
-            variants={{
-              hidden: { opacity: 0, y: 15 },
-              show: { opacity: 1, y: 0 },
-            }}
-            transition={{ duration: 0.25 }}
-          >
-            <CreditCard credit={credit} archived />
-          </motion.li>
-        ))}
-      </motion.ul>
+        <motion.ul
+          className={style.archive__list}
+          initial="hidden"
+          animate="show"
+          variants={{
+            hidden: {},
+            show: { transition: { staggerChildren: 0.07 } },
+          }}
+        >
+          {credits.map((credit) => (
+            <motion.li
+              key={credit.id}
+              variants={{
+                hidden: { opacity: 0, y: 15 },
+                show: { opacity: 1, y: 0 },
+              }}
+              transition={{ duration: 0.25 }}
+              layout
+              whileHover={{ y: -4 }}
+              whileTap={{ scale: 0.99 }}
+            >
+              <CreditCard credit={credit} archived />
+            </motion.li>
+          ))}
+        </motion.ul>
+      </motion.div>
     </motion.section>
   );
 };

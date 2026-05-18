@@ -17,7 +17,7 @@
   .auth__wrapper {
     background: var(--color-payments-modal-bg);
     padding: 30px;
-    border-radius: var(--radius-card);
+    border-radius: var(--radius-outer);
     border: 1px solid #777777;
 
     position: relative;
@@ -115,7 +115,7 @@
 
         input {
           padding: 20px;
-          border-radius: var(--radius-inner);
+          border-radius: var(--radius-card);
           background: var(--color-block-bg);
           border: 1px solid var(--color-input-border);
           color: var(--color-black);
@@ -163,7 +163,7 @@
         input {
           width: 105px;
           height: 65px;
-          border-radius: var(--radius-inner);
+          border-radius: var(--radius-card);
 
           background: var(--color-block-bg);
           border: 1px solid var(--color-input-border);

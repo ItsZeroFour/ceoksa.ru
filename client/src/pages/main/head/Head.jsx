@@ -15,6 +15,19 @@ const Head = ({ scrollToBlock }) => {
     dispatch(fetchHead("shapka?populate=*"));
   }, [dispatch]);
 
+  const renderTitle = (title) => {
+    if (!title) return null;
+    const words = title.trim().split(/\s+/);
+    const firstWords = words.slice(0, 3).join(" ");
+    const restWords = words.slice(3).join(" ");
+    return (
+      <>
+        <span className={style.head__title__big}>{firstWords}</span>
+        {restWords && <> {restWords}</>}
+      </>
+    );
+  };
+
   return (
     <section className={style.head}>
       <div className="container">
@@ -23,7 +36,7 @@ const Head = ({ scrollToBlock }) => {
         ) : (
           <div className={style.head__wrapper}>
             <div className={style.head__text}>
-              <h1>{data.title}</h1>
+              <h1>{renderTitle(data.title)}</h1>
               <p>{data.description}</p>
 
               <Link to="#" onClick={() => scrollToBlock("credit")}>

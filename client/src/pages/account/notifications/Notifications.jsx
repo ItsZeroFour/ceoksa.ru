@@ -65,13 +65,11 @@ const Notifications = ({ setOpenMenu, openMenu }) => {
 
             {items.length === 0 ? (
               <section className={style.empty}>
-                <div className={style.empty__wrapper}>
-                  <h2>У вас нет уведомлений</h2>
-                  <p>
-                    Здесь будут отображаться ваши уведомления от{" "}
-                    {activeTab === "banks" ? "Банков" : "ОКСА"}
-                  </p>
-                </div>
+                <h2>У вас нет уведомлений</h2>
+                <p>
+                  Здесь будут отображаться ваши уведомления от{" "}
+                  {activeTab === "banks" ? "Банков" : "ОКСА"}
+                </p>
               </section>
             ) : (
               <ul className={style.list}>
