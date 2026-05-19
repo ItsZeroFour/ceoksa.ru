@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import style from "./earlyrepaymentmodal.module.scss";
@@ -91,7 +92,7 @@ const EarlyRepaymentModal = ({ isOpen, onClose, credit }) => {
     });
   };
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <motion.div
@@ -108,6 +109,7 @@ const EarlyRepaymentModal = ({ isOpen, onClose, credit }) => {
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            onClick={(e) => e.stopPropagation()}
           >
             <header className={style.header}>
               <h3>Досрочное погашение</h3>
@@ -170,7 +172,8 @@ const EarlyRepaymentModal = ({ isOpen, onClose, credit }) => {
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };
 

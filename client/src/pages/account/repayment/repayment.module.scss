@@ -169,10 +169,10 @@
     overflow-x: auto;
     overflow-y: hidden;
     padding-bottom: 4px;
-    padding-left: 20px;
     margin-left: -20px;
     margin-right: -20px;
     scroll-snap-type: x mandatory;
+    scroll-padding-left: 20px;
     -webkit-overflow-scrolling: touch;
 
     &::-webkit-scrollbar {
@@ -211,6 +211,10 @@
     height: 95px;
     border-radius: var(--radius-inner);
     scroll-snap-align: start;
+
+    &:first-child {
+      margin-left: 20px;
+    }
   }
 
   @media (max-width: 480px) {
