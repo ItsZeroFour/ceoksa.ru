@@ -147,16 +147,6 @@
   }
 }
 
-.sbp__c {
-  color: #5b57d1;
-}
-.sbp__b {
-  color: #1fafe5;
-}
-.sbp__p {
-  color: #42a12c;
-}
-
 .banks {
   display: flex;
   flex-direction: column;
@@ -169,10 +159,10 @@
     overflow-x: auto;
     overflow-y: hidden;
     padding-bottom: 4px;
-    padding-left: 20px;
     margin-left: -20px;
     margin-right: -20px;
     scroll-snap-type: x mandatory;
+    scroll-padding-left: 20px;
     -webkit-overflow-scrolling: touch;
 
     &::-webkit-scrollbar {
@@ -206,15 +196,14 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 10px;
-    padding: 14px;
+    padding: 12px;
     width: 95px;
     height: 95px;
-    border-radius: var(--radius-inner);
     scroll-snap-align: start;
-  }
 
-  @media (max-width: 480px) {
-    padding: 12px;
+    &:first-child {
+      margin-left: 20px;
+    }
   }
 }
 
