@@ -17,7 +17,8 @@
       "PowerShell(Get-ChildItem -Path \"D:\\\\PACK\\\\Programming\\\\React\\\\ceoksa.ru\\\\client\\\\src\" -Recurse | Where-Object { $_.Extension -match '\\\\.\\(css|scss|sass|less\\)' } | Select-Object FullName)",
       "PowerShell(Get-ChildItem -Path \"D:\\\\PACK\\\\Programming\\\\React\\\\ceoksa.ru\\\\client\\\\src\\\\components\" -Recurse | Where-Object { $_.Extension -eq '.css' } | Select-Object FullName)",
       "PowerShell(Get-ChildItem -Path \"D:\\\\PACK\\\\Programming\\\\React\\\\ceoksa.ru\\\\client\\\\src\" -Recurse -File | Where-Object { $_.Name -match '\\\\.\\(css|scss\\)$' } | Select-Object FullName)",
-      "PowerShell(Get-ChildItem -Path \"D:\\\\PACK\\\\Programming\\\\React\\\\ceoksa.ru\\\\client\\\\src\" -Recurse -File | ForEach-Object { $_.Extension } | Sort-Object -Unique)"
+      "PowerShell(Get-ChildItem -Path \"D:\\\\PACK\\\\Programming\\\\React\\\\ceoksa.ru\\\\client\\\\src\" -Recurse -File | ForEach-Object { $_.Extension } | Sort-Object -Unique)",
+      "Bash(npx --no-install eslint src/App.js src/utils/lazyWithRetry.js src/components/ChunkErrorBoundary/ChunkErrorBoundary.js)"
     ]
   }
 }
