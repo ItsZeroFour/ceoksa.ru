@@ -7,7 +7,7 @@ import { ReactComponent as SNILS } from "../../../../assets/icons/profile/snils.
 import { ReactComponent as INN } from "../../../../assets/icons/profile/inn.svg";
 import gosuslugi from "../../../../assets/gosuslugi.png";
 
-const Documents = (user) => {
+const Documents = ({ user }) => {
   return (
     <div className={style.documents}>
       <div className={style.documents__wrapper}>
@@ -22,7 +22,7 @@ const Documents = (user) => {
 
               <div className={style.documents__item__text}>
                 <p>Паспорт</p>
-                <p>{user?.user?.passport?.series_number || "0000 000000"}</p>
+                <p>{user?.passport?.series_number || "0000 000000"}</p>
               </div>
             </div>
 
@@ -82,7 +82,7 @@ const Documents = (user) => {
 
               <div className={style.documents__item__text}>
                 <p>ИНН</p>
-                <p>{user?.user?.inn || "00 00 00000000"}</p>
+                <p>{user?.inn || "00 00 00000000"}</p>
               </div>
             </div>
 
