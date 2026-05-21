@@ -13,6 +13,7 @@ import logo from "../../assets/logo.svg";
 import logoDark from "../../assets/logo-dark.svg";
 import { useTheme } from "../../hooks/useTheme";
 import axios from "../../utils/axios";
+import { useMenu } from "../../App";
 
 const personalItems = [
   { icon: <List />, text: "Заявка на кредит", path: "/loan_applications" },
@@ -21,10 +22,11 @@ const personalItems = [
   { icon: <Profile />, text: "Профиль", path: "/profile" },
 ];
 
-const MobileLeftPanel = ({ setOpenMenu, openMenu }) => {
+const MobileLeftPanel = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isPersonalOpen, setIsPersonalOpen] = useState(true);
+  const { openMenu, setOpenMenu } = useMenu();
 
   const togglePersonal = () => setIsPersonalOpen(!isPersonalOpen);
   const isActive = (path) => location.pathname === `/account${path}`;

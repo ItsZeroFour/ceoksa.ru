@@ -1,4 +1,5 @@
 import {
+  lazy,
   Suspense,
   useState,
   useEffect,
@@ -11,61 +12,53 @@ import { useDispatch, useSelector } from "react-redux";
 import useDisableScroll from "./hooks/useDisableScroll";
 import { ThemeProvider } from "./context/ThemeContext";
 import { fetchMe } from "./redux/slices/auth/authSlice";
-import lazyWithRetry from "./utils/lazyWithRetry";
 
 import Auth from "./components/auth/Auth";
 import Cookies from "./components/cookies/Cookies";
 import ScrollToTop from "./components/ScrollToTop/ScrollToTop";
 import Header from "./components/header/Header";
-import ChunkErrorBoundary from "./components/ChunkErrorBoundary/ChunkErrorBoundary";
 
-const Main = lazyWithRetry(() => import("./pages/main/Main"));
-const Footer = lazyWithRetry(() => import("./components/footer/Footer"));
-const Policy = lazyWithRetry(() => import("./pages/policy/Policy"));
-const UserAgreement = lazyWithRetry(() =>
+const Main = lazy(() => import("./pages/main/Main"));
+const Footer = lazy(() => import("./components/footer/Footer"));
+const Policy = lazy(() => import("./pages/policy/Policy"));
+const UserAgreement = lazy(() =>
   import("./pages/user_agreement/UserAgreement")
 );
 
-const LoanApplication = lazyWithRetry(() =>
+const LoanApplication = lazy(() =>
   import("./pages/account/loan_application/LoanApplication")
 );
-const Credits = lazyWithRetry(() => import("./pages/account/credits/Credits"));
-const MyCredits = lazyWithRetry(() =>
-  import("./pages/account/my_credits/MyCredits")
-);
-const Rating = lazyWithRetry(() => import("./pages/account/rating/Rating"));
-const Profile = lazyWithRetry(() => import("./pages/account/profile/Profile"));
-const Repayment = lazyWithRetry(() =>
-  import("./pages/account/repayment/Repayment")
-);
-const SbpTransfer = lazyWithRetry(() =>
+const Credits = lazy(() => import("./pages/account/credits/Credits"));
+const MyCredits = lazy(() => import("./pages/account/my_credits/MyCredits"));
+const Rating = lazy(() => import("./pages/account/rating/Rating"));
+const Profile = lazy(() => import("./pages/account/profile/Profile"));
+const Repayment = lazy(() => import("./pages/account/repayment/Repayment"));
+const SbpTransfer = lazy(() =>
   import("./pages/account/sbp_transfer/SbpTransfer")
 );
-const CardTransfer = lazyWithRetry(() =>
+const CardTransfer = lazy(() =>
   import("./pages/account/card_transfer/CardTransfer")
 );
-const PaymentSchedule = lazyWithRetry(() =>
+const PaymentSchedule = lazy(() =>
   import("./pages/account/payment_schedule/PaymentSchedule")
 );
-const CertificateOrder = lazyWithRetry(() =>
+const CertificateOrder = lazy(() =>
   import("./pages/account/certificate_order/CertificateOrder")
 );
-const PartialRepayment = lazyWithRetry(() =>
+const PartialRepayment = lazy(() =>
   import("./pages/account/partial_repayment/PartialRepayment")
 );
-const FullRepayment = lazyWithRetry(() =>
+const FullRepayment = lazy(() =>
   import("./pages/account/full_repayment/FullRepayment")
 );
-const Notifications = lazyWithRetry(() =>
+const Notifications = lazy(() =>
   import("./pages/account/notifications/Notifications")
 );
-const NotificationDetail = lazyWithRetry(() =>
+const NotificationDetail = lazy(() =>
   import("./pages/account/notification_detail/NotificationDetail")
 );
-const PersonalData = lazyWithRetry(() =>
-  import("./pages/account/files/PersonalData")
-);
-const ADS = lazyWithRetry(() => import("./pages/account/files/ADS"));
+const PersonalData = lazy(() => import("./pages/account/files/PersonalData"));
+const ADS = lazy(() => import("./pages/account/files/ADS"));
 
 export const MenuContext = createContext();
 export const useMenu = () => useContext(MenuContext);
@@ -151,7 +144,6 @@ function App() {
     <ThemeProvider>
       <MenuContext.Provider value={{ openMenu, setOpenMenu }}>
         <div className="App">
-          <ChunkErrorBoundary>
           <Suspense fallback={<Loading />}>
             <div className="wrapper">
               <div className="header__container">
@@ -205,7 +197,6 @@ function App() {
               <Footer />
             </div>
           </Suspense>
-          </ChunkErrorBoundary>
         </div>
       </MenuContext.Provider>
     </ThemeProvider>
