@@ -9,16 +9,12 @@ import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../hooks/useTheme";
 import NotificationBell from "../notification_bell/NotificationBell";
 import { getUnreadCount } from "../../pages/account/notifications/notificationsMock";
+import { useMenu } from "../../App";
 
-const Header = ({
-  setOpenMenu,
-  openMenu,
-  setOpenAuthMenu,
-  userData,
-  userStatus,
-}) => {
+const Header = ({ setOpenAuthMenu, userData, userStatus }) => {
   const navigation = useNavigate();
   const location = useLocation();
+  const { openMenu, setOpenMenu } = useMenu();
 
   const { theme } = useTheme();
 
