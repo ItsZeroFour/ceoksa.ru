@@ -35,6 +35,16 @@
     border-bottom-right-radius: var(--radius-inner);
   }
 
+  // На узких экранах блоки идут в столбик — скругление со всех сторон
+  @media (max-width: 550px) {
+    :global(.credit__main__form__elem) :global(.credit__main__form__item),
+    :global(.credit__main__form__elem)
+      :global(.credit__main__data)
+      :global(.credit__main__form__item) {
+      border-radius: var(--radius-inner);
+    }
+  }
+
   .credit__title {
     font-size: 24px;
     font-weight: 500;
@@ -88,7 +98,7 @@
   }
 
   @media (max-width: 520px) {
-    padding: 15px;
+    // padding: 15px;
     margin-top: 15px;
   }
 }
