@@ -36,7 +36,11 @@ export const checkStatus = createAsyncThunk(
     try {
       const response = await axios.get(
         `${API}/mobile/auth/status/${auth_req_id}`,
-        { withCredentials: true }
+        {
+          withCredentials: true,
+          // сервер long-poll'ит до 25 сек, держим запас
+          timeout: 35000,
+        }
       );
       return response.data;
     } catch (err) {
