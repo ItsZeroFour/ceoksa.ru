@@ -61,13 +61,22 @@ export const initiateAuth = async (req, res) => {
 
     const { auth_req_id, expires_in, hhe_uri } = response.data;
 
-    await AuthTransaction.create({
+    const created = await AuthTransaction.create({
       auth_req_id,
       correlation_id: correlationId,
       phone,
       status: "pending",
       client_notification_token: clientNotificationToken,
       expires_at: new Date(Date.now() + expires_in * 1000),
+    });
+
+    console.log("[initiateAuth] Транзакция создана:", {
+      auth_req_id,
+      phone,
+      expires_in,
+      createdAt: created.createdAt,
+      expires_at: created.expires_at,
+      hasHheUri: !!hhe_uri,
     });
 
     res.json({
@@ -191,13 +200,27 @@ export const verifySmsCode = async (req, res) => {
 
 
 
+    console.log("[verifySmsCode] Отправляем код в МТС", {
+      auth_req_id,
+      endpoint: transaction.smsotp_endpoint,
+    });
+
     const response = await axios.post(transaction.smsotp_endpoint, payload, {
       headers: { "Content-Type": "application/json" },
       validateStatus: () => true,
     });
 
+    console.log("[verifySmsCode] Ответ МТС:", {
+      auth_req_id,
+      status: response.status,
+      dataPreview: JSON.stringify(response.data).slice(0, 300),
+    });
 
     if (response.status === 200) {
+      await AuthTransaction.findOneAndUpdate(
+        { auth_req_id },
+        { status: "verifying" }
+      );
 
       res.json({
         success: true,
@@ -226,13 +249,21 @@ export const verifySmsCode = async (req, res) => {
 
 export const handleNotification = async (req, res) => {
   try {
+    console.log("[handleNotification] === ВХОД ===", {
+      contentType: req.headers["content-type"],
+      hasAuth: !!req.headers["authorization"],
+      bodyKeys: Object.keys(req.body || {}),
+      bodyPreview: JSON.stringify(req.body).slice(0, 500),
+    });
+
     const { auth_req_id, id_token, access_token, error, error_description } =
       req.body;
 
-
-
     if (!auth_req_id) {
-      console.warn("[handleNotification] Отсутствует auth_req_id");
+      console.warn(
+        "[handleNotification] Отсутствует auth_req_id. body:",
+        req.body
+      );
       return res.status(400).json({
         error: "invalid_request",
         message: "Отсутствует auth_req_id",
@@ -248,6 +279,15 @@ export const handleNotification = async (req, res) => {
         message: "Транзакция не найдена",
       });
     }
+
+    console.log("[handleNotification] Найдена транзакция:", {
+      auth_req_id,
+      status: transaction.status,
+      phone: transaction.phone,
+      hasError: !!error,
+      hasIdToken: !!id_token,
+      hasAccessToken: !!access_token,
+    });
 
     if (
       transaction.client_notification_token &&
@@ -298,19 +338,60 @@ export const handleNotification = async (req, res) => {
     let decoded;
     try {
       decoded = await verifyIdToken(id_token);
-
+      console.log("[handleNotification] id_token верифицирован. sub:", decoded.sub);
     } catch (verifyError) {
       console.error(
         "[handleNotification] Ошибка верификации id_token:",
         verifyError.message
       );
 
-      await AuthTransaction.findOneAndUpdate(
+      const updFail = await AuthTransaction.findOneAndUpdate(
         { auth_req_id },
         {
           status: "failed",
           error: "token_verification_failed",
           error_description: verifyError.message,
+          can_retry: false,
+        },
+        { new: true }
+      );
+
+      console.warn(
+        "[handleNotification] Транзакция переведена в failed. updateResult:",
+        !!updFail
+      );
+
+      return res.status(204).end();
+    }
+
+    try {
+      const userResult = await User.findOneAndUpdate(
+        { phone: transaction.phone },
+        {
+          $set: { mts_sub: decoded.sub, lastAuthAt: new Date() },
+          $setOnInsert: {
+            phone: transaction.phone,
+            total_loans: 0,
+            is_loan_arrears: false,
+            total_debt: 0,
+          },
+        },
+        { upsert: true, new: true }
+      );
+      console.log("[handleNotification] User upsert OK. userId:", userResult?._id);
+    } catch (userError) {
+      console.error(
+        "[handleNotification] Ошибка upsert User:",
+        userError.code,
+        userError.message
+      );
+
+      await AuthTransaction.findOneAndUpdate(
+        { auth_req_id },
+        {
+          status: "failed",
+          error: "user_upsert_failed",
+          error_description: userError.message,
           can_retry: false,
         }
       );
@@ -318,31 +399,25 @@ export const handleNotification = async (req, res) => {
       return res.status(204).end();
     }
 
-    await User.findOneAndUpdate(
-      { phone: transaction.phone },
-      {
-        $set: { mts_sub: decoded.sub, lastAuthAt: new Date() },
-        $setOnInsert: {
-          phone: transaction.phone,
-          total_loans: 0,
-          is_loan_arrears: false,
-          total_debt: 0,
-        },
-      },
-      { upsert: true, new: true }
-    );
-
-
-
-    await AuthTransaction.findOneAndUpdate(
+    const updateResult = await AuthTransaction.findOneAndUpdate(
       { auth_req_id },
-      { status: "success", access_token, id_token, sub: decoded.sub }
+      { status: "success", access_token, id_token, sub: decoded.sub },
+      { new: true }
     );
 
+    console.log("[handleNotification] Транзакция переведена в success:", {
+      auth_req_id,
+      found: !!updateResult,
+      finalStatus: updateResult?.status,
+    });
 
     res.status(204).end();
   } catch (error) {
-    console.error("[handleNotification] Критическая ошибка:", error.message);
+    console.error(
+      "[handleNotification] Критическая ошибка:",
+      error.message,
+      error.stack
+    );
     res.status(500).json({
       error: "server_error",
       message: error.message,
@@ -356,7 +431,20 @@ export const checkAuthStatus = async (req, res) => {
     const transaction = await AuthTransaction.findOne({ auth_req_id });
 
     if (!transaction) {
-      console.warn("[checkAuthStatus] Транзакция не найдена:", auth_req_id);
+      const total = await AuthTransaction.countDocuments();
+      const recent = await AuthTransaction.find({})
+        .sort({ createdAt: -1 })
+        .limit(3)
+        .select("auth_req_id status createdAt expires_at");
+      console.warn("[checkAuthStatus] Транзакция не найдена:", auth_req_id, {
+        totalInDb: total,
+        recentInDb: recent.map((t) => ({
+          id: t.auth_req_id,
+          status: t.status,
+          createdAt: t.createdAt,
+          expires_at: t.expires_at,
+        })),
+      });
       return res.status(404).json({
         error: "not_found",
         message: "Транзакция не найдена",

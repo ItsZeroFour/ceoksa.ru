@@ -52,7 +52,7 @@ const Auth = ({ setOpenAuthMenu }) => {
     onError: ({ status, canRetry }) => {
       setIsAuthLoading(false);
 
-      if (canRetry || status === "expired") {
+      if (canRetry || status === "expired" || status === "not_found") {
         authPolling.stopPolling();
         codeInput.reset();
         setCurrentStep("phone");
