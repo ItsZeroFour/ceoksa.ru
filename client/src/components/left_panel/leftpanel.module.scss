@@ -6,6 +6,25 @@
   }
 }
 
+.left_panel__signout {
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+  background: none;
+  text-align: left;
+  padding: 17px;
+  width: 100%;
+  color: var(--color-black);
+  cursor: pointer;
+  border-radius: var(--radius-inner, 12px);
+
+  &:hover {
+    background: var(--color-gray);
+  }
+}
+
 .left__panel__wrapper,
 .mobile_left_panel__wrapper {
   padding: 15px;

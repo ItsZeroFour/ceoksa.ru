@@ -8,12 +8,14 @@ import { ReactComponent as Rate } from "../../assets/icons/left_panel/rate.svg";
 import { ReactComponent as Profile } from "../../assets/icons/left_panel/profile.svg";
 import { ReactComponent as Angle } from "../../assets/icons/left_panel/angle.svg";
 import { ReactComponent as SignOut } from "../../assets/icons/left_panel/signout.svg";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import logo from "../../assets/logo.svg";
 import logoDark from "../../assets/logo-dark.svg";
 import { useTheme } from "../../hooks/useTheme";
 import axios from "../../utils/axios";
 import { useMenu } from "../../App";
+import { logout } from "../../redux/slices/auth/authSlice";
 
 const personalItems = [
   { icon: <List />, text: "Заявка на кредит", path: "/loan_applications" },
@@ -24,7 +26,7 @@ const personalItems = [
 
 const MobileLeftPanel = () => {
   const location = useLocation();
-  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [isPersonalOpen, setIsPersonalOpen] = useState(true);
   const { openMenu, setOpenMenu } = useMenu();
 
@@ -32,6 +34,18 @@ const MobileLeftPanel = () => {
   const isActive = (path) => location.pathname === `/account${path}`;
 
   const { theme } = useTheme();
+
+  const handleLogout = async () => {
+    try {
+      await axios.post("/logout");
+    } catch (err) {
+      console.warn("Logout request failed (продолжаем):", err?.message);
+    }
+    dispatch(logout());
+    setOpenMenu(false);
+    // hard-redirect: гарантированно сбрасываем кэшированный state и cookies
+    window.location.assign("/");
+  };
 
   return (
     <div className={style.mobile_left_panel__main}>
@@ -138,12 +152,7 @@ const MobileLeftPanel = () => {
 
                 <button
                   className={style.mobile_left_panel__signout}
-                  onClick={async () => {
-                    await axios.post("/logout", {}, { withCredentials: true });
-                    setOpenMenu(false);
-                    navigate("/");
-                    window.location.reload();
-                  }}
+                  onClick={handleLogout}
                 >
                   <SignOut />
                   Выйти
