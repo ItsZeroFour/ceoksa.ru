@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import jwkToPem from "jwk-to-pem";
 import axios from "axios";
 import crypto from "crypto";
+import { EventEmitter } from "events";
 import { generateRequestJWT, verifyIdToken } from "../utils/jwtHelper.js";
 import User from "../models/User.js";
 import AuthTransaction from "../models/AuthTransaction.js";
@@ -16,6 +17,18 @@ const __dirname = dirname(__filename);
 const MTS_ENDPOINT = process.env.MTS_ENDPOINT;
 const CLIENT_ID = process.env.CLIENT_ID;
 const BASE_URL = process.env.BASE_URL || "https://ceoksa.ru/api";
+
+// Шина статусных событий: handleSmsOtp/handleNotification эмитят сюда,
+// а long-polling в checkAuthStatus подписывается, чтобы вернуть ответ
+// моментально при изменении статуса транзакции.
+const authStatusEvents = new EventEmitter();
+authStatusEvents.setMaxListeners(0);
+
+const emitStatusChange = (authReqId, status) => {
+  authStatusEvents.emit(`status:${authReqId}`, status);
+};
+
+const LONG_POLL_TIMEOUT_MS = 25_000;
 
 const validateBearerToken = (req, expectedToken) => {
   const authHeader = req.headers["authorization"] || "";
@@ -142,6 +155,8 @@ export const handleSmsOtp = async (req, res) => {
         send_payload: send,
       }
     );
+    emitStatusChange(auth_req_id, "sms_sent");
+    console.log("[handleSmsOtp] Статус переведён в sms_sent. auth_req_id:", auth_req_id);
     res.status(200).end();
   } catch (error) {
     console.error("[handleSmsOtp] Ошибка:", error.message);
@@ -221,6 +236,7 @@ export const verifySmsCode = async (req, res) => {
         { auth_req_id },
         { status: "verifying" }
       );
+      emitStatusChange(auth_req_id, "verifying");
 
       res.json({
         success: true,
@@ -309,7 +325,8 @@ export const handleNotification = async (req, res) => {
         typeof error_description === "string" &&
         (error_description.includes("client cancelled") ||
           error_description.includes("user_denied") ||
-          error_description.includes("cancelled"));
+          error_description.includes("cancelled") ||
+          error_description.includes("client timeout"));
 
       console.warn(`[handleNotification] Аутентификация не удалась:`, {
         auth_req_id,
@@ -323,6 +340,7 @@ export const handleNotification = async (req, res) => {
         { auth_req_id },
         { status: "failed", error, error_description, can_retry: canRetry }
       );
+      emitStatusChange(auth_req_id, "failed");
 
       return res.status(204).end();
     }
@@ -355,6 +373,7 @@ export const handleNotification = async (req, res) => {
         },
         { new: true }
       );
+      emitStatusChange(auth_req_id, "failed");
 
       console.warn(
         "[handleNotification] Транзакция переведена в failed. updateResult:",
@@ -395,6 +414,7 @@ export const handleNotification = async (req, res) => {
           can_retry: false,
         }
       );
+      emitStatusChange(auth_req_id, "failed");
 
       return res.status(204).end();
     }
@@ -404,6 +424,7 @@ export const handleNotification = async (req, res) => {
       { status: "success", access_token, id_token, sub: decoded.sub },
       { new: true }
     );
+    emitStatusChange(auth_req_id, "success");
 
     console.log("[handleNotification] Транзакция переведена в success:", {
       auth_req_id,
@@ -425,10 +446,36 @@ export const handleNotification = async (req, res) => {
   }
 };
 
+// статусы, при которых long-polling будет ждать дальнейшего изменения
+const WAIT_STATUSES = new Set(["pending", "sms_sent", "verifying"]);
+
+const waitForStatusChange = (authReqId, timeoutMs) =>
+  new Promise((resolve) => {
+    const event = `status:${authReqId}`;
+    let settled = false;
+
+    const onChange = (status) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      authStatusEvents.off(event, onChange);
+      resolve(status);
+    };
+
+    const timer = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      authStatusEvents.off(event, onChange);
+      resolve(null);
+    }, timeoutMs);
+
+    authStatusEvents.on(event, onChange);
+  });
+
 export const checkAuthStatus = async (req, res) => {
   try {
     const { auth_req_id } = req.params;
-    const transaction = await AuthTransaction.findOne({ auth_req_id });
+    let transaction = await AuthTransaction.findOne({ auth_req_id });
 
     if (!transaction) {
       const total = await AuthTransaction.countDocuments();
@@ -464,6 +511,30 @@ export const checkAuthStatus = async (req, res) => {
         { status: "expired" }
       );
       return res.json({ status: "expired", phone: transaction.phone });
+    }
+
+    // long-polling: если статус «промежуточный» — ждём события изменения,
+    // чтобы вернуть ответ сразу при срабатывании МТС-callback, а не через
+    // следующий клиентский тик. Защищает от случая, когда клиентский
+    // setInterval не работает (старый bundle / network).
+    if (WAIT_STATUSES.has(transaction.status)) {
+      const remainMs = transaction.expires_at
+        ? new Date(transaction.expires_at).getTime() - Date.now()
+        : LONG_POLL_TIMEOUT_MS;
+      const waitMs = Math.max(0, Math.min(LONG_POLL_TIMEOUT_MS, remainMs));
+
+      if (waitMs > 0) {
+        const newStatus = await waitForStatusChange(auth_req_id, waitMs);
+        if (newStatus) {
+          transaction = await AuthTransaction.findOne({ auth_req_id });
+          if (!transaction) {
+            return res.status(404).json({
+              error: "not_found",
+              message: "Транзакция не найдена",
+            });
+          }
+        }
+      }
     }
 
     const response = {
