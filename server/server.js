@@ -104,13 +104,20 @@ app.use("/ocr", OcrRoutes);
 app.use("/rim", RimRoutes);
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("app_token", {
+  // Параметры должны совпадать с теми, с которыми ставилась кука в finalizeAuth.
+  // Иначе браузер не удалит её и юзер останется залогинен после reload.
+  const cookieOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "Lax",
     path: "/",
-  });
+  };
 
+  res.clearCookie("app_token", cookieOptions);
+  // Подстраховка на случай, если где-то осталась кука без httpOnly или с другими опциями
+  res.cookie("app_token", "", { ...cookieOptions, maxAge: 0, expires: new Date(0) });
+
+  console.log("[logout] Выход выполнен. hadCookie:", !!req.cookies?.app_token);
   res.json({ success: true, message: "Вышли из системы" });
 });
 
