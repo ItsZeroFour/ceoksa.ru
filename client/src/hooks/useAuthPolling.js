@@ -18,6 +18,13 @@ export const useAuthPolling = ({ onSuccess, onError, onSmsRequired }) => {
 
   const startPolling = useCallback(
     (authReqId) => {
+      console.log("[useAuthPolling] startPolling вызван. authReqId:", authReqId);
+
+      if (!authReqId) {
+        console.error("[useAuthPolling] startPolling: authReqId пустой, polling не запущен");
+        return;
+      }
+
       isHandledRef.current = false;
       notFoundCountRef.current = 0;
       attemptsRef.current = 0;
@@ -26,7 +33,7 @@ export const useAuthPolling = ({ onSuccess, onError, onSmsRequired }) => {
         clearInterval(intervalRef.current);
       }
 
-      intervalRef.current = setInterval(async () => {
+      const tick = async () => {
         if (isHandledRef.current) return;
 
         attemptsRef.current += 1;
@@ -39,15 +46,16 @@ export const useAuthPolling = ({ onSuccess, onError, onSmsRequired }) => {
         }
 
         try {
+          console.log(
+            `[useAuthPolling] tick #${attemptsRef.current} → checkStatus(${authReqId})`
+          );
           const res = await dispatch(checkStatus(authReqId));
 
           if (res.meta.requestStatus === "rejected") {
             const errorPayload = res.payload || {};
+            console.warn("[useAuthPolling] rejected payload:", errorPayload);
             if (errorPayload.error === "not_found") {
               notFoundCountRef.current += 1;
-              console.warn(
-                `checkStatus 404 (not_found) ${notFoundCountRef.current}/${MAX_NOT_FOUND_IN_A_ROW}`
-              );
               if (notFoundCountRef.current >= MAX_NOT_FOUND_IN_A_ROW) {
                 isHandledRef.current = true;
                 clearInterval(intervalRef.current);
@@ -56,12 +64,12 @@ export const useAuthPolling = ({ onSuccess, onError, onSmsRequired }) => {
               }
               return;
             }
-            console.warn("checkStatus rejected, продолжаем polling...");
             return;
           }
 
           notFoundCountRef.current = 0;
           const { status, can_retry } = res.payload || {};
+          console.log(`[useAuthPolling] статус из БД: ${status}`);
 
           if (status === "sms_sent") {
             onSmsRequired?.();
@@ -104,9 +112,13 @@ export const useAuthPolling = ({ onSuccess, onError, onSmsRequired }) => {
             onError?.({ status: "expired", canRetry: true });
           }
         } catch (error) {
-          console.warn("Polling error (продолжаем):", error.message);
+          console.warn("[useAuthPolling] Polling error (продолжаем):", error.message);
         }
-      }, 2000);
+      };
+
+      // первый тик мгновенный — чтобы не ждать 2 сек, если notification уже пришёл
+      tick();
+      intervalRef.current = setInterval(tick, 2000);
     },
     [dispatch, onSuccess, onError, onSmsRequired]
   );
