@@ -128,7 +128,12 @@ const Auth = ({ setOpenAuthMenu }) => {
     isSubmittingRef.current = true;
     setIsAuthLoading(true);
 
+    console.log("[Auth] handleSubmitCode: verify start", { auth_req_id });
     const result = await dispatch(verifyCode({ auth_req_id, code: smsCode }));
+    console.log("[Auth] handleSubmitCode: verify result", {
+      requestStatus: result.meta.requestStatus,
+      auth_req_id,
+    });
 
     isSubmittingRef.current = false;
 
@@ -138,6 +143,7 @@ const Auth = ({ setOpenAuthMenu }) => {
       return;
     }
 
+    console.log("[Auth] handleSubmitCode: starting polling for", auth_req_id);
     authPolling.startPolling(auth_req_id);
   };
   handleSubmitCodeRef.current = handleSubmitCode;
