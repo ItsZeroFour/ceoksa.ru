@@ -195,11 +195,20 @@ const Requisites = ({ setShowRequisites, showRequisites }) => {
   return (
     <section className={style.requisites} onClick={handleOverlayClick}>
       <div className={style.requisites__wrapper} onClick={handleContentClick}>
-        <h2>Реквизиты для перевода</h2>
-        <p>
-          Укажите данные счёта, на который нужно перечислить денежные средства.
-          Пожалуйста, проверьте реквизиты перед подтверждением.
-        </p>
+        <div className={style.requisites__top}>
+          <div>
+            <h2>Реквизиты для перевода</h2>
+            <p>
+              Укажите данные счёта, на который нужно перечислить денежные
+              средства. Пожалуйста, проверьте реквизиты перед подтверждением.
+            </p>
+          </div>
+
+          <button
+            className={style.close}
+            onClick={() => setShowRequisites(false)}
+          ></button>
+        </div>
 
         <div className={style.requisites__check} onClick={handleCheckboxChange}>
           <Checkbox setIsChecked={setIsChecked} isChecked={isChecked} />

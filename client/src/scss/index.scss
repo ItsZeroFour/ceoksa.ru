@@ -30,9 +30,7 @@ body {
   overflow-x: hidden !important;
 
   -webkit-tap-highlight-color: transparent;
-  transition:
-    background-color 0.3s,
-    color 0.3s;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 html {
@@ -147,6 +145,7 @@ li {
 button {
   font-family: "Inter", sans-serif;
   font-weight: 600;
+  line-height: 1;
   touch-action: manipulation;
 }
 
@@ -161,6 +160,15 @@ button {
 
 .loan_application__main {
   width: 100%;
+
+  h1 {
+    font-size: 40px;
+    font-weight: 600;
+
+    @media (max-width: 480px) {
+      font-size: 32px;
+    }
+  }
 }
 
 .animated-wrapper {
@@ -199,24 +207,32 @@ button {
   }
 }
 
+.credit__main__form__item,
+.credit__main__form__cash {
+  padding: 10px 20px;
+}
+
 .credit__buttons {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   gap: 12px;
   margin-top: 10px;
 
   button {
     width: 50% !important;
     margin: 0;
-    padding: 18px;
+    padding: 20px;
   }
 
   .credit__buttons__continue {
     padding: 20px;
     background: var(--color-blue);
     color: var(--color-white);
-    border-radius: 60px;
+    border-radius: var(--radius-button);
     font-size: 17px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   @media (max-width: 860px) {
@@ -228,6 +244,12 @@ button {
 
     .credit__buttons__continue {
       font-size: 14px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .credit__buttons__continue {
+      padding: 18px;
     }
   }
 }
@@ -244,8 +266,8 @@ button {
 
     &:first-child {
       justify-content: space-between;
-      border-bottom-left-radius: 16px;
-      border-top-left-radius: 16px;
+      border-bottom-left-radius: var(--radius-inner);
+      border-top-left-radius: var(--radius-inner);
 
       padding-right: 16px;
 
@@ -259,7 +281,7 @@ button {
       }
 
       @media (max-width: 550px) {
-        border-radius: 16px;
+        border-radius: var(--radius-inner);
         padding: 20px 15px;
       }
     }
@@ -267,8 +289,8 @@ button {
     &:last-child {
       border-bottom-left-radius: 0;
       border-top-left-radius: 0;
-      border-bottom-right-radius: 16px;
-      border-top-right-radius: 16px;
+      border-bottom-right-radius: var(--radius-inner);
+      border-top-right-radius: var(--radius-inner);
       padding-left: 16px;
 
       padding: 15px;
@@ -292,7 +314,7 @@ button {
         top: 110%;
         left: 0;
 
-        border-radius: 16px;
+        border-radius: var(--radius-inner);
 
         gap: 4px;
         padding: 16px;
@@ -334,8 +356,8 @@ button {
       }
 
       @media (max-width: 550px) {
-        border-bottom-left-radius: 16px;
-        border-top-left-radius: 16px;
+        border-bottom-left-radius: var(--radius-inner);
+        border-top-left-radius: var(--radius-inner);
       }
     }
 
@@ -395,7 +417,7 @@ button {
   display: flex;
   justify-content: space-between;
   // width: 250px;
-  border-radius: 16px;
+  border-radius: var(--radius-inner);
 
   position: relative;
 
@@ -421,7 +443,7 @@ button {
     top: 110%;
     left: 0;
 
-    border-radius: 16px;
+    border-radius: var(--radius-inner);
 
     gap: 4px;
     padding: 16px;
@@ -451,7 +473,7 @@ button {
 .credit__main__form__auth {
   width: 100%;
   padding: 20px;
-  border-radius: 60px;
+  border-radius: var(--radius-button);
 
   background: #d9d9d9;
   color: #b7b7b7;
@@ -465,8 +487,14 @@ button {
 
   img {
     width: 24px;
-    height: auto;
+    height: 24px;
+    object-fit: contain;
     filter: grayscale(100%);
+
+    @media (max-width: 860px) {
+      width: 1em;
+      height: 1em;
+    }
   }
 
   @media (max-width: 1450px) {
@@ -482,7 +510,7 @@ button {
   }
 
   @media (max-width: 768px) {
-    padding: 15px 14px !important;
+    padding: 18px !important;
   }
 
   @media (max-width: 390px) {
@@ -491,7 +519,7 @@ button {
 }
 
 .credit__main__form__cash {
-  border-radius: 16px;
+  border-radius: var(--radius-inner);
 
   position: relative;
 
@@ -540,7 +568,7 @@ button {
 .credit__main__form__item__special__con {
   .credit__main__form__item {
     &:last-child {
-      border-radius: 16px;
+      border-radius: var(--radius-card);
     }
 
     &::before {
@@ -576,13 +604,13 @@ button {
   background: var(--color-gray-secondary);
   padding: 2px;
   width: 385px;
-  border-radius: 8px;
+  border-radius: 80px;
   margin-top: 30px;
 
   button {
     width: 50%;
     padding: 10px;
-    border-radius: 7px;
+    border-radius: 80px;
     background: none;
     color: var(--color-credits-nav);
   }
@@ -618,6 +646,16 @@ button {
 .rating__main,
 .profile__main {
   width: 100%;
+}
+
+.credits__main {
+  h1 {
+    font-size: 40px;
+
+    @media (max-width: 480px) {
+      font-size: 32px;
+    }
+  }
 }
 
 .circle-progress {

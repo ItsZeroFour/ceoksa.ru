@@ -8,21 +8,21 @@ import Addresses from "./addresses/Addresses";
 import Rekvisits from "./rekvisits/Rekvisits";
 import Accept from "./accept/Accept";
 
-const Profile = ({ setOpenMenu, openMenu, user }) => {
+const Profile = ({ userData }) => {
   return (
     <div className="profile">
       <div className="container">
         <div className="profile__wrapper">
           {/* <LeftPanel /> */}
-          <MobileLeftPanel setOpenMenu={setOpenMenu} openMenu={openMenu} />
+          <MobileLeftPanel />
 
           <div className="profile__main">
-            <Top user={user} />
-            <Documents user={user} />
+            <Top user={userData} />
+            <Documents user={userData} />
             {/* <Automobiles /> */}
-            <Addresses user={user} />
-            <Rekvisits user={user} />
-            <Accept user={user} />
+            <Addresses user={userData} />
+            <Rekvisits user={userData} />
+            <Accept user={userData} />
           </div>
         </div>
       </div>

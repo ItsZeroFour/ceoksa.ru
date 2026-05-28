@@ -1,0 +1,29 @@
+.active {
+  background: var(--color-gray-secondary);
+  border-radius: var(--radius-outer);
+  padding: 35px;
+  margin-top: 25px;
+
+  @media (max-width: 768px) {
+    padding: 28px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 22px;
+    margin-top: 18px;
+  }
+
+  @media (max-width: 360px) {
+    padding: 18px;
+  }
+}
+
+.active__list {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+
+  @media (max-width: 480px) {
+    gap: 18px;
+  }
+}

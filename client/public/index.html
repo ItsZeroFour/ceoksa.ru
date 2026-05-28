@@ -1,26 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="%PUBLIC_URL%/favicon.ico?v=2" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="%PUBLIC_URL%/favicon-32x32.png?v=2"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="%PUBLIC_URL%/apple-touch-icon.png?v=2"
+    />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, minimum-scale=1, viewport-fit=cover"
     />
-    <link
-      rel="preload"
-      href="../src/assets/fonts/Inter.ttf"
-      as="font"
-      type="font/ttf"
-      crossorigin
+    <meta
+      name="theme-color"
+      content="#ffffff"
+      media="(prefers-color-scheme: light)"
     />
-    <link
-      rel="preload"
-      href="../src/assets/fonts/Rubik.ttf"
-      as="font"
-      type="font/ttf"
-      crossorigin
+    <meta
+      name="theme-color"
+      content="#121212"
+      media="(prefers-color-scheme: dark)"
     />
+    <link rel="dns-prefetch" href="//155.212.184.8" />
+    <link rel="preconnect" href="http://155.212.184.8" crossorigin />
 
     <title>CEOKSA</title>
   </head>
@@ -38,14 +48,6 @@
 
         const initialTheme = savedTheme || systemTheme;
         document.documentElement.setAttribute("data-theme", initialTheme);
-
-        const colors =
-          initialTheme === "dark"
-            ? { bg: "#121212", text: "#f5f5f5" }
-            : { bg: "#ffffff", text: "#333333" };
-
-        document.documentElement.style.setProperty("--color-bg", colors.bg);
-        document.documentElement.style.setProperty("--color-text", colors.text);
       })();
     </script>
   </body>

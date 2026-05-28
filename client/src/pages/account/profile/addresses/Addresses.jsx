@@ -59,7 +59,7 @@ const Addresses = ({ user }) => {
                 /> */}
 
                 <p>
-                  {(user.address_doesnt_match
+                  {(user?.address_doesnt_match
                     ? user?.real_address?.street
                     : user?.address?.street) || "-"}
                 </p>

@@ -37,7 +37,7 @@
       transition: all 0.2s ease;
 
       padding: 25px;
-      border-radius: 16px;
+      border-radius: var(--radius-card);
 
       @media (hover: hover) and (pointer: fine) {
         &:hover {

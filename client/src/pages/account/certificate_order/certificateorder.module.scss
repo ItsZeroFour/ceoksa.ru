@@ -1,0 +1,151 @@
+.page {
+  margin-top: 0;
+}
+
+.wrapper {
+  display: flex;
+  min-width: 0;
+  width: 100%;
+}
+
+.main {
+  min-width: 0;
+  flex: 1;
+  width: 100%;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  margin-top: 20px;
+  background: var(--color-gray-secondary);
+  border: none;
+  border-radius: var(--radius-button);
+  color: var(--color-black);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: "Inter", sans-serif;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  svg {
+    color: var(--color-black);
+  }
+}
+
+.main h1 {
+  margin-top: 25px;
+  font-size: 40px;
+  font-weight: 600;
+
+  @media (max-width: 768px) {
+    font-size: 32px;
+    margin-top: 20px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 28px;
+    margin-top: 18px;
+  }
+}
+
+.col {
+  margin-top: 30px;
+  background: var(--color-gray-secondary);
+  border-radius: var(--radius-outer);
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  @media (max-width: 768px) {
+    padding: 24px;
+    margin-top: 22px;
+    gap: 14px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 20px;
+    margin-top: 18px;
+  }
+}
+
+.col__head h2 {
+  font-size: 22px;
+  font-weight: 600;
+  font-family: "Inter", sans-serif;
+
+  @media (max-width: 768px) {
+    font-size: 20px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 18px;
+  }
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  @media (max-width: 480px) {
+    gap: 8px;
+  }
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 22px;
+  background: var(--color-block-bg);
+  border-radius: var(--radius-inner);
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+
+  &:hover {
+    opacity: 0.85;
+  }
+
+  &:active {
+    transform: scale(0.99);
+  }
+
+  @media (max-width: 480px) {
+    padding: 14px 18px;
+    border-radius: var(--radius-inner);
+  }
+}
+
+.item__icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-gray-light);
+  border-radius: 10px;
+
+  svg {
+    color: var(--color-blue-secondary);
+  }
+}
+
+.item__title {
+  font-size: 16px;
+  font-weight: 500;
+  font-family: "Inter", sans-serif;
+  color: var(--color-black);
+
+  @media (max-width: 480px) {
+    font-size: 15px;
+  }
+}

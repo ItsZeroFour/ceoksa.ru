@@ -1,8 +1,9 @@
 .stats__top {
   padding: 35px;
   width: 100%;
+  margin-top: 40px;
   background: var(--color-gray-secondary);
-  border-radius: 20px;
+  border-radius: var(--radius-outer);
 
   display: flex;
   align-items: center;
@@ -23,7 +24,7 @@
 
 .stats__right__main {
   padding: 20px;
-  border-radius: 16px;
+  border-radius: var(--radius-card);
   background: var(--color-block-bg);
 
   h3 {
@@ -49,12 +50,12 @@
     width: 100%;
     background: var(--color-block-bg);
     padding: 5px 15px;
-    border-radius: 16px;
+    border-radius: var(--radius-card);
 
     & > p {
       font-size: 14px;
       font-weight: 300;
-      border-radius: 16px;
+      border-radius: var(--radius-inner);
     }
 
     .stats__right__date__info {
@@ -94,7 +95,7 @@
     background: var(--color-rating-stats-bg);
     display: flex;
     padding: 35px;
-    border-radius: 20px;
+    border-radius: var(--radius-outer);
 
     &:first-child {
       display: flex;
@@ -140,7 +141,7 @@
 
         .stats__bottom__item__list__number {
           padding: 3px 12px;
-          border-radius: 60px;
+          border-radius: var(--radius-button);
           background: var(--color-blue);
           color: var(--color-white);
         }

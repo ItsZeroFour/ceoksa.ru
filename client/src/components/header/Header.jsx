@@ -7,16 +7,14 @@ import { ReactComponent as Business } from "../../assets/icons/business.svg";
 import signin from "../../assets/icons/signin.svg";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../hooks/useTheme";
+import NotificationBell from "../notification_bell/NotificationBell";
+import { getUnreadCount } from "../../pages/account/notifications/notificationsMock";
+import { useMenu } from "../../App";
 
-const Header = ({
-  setOpenMenu,
-  openMenu,
-  setOpenAuthMenu,
-  userData,
-  userStatus,
-}) => {
+const Header = ({ setOpenAuthMenu, userData, userStatus }) => {
   const navigation = useNavigate();
   const location = useLocation();
+  const { openMenu, setOpenMenu } = useMenu();
 
   const { theme } = useTheme();
 
@@ -49,10 +47,16 @@ const Header = ({
           </div>
 
           <div className={style.header__buttons}>
-            <button className={style.header__button_business}>
+            {/* <button className={style.header__button_business}>
               <Business />
               <p>Бизнесу</p>
-            </button>
+            </button> */}
+
+            {userData && (
+              <NotificationBell
+                count={getUnreadCount("banks") + getUnreadCount("oksa")}
+              />
+            )}
 
             {userStatus === "succeeded" && userData ? (
               <Link

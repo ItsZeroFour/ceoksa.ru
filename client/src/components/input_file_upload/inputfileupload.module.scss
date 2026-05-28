@@ -1,7 +1,7 @@
 .input_file_upload {
   background: var(--color-block-bg);
   padding: 20px;
-  border-radius: 14px;
+  border-radius: var(--radius-inner);
   width: 100%;
 
   & > p {
@@ -100,19 +100,42 @@
   top: 0;
   left: 0;
   width: 100vw;
+  height: 100vh;
   height: 100dvh;
-  background: #000;
+
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
   z-index: 1000;
+
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(5px);
 }
 
 .camera_modal {
-  width: 100%;
-  height: 100%;
+  width: 90%;
+  max-width: 520px;
+  height: 85vh;
+  height: 85dvh;
+
+  background: #000;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+
   display: flex;
   flex-direction: column;
-  background: #000;
+
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+
+  @media (max-width: 600px) {
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    max-width: 100%;
+    border-radius: 0;
+  }
 }
 
 /* ======== Top bar — close button (like RIM header bar) ======== */
@@ -120,9 +143,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 22px 16px;
-  background: #2c2c2c;
+  padding: 20px 24px;
+  background: var(--color-bg);
   flex-shrink: 0;
+  border-bottom: 1px solid var(--color-border-address);
 }
 
 .camera_modal__close_btn {
@@ -130,7 +154,7 @@
   height: 28px;
   background: none;
   border: none;
-  color: #fff;
+  color: var(--color-black);
   font-size: 18px;
   cursor: pointer;
   display: flex;
@@ -190,9 +214,7 @@ $dim: rgba(40, 40, 40, 0.75);
   pointer-events: none;
 
   // Dark overlay + subtle glow — works on all devices
-  box-shadow:
-    0 0 0 200vmax $dim,
-    0 0 18px 2px rgba(255, 255, 255, 0.07),
+  box-shadow: 0 0 0 200vmax $dim, 0 0 18px 2px rgba(255, 255, 255, 0.07),
     inset 0 0 0 0.5px rgba(255, 255, 255, 0.1);
 }
 
@@ -240,7 +262,7 @@ $dim: rgba(40, 40, 40, 0.75);
 .overlay__capture_btn {
   width: 100%;
   padding: 14px;
-  border-radius: 28px;
+  border-radius: var(--radius-button);
   background: var(--color-blue);
   color: #fff;
   font-size: 15px;
@@ -270,10 +292,22 @@ $dim: rgba(40, 40, 40, 0.75);
   overflow: visible;
 }
 
-.corner_tl { top: 0; left: 0; }
-.corner_tr { top: 0; right: 0; }
-.corner_bl { bottom: 0; left: 0; }
-.corner_br { bottom: 0; right: 0; }
+.corner_tl {
+  top: 0;
+  left: 0;
+}
+.corner_tr {
+  top: 0;
+  right: 0;
+}
+.corner_bl {
+  bottom: 0;
+  left: 0;
+}
+.corner_br {
+  bottom: 0;
+  right: 0;
+}
 
 /* ======== Confirm overlay (over captured image) ======== */
 
@@ -297,7 +331,7 @@ $dim: rgba(40, 40, 40, 0.75);
 .overlay__use_btn {
   flex: 1;
   padding: 14px;
-  border-radius: 28px;
+  border-radius: var(--radius-button);
   font-size: 15px;
   font-weight: 500;
   font-family: "Inter", sans-serif;

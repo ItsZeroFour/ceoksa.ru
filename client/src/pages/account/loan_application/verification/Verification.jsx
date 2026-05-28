@@ -1,107 +1,90 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import style from "./verification.module.scss";
 import { ReactComponent as Shield } from "../../../../assets/icons/info.svg";
 import {
   startVerification,
-  fetchCurrentIdentification,
   completeIdentification,
   resetRim,
 } from "../../../../redux/slices/rim/rimSlice";
 import useIsMobile from "../../../../hooks/useIsMobile";
 
-const STATUS_MAP = {
-  identificationSucceeded: {
-    label: "Верификация пройдена",
-    color: "#27ae60",
-    icon: "✓",
-  },
-  identificationFailed: {
-    label: "Верификация не пройдена",
-    color: "#e74c3c",
-    icon: "✕",
-  },
-  systemError: {
-    label: "Системная ошибка",
-    color: "#e74c3c",
-    icon: "!",
-  },
-  personDataCollected: {
-    label: "Данные получены, идёт проверка",
-    color: "#f39c12",
-    icon: "⏳",
-  },
-  linkCreated: {
-    label: "Ожидает прохождения",
-    color: "#3498db",
-    icon: "→",
-  },
-  completed: {
-    label: "Верификация завершена",
-    color: "#27ae60",
-    icon: "✓",
-  },
-};
-
 const Verification = () => {
   const dispatch = useDispatch();
-  const {
-    status: rimStatus,
-    identificationStatus,
-    isLoading,
-    error,
-    isSucceeded,
-  } = useSelector((state) => state.rim);
-
-  const user = useSelector((state) => state.auth);
-  const userRim = user?.user?.data?.rim;
   const isMobile = useIsMobile();
 
-  useEffect(() => {
-    dispatch(fetchCurrentIdentification()).then((action) => {
-      // Если МТС завершил верификацию (callback пришёл), но данные ещё не подтянуты —
-      // сразу вызываем completeIdentification для загрузки паспортных данных
-      const serverStatus = action.payload?.status;
-      if (
-        action.payload?.hasIdentification &&
-        (serverStatus === "completed" ||
-          serverStatus === "personDataCollected") &&
-        serverStatus !== "identificationSucceeded"
-      ) {
-        dispatch(completeIdentification());
-      }
-    });
-  }, [dispatch]);
+  const { isLoading, error } = useSelector((state) => state.rim);
+  const user = useSelector((state) => state.auth);
+  const userRim = user?.user?.data?.rim;
 
-  const handleStartVerification = () => {
+  const savedStatus = userRim?.identificationStatus;
+  const isVerified = savedStatus === "identificationSucceeded";
+  const isFailed =
+    savedStatus === "identificationFailed" || savedStatus === "systemError";
+  const hasStarted = !!userRim?.lastRequestGuid;
+
+  const [processingState, setProcessingState] = useState(null);
+  const mountCheckDoneRef = useRef(false);
+
+  useEffect(() => {
+    if (user.status !== "succeeded") return;
+    if (mountCheckDoneRef.current) return;
+    if (isVerified || isFailed) return;
+    if (!hasStarted) return;
+
+    mountCheckDoneRef.current = true;
+
+    const checkOnce = async () => {
+      setProcessingState("checking");
+      try {
+        const result = await dispatch(completeIdentification()).unwrap();
+        if (result.isSucceeded) {
+          setProcessingState("succeeded");
+          setTimeout(() => window.location.reload(), 500);
+          return;
+        }
+      } catch {}
+      setProcessingState(null);
+    };
+
+    checkOnce();
+  }, [user.status, isVerified, isFailed, hasStarted, dispatch]);
+
+  const handleStart = () => {
+    setProcessingState(null);
     dispatch(startVerification());
   };
 
   const handleRetry = () => {
+    setProcessingState(null);
     dispatch(resetRim());
     dispatch(startVerification());
   };
 
-  const currentStatus =
-    identificationStatus || userRim?.identificationStatus || null;
-  const statusInfo = currentStatus ? STATUS_MAP[currentStatus] : null;
-
-  const isVerified =
-    currentStatus === "identificationSucceeded" ||
-    currentStatus === "completed" ||
-    isSucceeded;
-
-  useEffect(() => {
-    if (isSucceeded) {
-      window.location.reload();
-    }
-  }, [isSucceeded]);
-
-  const isFailed =
-    currentStatus === "identificationFailed" || currentStatus === "systemError";
-
-  const isPending =
-    currentStatus === "linkCreated" || currentStatus === "personDataCollected";
+  if (processingState === "checking" || processingState === "succeeded") {
+    return (
+      <section className={style.verification}>
+        <div className={style.verification__wrapper}>
+          <h2>Верификация личности</h2>
+          <div className={style.verification__content}>
+            <div
+              className={style.verification__status}
+              style={{ borderColor: "#3498db" }}
+            >
+              <span className={style.verification__status__icon}>
+                {processingState === "succeeded" ? "\u2713" : "\u231B"}
+              </span>
+              <span className={style.verification__status__text}>
+                {processingState === "succeeded"
+                  ? "Данные получены, обновляем страницу..."
+                  : "Обработка результатов верификации..."}
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className={style.verification}>
@@ -117,51 +100,34 @@ const Verification = () => {
               <div className={style.verification__info__text}>
                 <p>
                   Для рассмотрения кредитной заявки необходимо пройти
-                  верификацию: сфотографировать паспорт и сделать селфи.
+                  верификацию:сделать селфи и сфотографировать паспорт.
                   Проверка займет меньше минуты.
                 </p>
               </div>
             </div>
           )}
 
-          {statusInfo && (
-            <div
-              className={style.verification__status}
-              style={{ borderColor: statusInfo.color }}
-            >
-              <span
-                className={style.verification__status__icon}
-                // style={{ background: statusInfo.color }}
-              >
-                {statusInfo.icon}
-              </span>
-              <span className={style.verification__status__text}>
-                {statusInfo.label}
-              </span>
-            </div>
-          )}
-
-          {error && (
+          {(error || processingState === "failed") && (
             <div className={style.verification__error}>
-              <p>{error}</p>
+              <p>{error || "Верификация не пройдена. Попробуйте ещё раз."}</p>
             </div>
           )}
 
           <div className={style.verification__actions}>
-            {!currentStatus && (
+            {!isVerified && !isFailed && !hasStarted && (
               <button
                 className={style.verification__button}
-                onClick={handleStartVerification}
+                onClick={handleStart}
                 disabled={isLoading || !isMobile}
               >
                 {isLoading ? "Подготовка..." : "Пройти верификацию"}
               </button>
             )}
 
-            {isPending && (
+            {!isVerified && !isFailed && hasStarted && (
               <button
                 className={style.verification__button}
-                onClick={handleStartVerification}
+                onClick={handleStart}
                 disabled={isLoading || !isMobile}
               >
                 {isLoading ? "Подготовка..." : "Продолжить верификацию"}

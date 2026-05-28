@@ -9,7 +9,7 @@
 .contacts__wrapper {
   padding: 35px;
   background: var(--color-gray-secondary);
-  border-radius: 20px;
+  border-radius: var(--radius-outer);
 
   h2 {
     font-weight: 600;
@@ -63,7 +63,7 @@
       gap: 15px;
       padding: 10px;
       background: var(--color-block-bg);
-      border-radius: 14px;
+      border-radius: var(--radius-inner);
       border: 1px solid var(--color-border-address);
       transition: border-color 0.2s;
 

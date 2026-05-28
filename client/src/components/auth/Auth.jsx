@@ -67,6 +67,15 @@ const Auth = ({ setOpenAuthMenu }) => {
     dispatch(fetchFiles("fajly?populate=*"));
   }, [dispatch]);
 
+  // Авто-отправка при заполнении всех 4 цифр
+  const handleSubmitCodeRef = useRef(null);
+
+  useEffect(() => {
+    codeInput.setOnComplete(() => {
+      handleSubmitCodeRef.current?.();
+    });
+  }, []);
+
   useEffect(() => {
     if (flow === "sms" && currentStep === "push_wait") {
       authPolling.stopPolling();
@@ -131,6 +140,7 @@ const Auth = ({ setOpenAuthMenu }) => {
 
     authPolling.startPolling(auth_req_id);
   };
+  handleSubmitCodeRef.current = handleSubmitCode;
 
   const handleBackToPhone = () => {
     codeInput.reset();

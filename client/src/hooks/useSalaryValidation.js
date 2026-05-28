@@ -3,16 +3,22 @@ import { useNumberFormatter } from "./useNumberFormatter";
 
 export const useSalaryValidation = (options = {}) => {
   const {
+    initialValue = "",
     minSalary = 10000,
     maxSalary = 10000000,
     debounceDelay = 300,
   } = options;
 
+  const initialRaw =
+    initialValue === null || initialValue === undefined || initialValue === ""
+      ? ""
+      : String(initialValue).replace(/\D/g, "");
+
   const [salaryState, setSalaryState] = useState({
-    raw: "",
+    raw: initialRaw,
     error: "",
     isFocused: false,
-    lastValidValue: "",
+    lastValidValue: initialRaw,
   });
 
   const { formatNumber, parseNumber } = useNumberFormatter();

@@ -105,7 +105,7 @@ const Active = ({ setShowRequisites }) => {
           transition={{ duration: 0.4 }}
         >
           <div className={style.active__top__text}>
-            <h2>Персональные предложения</h2>
+            {/* <h2>Персональные предложения</h2> */}
             <p>Заявка №12-509 от 12.11.2025</p>
           </div>
 

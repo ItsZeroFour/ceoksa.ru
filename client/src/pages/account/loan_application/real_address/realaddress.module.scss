@@ -8,7 +8,7 @@
 
 .real_address__wrapper {
   padding: 35px;
-  border-radius: 20px;
+  border-radius: var(--radius-outer);
   background: var(--color-gray-secondary);
 
   h2 {
@@ -60,7 +60,7 @@
   align-items: center;
   background: var(--color-block-bg);
   padding: 20px;
-  border-radius: 14px;
+  border-radius: var(--radius-inner);
   margin-top: 15px;
 
   form {
@@ -116,7 +116,7 @@
   position: relative;
   padding: 5px 10px;
   padding-left: 0;
-  border-radius: 14px;
+  border-radius: var(--radius-inner);
   border: 1px solid var(--color-border-address);
   transition: border-color 0.2s;
 

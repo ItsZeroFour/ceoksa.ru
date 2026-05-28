@@ -8,8 +8,42 @@
 
 .credit__wrapper {
   background: var(--color-gray-secondary);
-  padding: 40px;
-  border-radius: 20px;
+  padding: 35px;
+  border-radius: var(--radius-outer);
+
+  :global(.credit__main__form__item),
+  :global(.credit__main__form__target),
+  :global(.credit__main__form__cash) {
+    background: var(--color-block-bg);
+  }
+
+  // Первый блок (сумма) — скругление слева
+  :global(.credit__main__form__elem) :global(.credit__main__form__item) {
+    border-top-left-radius: var(--radius-inner);
+    border-bottom-left-radius: var(--radius-inner);
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  // Второй блок (срок) внутри credit__main__data — скругление справа
+  :global(.credit__main__form__elem)
+    :global(.credit__main__data)
+    :global(.credit__main__form__item) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: var(--radius-inner);
+    border-bottom-right-radius: var(--radius-inner);
+  }
+
+  // На узких экранах блоки идут в столбик — скругление со всех сторон
+  @media (max-width: 550px) {
+    :global(.credit__main__form__elem) :global(.credit__main__form__item),
+    :global(.credit__main__form__elem)
+      :global(.credit__main__data)
+      :global(.credit__main__form__item) {
+      border-radius: var(--radius-inner);
+    }
+  }
 
   .credit__title {
     font-size: 24px;
@@ -39,19 +73,15 @@
     }
   }
 
-  @media (max-width: 1400px) {
-    padding: 30px;
-  }
-
-  @media (max-width: 520px) {
-    padding: 20px;
+  @media (max-width: 550px) {
+    padding: 18px;
   }
 }
 
 .credit__main {
-  background: var(--color-block-bg);
-  border-radius: 18px;
-  padding: 25px;
+  // background: var(--color-block-bg);
+  border-radius: var(--radius-inner);
+  // padding: 25px;
   margin-top: 20px;
 
   h3 {
@@ -64,7 +94,7 @@
   }
 
   @media (max-width: 520px) {
-    padding: 15px;
+    // padding: 15px;
     margin-top: 15px;
   }
 }
@@ -106,6 +136,43 @@
   }
 }
 
+.credit__button {
+  display: flex;
+  justify-content: end;
+  align-items: end;
+}
+
+.credit__buttons__continue {
+  padding: 20px 50px;
+  background: var(--color-blue);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--color-white);
+  border-radius: var(--radius-button);
+  min-height: 64px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+
+  transition: all 0.2s ease;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  @media (max-width: 860px) {
+    font-size: 14px;
+    min-height: 54px;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    padding: 18px;
+    min-height: 50px;
+  }
+}
+
 .credit__bottom {
   margin-top: 25px;
 
@@ -115,12 +182,16 @@
   align-items: end;
 
   button {
-    padding: 14px 50px;
+    padding: 20px 50px;
     background: var(--color-blue);
-    font-size: 15px;
-    font-weight: 500;
+    font-size: 17px;
+    font-weight: 600;
     color: var(--color-white);
-    border-radius: 60px;
+    border-radius: var(--radius-button);
+    min-height: 64px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
     transition: all 0.2s ease;
 
@@ -128,8 +199,15 @@
       opacity: 0.8;
     }
 
-    @media (max-width: 550px) {
+    @media (max-width: 860px) {
+      font-size: 14px;
+      min-height: 54px;
+    }
+
+    @media (max-width: 768px) {
       width: 100%;
+      padding: 18px;
+      min-height: 50px;
     }
   }
 
@@ -163,7 +241,7 @@
 
     .credit__main__form__item__total__con {
       width: 100% !important;
-      border-radius: 14px;
+      border-radius: var(--radius-inner);
       padding: 20px;
     }
 

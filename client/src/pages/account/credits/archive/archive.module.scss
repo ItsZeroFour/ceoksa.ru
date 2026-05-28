@@ -4,25 +4,48 @@
 
 .archive__wrapper {
   padding: 35px;
-  border-radius: 16px;
+  border-radius: var(--radius-outer);
   background: var(--color-gray-secondary);
 
   p {
     margin-top: 15px;
     font-weight: 300;
+
+    @media (max-width: 550px) {
+      font-size: 14px;
+    }
   }
 
   h2 {
     font-size: 26px;
     font-weight: 500;
+
+    @media (max-width: 550px) {
+      font-size: 20px;
+    }
   }
 
   button {
-    margin-top: 50px;
+    margin-top: 25px;
     padding: 20px 60px;
     font-size: 17px;
-    border-radius: 16px;
+    border-radius: var(--radius-button);
     background: var(--color-blue);
     color: var(--color-white);
+    min-height: 64px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    @media (max-width: 860px) {
+      font-size: 14px;
+      min-height: 54px;
+    }
+
+    @media (max-width: 768px) {
+      padding: 18px;
+      width: 100%;
+      min-height: 50px;
+    }
   }
 }

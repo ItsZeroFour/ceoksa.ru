@@ -5,7 +5,7 @@
 
 .head__wrapper {
   background: var(--color-head);
-  border-radius: 20px;
+  border-radius: var(--radius-outer);
 
   // padding-bottom: 40px;
 
@@ -87,6 +87,10 @@
     }
   }
 
+  .head__title__big {
+    font-size: calc(1em + 6px);
+  }
+
   p {
     margin-top: 30px;
     font-size: 16px;
@@ -101,11 +105,11 @@
     display: block;
     margin-top: 100px;
     background: var(--color-red);
-    border-radius: 60px;
+    border-radius: var(--radius-button);
 
     color: var(--color-white);
     font-weight: 600;
-    padding: 21px 60px;
+    padding: 20px 60px;
 
     @media (max-width: 768px) {
       padding: 15px 40px;
@@ -136,7 +140,7 @@
     display: block;
 
     background: var(--color-red);
-    border-radius: 60px;
+    border-radius: var(--radius-button);
     color: var(--color-white);
     font-weight: 600;
     padding: 15px;

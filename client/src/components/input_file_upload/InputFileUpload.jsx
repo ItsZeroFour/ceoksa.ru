@@ -55,7 +55,7 @@ const InputFileUpload = ({
   };
 
   const openCameraModal = () => {
-    if (screenWidth < 800) {
+    if (screenWidth < 1200) {
       setIsModalOpen(true);
       setCapturedImage(null);
       document.body.style.overflow = "hidden";
@@ -172,7 +172,7 @@ const InputFileUpload = ({
   };
 
   const handleClick = (e) => {
-    if (screenWidth < 800) {
+    if (screenWidth < 1200) {
       e.preventDefault();
       openCameraModal();
     }
@@ -193,7 +193,7 @@ const InputFileUpload = ({
 
       <div className={style.input_file_upload}>
         <label
-          htmlFor={screenWidth >= 800 ? `file-${id}` : undefined}
+          htmlFor={screenWidth >= 1200 ? `file-${id}` : undefined}
           className={style.input_file_upload__main}
           onClick={handleClick}
         >

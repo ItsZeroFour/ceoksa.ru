@@ -50,7 +50,7 @@
     align-items: center;
     gap: 10px;
     padding: 10px 25px;
-    border-radius: 60px;
+    border-radius: var(--radius-button);
     cursor: pointer;
     flex-shrink: 0;
 
@@ -208,6 +208,7 @@
     justify-content: center;
     align-items: center;
 
+    border: 3px solid var(--color-avatar);
     border-radius: 50%;
 
     img {
@@ -268,7 +269,7 @@
     height: 42px;
     object-fit: cover;
     border-radius: 50%;
-    border: 2px solid var(--color-avatar);
+    border: 3px solid var(--color-avatar);
 
     @media (max-width: 525px) {
       width: 36px;

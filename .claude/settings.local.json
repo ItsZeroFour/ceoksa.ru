@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /d/PACK/Programming/React/ceoksa.ru/client/public -type f -exec ls -lh {} \\\\;)",
+      "Bash(find /d/PACK/Programming/React/ceoksa.ru/client/src/assets -type f -exec ls -lh {} \\\\;)",
+      "Bash(sort -k5 -h)",
+      "Bash(find /d/PACK/Programming/React/ceoksa.ru/client/src/scss -name \"*.scss\" -exec wc -l {} +)",
+      "Bash(find:*)",
+      "Bash(xargs -I {} wc -l {})",
+      "Bash(npm install:*)",
+      "Bash(xargs ls *)",
+      "Bash(BROWSER=none npm start)",
+      "Bash(ls -la /tmp/)",
+      "Read(//c/Users/lanin/AppData/Local/Temp/claude/D--PACK-Programming-React-ceoksa-ru/c57be5fa-d01a-4387-87bb-dfe6f5aa9309/tasks//**)",
+      "Bash(Get-ChildItem -Path \"D:\\\\PACK\\\\Programming\\\\React\\\\ceoksa.ru\\\\src\" -Recurse -Include \"*.css\",\"*.scss\",\"*.sass\",\"*.less\")",
+      "Bash(Select-Object FullName)",
+      "PowerShell(Get-ChildItem -Path \"D:\\\\PACK\\\\Programming\\\\React\\\\ceoksa.ru\\\\client\\\\src\" -Recurse | Where-Object { $_.Extension -match '\\\\.\\(css|scss|sass|less\\)' } | Select-Object FullName)",
+      "PowerShell(Get-ChildItem -Path \"D:\\\\PACK\\\\Programming\\\\React\\\\ceoksa.ru\\\\client\\\\src\\\\components\" -Recurse | Where-Object { $_.Extension -eq '.css' } | Select-Object FullName)",
+      "PowerShell(Get-ChildItem -Path \"D:\\\\PACK\\\\Programming\\\\React\\\\ceoksa.ru\\\\client\\\\src\" -Recurse -File | Where-Object { $_.Name -match '\\\\.\\(css|scss\\)$' } | Select-Object FullName)",
+      "PowerShell(Get-ChildItem -Path \"D:\\\\PACK\\\\Programming\\\\React\\\\ceoksa.ru\\\\client\\\\src\" -Recurse -File | ForEach-Object { $_.Extension } | Sort-Object -Unique)",
+      "Bash(npx --no-install eslint src/App.js src/utils/lazyWithRetry.js src/components/ChunkErrorBoundary/ChunkErrorBoundary.js)",
+      "Bash(git --no-pager diff -- client/src/App.js)",
+      "Bash(git check-ignore *)"
+    ]
+  }
+}

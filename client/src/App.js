@@ -1,47 +1,126 @@
-import { lazy, Suspense, useState, useEffect, useRef } from "react";
+import {
+  lazy,
+  Suspense,
+  useState,
+  useEffect,
+  createContext,
+  useContext,
+} from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
-import LoanApplication from "./pages/account/loan_application/LoanApplication";
-import useDisableScroll from "./hooks/useDisableScroll";
-import Credits from "./pages/account/credits/Credits";
-import Rating from "./pages/account/rating/Rating";
-import Profile from "./pages/account/profile/Profile";
-import { ThemeProvider } from "./context/ThemeContext";
-import Auth from "./components/auth/Auth";
-import Policy from "./pages/policy/Policy";
-import UserAgreement from "./pages/user_agreement/UserAgreement";
-import PersonalData from "./pages/account/files/PersonalData";
-import ADS from "./pages/account/files/ADS";
-import Cookies from "./components/cookies/Cookies";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchMe } from "./redux/slices/auth/authSlice";
-import ScrollToTop from "./components/ScrollToTop/ScrollToTop";
 
+import useDisableScroll from "./hooks/useDisableScroll";
+import { ThemeProvider } from "./context/ThemeContext";
+import { fetchMe } from "./redux/slices/auth/authSlice";
+
+import Auth from "./components/auth/Auth";
+import Cookies from "./components/cookies/Cookies";
+import ScrollToTop from "./components/ScrollToTop/ScrollToTop";
 import Header from "./components/header/Header";
+
 const Main = lazy(() => import("./pages/main/Main"));
 const Footer = lazy(() => import("./components/footer/Footer"));
+const Policy = lazy(() => import("./pages/policy/Policy"));
+const UserAgreement = lazy(() =>
+  import("./pages/user_agreement/UserAgreement")
+);
 
-const ProtectedRoute = ({ children, userData, userStatus }) => {
-  if (userStatus === "idle" || userStatus === "loading") {
-    return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "50vh",
-        }}
-      >
-        Загрузка...
-      </div>
-    );
-  }
+const LoanApplication = lazy(() =>
+  import("./pages/account/loan_application/LoanApplication")
+);
+const Credits = lazy(() => import("./pages/account/credits/Credits"));
+const MyCredits = lazy(() => import("./pages/account/my_credits/MyCredits"));
+const Rating = lazy(() => import("./pages/account/rating/Rating"));
+const Profile = lazy(() => import("./pages/account/profile/Profile"));
+const Repayment = lazy(() => import("./pages/account/repayment/Repayment"));
+const SbpTransfer = lazy(() =>
+  import("./pages/account/sbp_transfer/SbpTransfer")
+);
+const CardTransfer = lazy(() =>
+  import("./pages/account/card_transfer/CardTransfer")
+);
+const PaymentSchedule = lazy(() =>
+  import("./pages/account/payment_schedule/PaymentSchedule")
+);
+const CertificateOrder = lazy(() =>
+  import("./pages/account/certificate_order/CertificateOrder")
+);
+const PartialRepayment = lazy(() =>
+  import("./pages/account/partial_repayment/PartialRepayment")
+);
+const FullRepayment = lazy(() =>
+  import("./pages/account/full_repayment/FullRepayment")
+);
+const Notifications = lazy(() =>
+  import("./pages/account/notifications/Notifications")
+);
+const NotificationDetail = lazy(() =>
+  import("./pages/account/notification_detail/NotificationDetail")
+);
+const PersonalData = lazy(() => import("./pages/account/files/PersonalData"));
+const ADS = lazy(() => import("./pages/account/files/ADS"));
 
-  if (userStatus !== "succeeded" || !userData) {
-    return <Navigate to="/" replace />;
-  }
+export const MenuContext = createContext();
+export const useMenu = () => useContext(MenuContext);
+
+const Loading = () => (
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      minHeight: "50vh",
+    }}
+  >
+    Загрузка...
+  </div>
+);
+
+const ProtectedRoute = ({ children }) => {
+  const { user, status } = useSelector((state) => state.auth);
+  const userData = user?.data ?? null;
+
+  if (status === "idle" || status === "loading") return <Loading />;
+  if (status !== "succeeded" || !userData) return <Navigate to="/" replace />;
 
   return children;
 };
+
+const protectedRoutes = [
+  {
+    path: "/account/loan_applications",
+    element: LoanApplication,
+    needsUser: true,
+  },
+  { path: "/account/credits", element: Credits },
+  { path: "/account/my-credits", element: MyCredits },
+  { path: "/account/my-credits/repayment", element: Repayment },
+  {
+    path: "/account/my-credits/sbp-transfer",
+    element: SbpTransfer,
+    needsUser: true,
+  },
+  { path: "/account/my-credits/card-transfer", element: CardTransfer },
+  { path: "/account/my-credits/schedule", element: PaymentSchedule },
+  {
+    path: "/account/my-credits/certificates",
+    element: CertificateOrder,
+    needsUser: true,
+  },
+  { path: "/account/my-credits/partial-repayment", element: PartialRepayment },
+  { path: "/account/my-credits/full-repayment", element: FullRepayment },
+  { path: "/account/rating", element: Rating },
+  { path: "/account/profile", element: Profile, needsUser: true },
+  { path: "/account/notifications", element: Notifications },
+  { path: "/account/notifications/:id", element: NotificationDetail },
+];
+
+const publicRoutes = [
+  { path: "/privacy-policy", element: Policy },
+  { path: "/polzovatelskoe-soglashenie", element: UserAgreement },
+  { path: "/soglasie-na-obrabotku-personalnyh-dannyh", element: PersonalData },
+  { path: "/soglasie-na-poluchenie-reklamy", element: ADS },
+];
 
 function App() {
   const [openMenu, setOpenMenu] = useState(false);
@@ -52,132 +131,74 @@ function App() {
     dispatch(fetchMe());
   }, [dispatch]);
 
-  const user = useSelector((state) => state.auth);
-  const userData = user.user?.data ?? null;
+  const { user, status: userStatus } = useSelector((state) => state.auth);
+  const userData = user?.data ?? null;
 
   const scrollToBlock = (id) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
   useDisableScroll(openMenu);
 
   return (
     <ThemeProvider>
-      <div className="App">
-        <Suspense fallback={<div>Загрузка...</div>}>
-          <div className="wrapper">
-            <div className="header__container">
-              <Header
-                setOpenMenu={setOpenMenu}
-                openMenu={openMenu}
-                setOpenAuthMenu={setOpenAuthMenu}
-                userData={userData}
-                userStatus={user.status}
-              />
+      <MenuContext.Provider value={{ openMenu, setOpenMenu }}>
+        <div className="App">
+          <Suspense fallback={<Loading />}>
+            <div className="wrapper">
+              <div className="header__container">
+                <Header
+                  setOpenAuthMenu={setOpenAuthMenu}
+                  userData={userData}
+                  userStatus={userStatus}
+                />
+              </div>
+
+              {openAuthMenu && <Auth setOpenAuthMenu={setOpenAuthMenu} />}
+
+              <main>
+                <ScrollToTop />
+                <Routes>
+                  {/* Main page */}
+                  <Route
+                    path="/"
+                    element={
+                      <Main
+                        scrollToBlock={scrollToBlock}
+                        setOpenAuthMenu={setOpenAuthMenu}
+                        openAuthMenu={openAuthMenu}
+                      />
+                    }
+                  />
+
+                  {/* Protected account routes */}
+                  {protectedRoutes.map(
+                    ({ path, element: Element, needsUser }) => (
+                      <Route
+                        key={path}
+                        path={path}
+                        element={
+                          <ProtectedRoute>
+                            <Element {...(needsUser ? { userData } : {})} />
+                          </ProtectedRoute>
+                        }
+                      />
+                    )
+                  )}
+
+                  {/* Public routes */}
+                  {publicRoutes.map(({ path, element: Element }) => (
+                    <Route key={path} path={path} element={<Element />} />
+                  ))}
+                </Routes>
+              </main>
+
+              <Cookies />
+              <Footer />
             </div>
-
-            {openAuthMenu && <Auth setOpenAuthMenu={setOpenAuthMenu} />}
-
-            <main>
-              <ScrollToTop />
-
-              <Routes>
-                <Route
-                  path="/"
-                  element={
-                    <Main
-                      scrollToBlock={scrollToBlock}
-                      setOpenAuthMenu={setOpenAuthMenu}
-                      openAuthMenu={openAuthMenu}
-                    />
-                  }
-                />
-
-                <Route
-                  path="/account/loan_applications"
-                  element={
-                    <ProtectedRoute
-                      userData={userData}
-                      userStatus={user.status}
-                    >
-                      <LoanApplication
-                        setOpenMenu={setOpenMenu}
-                        openMenu={openMenu}
-                        userData={userData}
-                      />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/account/credits"
-                  element={
-                    <ProtectedRoute
-                      userData={userData}
-                      userStatus={user.status}
-                    >
-                      <Credits setOpenMenu={setOpenMenu} openMenu={openMenu} />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/account/rating"
-                  element={
-                    <ProtectedRoute
-                      userData={userData}
-                      userStatus={user.status}
-                    >
-                      <Rating setOpenMenu={setOpenMenu} openMenu={openMenu} />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/account/profile"
-                  element={
-                    <ProtectedRoute
-                      userData={userData}
-                      userStatus={user.status}
-                    >
-                      <Profile
-                        setOpenMenu={setOpenMenu}
-                        openMenu={openMenu}
-                        user={userData}
-                      />
-                    </ProtectedRoute>
-                  }
-                />
-
-                <Route path="/privacy-policy" element={<Policy />} />
-                <Route
-                  path="/polzovatelskoe-soglashenie"
-                  element={<UserAgreement />}
-                />
-
-                <Route
-                  path="/soglasie-na-obrabotku-personalnyh-dannyh"
-                  element={
-                    <PersonalData
-                      setOpenMenu={setOpenMenu}
-                      openMenu={openMenu}
-                    />
-                  }
-                />
-                <Route
-                  path="/soglasie-na-poluchenie-reklamy"
-                  element={
-                    <ADS setOpenMenu={setOpenMenu} openMenu={openMenu} />
-                  }
-                />
-              </Routes>
-            </main>
-
-            <Cookies />
-            <Footer />
-          </div>
-        </Suspense>
-      </div>
+          </Suspense>
+        </div>
+      </MenuContext.Provider>
     </ThemeProvider>
   );
 }

@@ -20,7 +20,7 @@ const Credits = ({ setOpenMenu, openMenu }) => {
           <MobileLeftPanel setOpenMenu={setOpenMenu} openMenu={openMenu} />
 
           <section className="credits__main">
-            <h1>Кредиты</h1>
+            <h1>Предложения</h1>
 
             <div className="credits__main__nav">
               <button

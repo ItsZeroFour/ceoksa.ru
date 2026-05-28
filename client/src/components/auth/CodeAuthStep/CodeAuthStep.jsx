@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 const CodeAuthStep = ({
   phone,
@@ -17,6 +17,11 @@ const CodeAuthStep = ({
   styles,
   isLoading,
 }) => {
+  // Авто-фокус на первый input при появлении
+  useEffect(() => {
+    inputRefs.current[0]?.focus();
+  }, []);
+
   return (
     <>
       <div className={styles.auth__text}>
@@ -31,7 +36,7 @@ const CodeAuthStep = ({
               key={index}
               type="text"
               inputMode="numeric"
-              pattern="\d"
+              pattern={index === 0 ? "[0-9]*" : "[0-9]"}
               maxLength={index === 0 ? code.length : 1}
               value={digit}
               onChange={(e) => onCodeChange(index, e.target.value)}
@@ -39,6 +44,7 @@ const CodeAuthStep = ({
               onPaste={onPaste}
               ref={(el) => (inputRefs.current[index] = el)}
               autoComplete={index === 0 ? "one-time-code" : "off"}
+              name={index === 0 ? "one-time-code" : undefined}
               className={`${styles.auth__code_input} ${
                 hasError ? styles.error : ""
               }`}
@@ -49,13 +55,9 @@ const CodeAuthStep = ({
 
         {hasError && <p className={styles.auth__code__error}>Неверный код</p>}
 
-        <button
-          type="button"
-          disabled={!isComplete || isLoading}
-          onClick={onSubmit}
-        >
-          {isLoading ? "Проверяем..." : "Отправить"}
-        </button>
+        {isLoading && (
+          <p className={styles.auth__code__loading}>Проверяем...</p>
+        )}
       </form>
 
       <button

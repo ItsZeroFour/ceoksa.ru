@@ -1,12 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import style from "./credit.module.scss";
+import DropdownSelector from "../../../../components/dropdown_selector/DropdownSelector";
+import Notification from "../../../../components/notification/Notification";
+import CreditSceleton from "../../../../components/sceletons/CreditSceleton";
+import CreditAmountInput from "../../../../components/credit/CreditAmountInput/CreditAmountInput";
+import SalaryInput from "../../../../components/credit/SalaryInput/SalaryInput";
+import CreditFormButtons from "../../../../components/credit/CreditFormButtons/CreditFormButtons";
 import { useOutsideClick } from "../../../../hooks/useOutsideClick";
 import { useDropdown } from "../../../../hooks/useDropdown";
+import { useScreenWidth } from "../../../../hooks/useScreenWidth";
 import { useCreditAmount } from "../../../../hooks/useCreditAmount";
 import { useSalaryValidation } from "../../../../hooks/useSalaryValidation";
 import { useDebouncedUpdate } from "../../../../hooks/useDebouncedUpdate";
-import { fetchFiles } from "../../../../redux/slices/strapi/FilesSlide";
+import { fetchCredit } from "../../../../redux/slices/strapi/creditSlice";
 import {
   updateUser,
   clearError,
@@ -15,23 +22,37 @@ import {
   TERMS,
   TARGETS,
   CREDIT_LIMITS,
+  DRAFT_KEY,
 } from "../../../../constants/creditConstants";
-import CreditAmountSection from "../../../../components/account/CreditAmountSection/CreditAmountSection";
-import CreditTargetSection from "../../../../components/account/CreditTargetSection/CreditTargetSection";
-import CreditSalaryInput from "../../../../components/account/CreditSalaryInput/CreditSalaryInput";
-import CreditFooter from "../../../../components/account/CreditFooter/CreditFooter";
+import { useNavigate } from "react-router-dom";
 
-const Credit = () => {
+export const saveDraft = (data) => {
+  localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
+};
+
+const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const userChangedRef = useRef(false);
+
   const user = useSelector((state) => state.auth);
+  const isAuthenticated = user?.isAuth ?? false;
+  const authStatus = user?.status;
 
   const loanApplication = user?.user?.data?.loan_application;
+  const draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
 
-  const initialSum = loanApplication?.sum ?? 500000;
+  const initialSum = loanApplication?.sum ?? draft?.sum ?? 500000;
+
   const initialTerm =
-    TERMS.find((t) => t.value === loanApplication?.date) ?? TERMS[5];
+    TERMS.find((t) => t.value === (loanApplication?.date ?? draft?.date)) ??
+    TERMS[5];
+
   const initialTarget =
-    TARGETS.find((t) => t.value === loanApplication?.target) ?? TARGETS[0];
+    TARGETS.find(
+      (t) => t.value === (loanApplication?.target ?? draft?.target)
+    ) ?? TARGETS[0];
 
   const [selectedTerm, setSelectedTerm] = useState(initialTerm);
   const [selectedTarget, setSelectedTarget] = useState(initialTarget);
@@ -39,12 +60,9 @@ const Credit = () => {
 
   const termRef = useRef(null);
   const targetRef = useRef(null);
-  const userChangedRef = useRef(false);
-  const currentDataRef = useRef({});
 
-  const { data: filesData, status: filesStatus } = useSelector(
-    (state) => state.files
-  );
+  const screenWidth = useScreenWidth();
+  const { data, status } = useSelector((state) => state.credit);
 
   const creditAmount = useCreditAmount({
     initialValue: initialSum,
@@ -54,7 +72,7 @@ const Credit = () => {
   });
 
   const salary = useSalaryValidation({
-    initialValue: loanApplication?.salary ?? "",
+    initialValue: loanApplication?.salary ?? draft?.salary ?? "",
     minSalary: CREDIT_LIMITS.MIN_SALARY,
     maxSalary: CREDIT_LIMITS.MAX_AMOUNT,
     debounceDelay: 300,
@@ -70,37 +88,64 @@ const Credit = () => {
     dispatch(updateUser({ loan_application: data }));
   }, 1000);
 
-  currentDataRef.current = {
+  const getCurrentFormData = () => ({
     sum: creditAmount.amountValue,
     date: selectedTerm.value,
     target: selectedTarget.value,
     salary: salary.salaryValue,
-  };
+  });
 
   useEffect(() => {
-    dispatch(fetchFiles("fajly?populate=*"));
+    dispatch(fetchCredit("kredit?populate=*"));
   }, [dispatch]);
 
   useEffect(() => {
-    return () => {
-      if (!userChangedRef.current) return;
+    if (!isAuthenticated) return;
+    if (isHydrated) return;
+
+    const savedDraft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
+
+    if (savedDraft) {
       dispatch(clearError());
-      dispatch(updateUser({ loan_application: currentDataRef.current }));
-    };
-  }, []);
+      dispatch(updateUser({ loan_application: savedDraft }));
+      localStorage.removeItem(DRAFT_KEY);
+    }
+
+    setIsHydrated(true);
+  }, [isAuthenticated, isHydrated, dispatch]);
 
   useEffect(() => {
-    if (user.status !== "succeeded") return;
-    if (!loanApplication) {
-      setIsHydrated(true);
-      return;
-    }
+    if (isAuthenticated) return;
 
-    if (userChangedRef.current) return;
+    saveDraft(getCurrentFormData());
+  }, [
+    isAuthenticated,
+    creditAmount.amountValue,
+    selectedTerm,
+    selectedTarget,
+    salary.salaryValue,
+  ]);
 
-    if (loanApplication.sum) {
-      creditAmount.setAmountValue(loanApplication.sum);
-    }
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    if (!isHydrated) return;
+    if (!userChangedRef.current) return;
+
+    debouncedUpdate(getCurrentFormData());
+  }, [
+    isAuthenticated,
+    isHydrated,
+    creditAmount.amountValue,
+    selectedTerm,
+    selectedTarget,
+    salary.salaryValue,
+  ]);
+
+  useEffect(() => {
+    if (authStatus !== "succeeded") return;
+    if (!loanApplication) return;
+
+    if (draft) return;
 
     const savedTerm = TERMS.find((t) => t.value === loanApplication.date);
     if (savedTerm) setSelectedTerm(savedTerm);
@@ -111,27 +156,7 @@ const Credit = () => {
     if (loanApplication.salary) {
       salary.setSalaryValue(loanApplication.salary);
     }
-
-    setIsHydrated(true);
-  }, [user.status, loanApplication]);
-
-  useEffect(() => {
-    if (!isHydrated) return;
-    if (!userChangedRef.current) return;
-
-    debouncedUpdate({
-      sum: creditAmount.amountValue,
-      date: selectedTerm.value,
-      target: selectedTarget.value,
-      salary: salary.salaryValue,
-    });
-  }, [
-    isHydrated,
-    creditAmount.amountValue,
-    selectedTerm,
-    selectedTarget,
-    salary.salaryValue,
-  ]);
+  }, [authStatus, loanApplication]);
 
   const handleTermSelect = (term) => {
     userChangedRef.current = true;
@@ -145,102 +170,110 @@ const Credit = () => {
     setOpenDropdown(null);
   };
 
-  const handleSalaryChange = (e) => {
-    userChangedRef.current = true;
-    salary.handleSalaryChange(e);
-  };
-
-  const handleAmountChange = (e) => {
-    userChangedRef.current = true;
-    creditAmount.handleAmountChange(e);
-  };
-
-  const handleIncrement = () => {
-    userChangedRef.current = true;
-    creditAmount.increment();
-  };
-
-  const handleDecrement = () => {
-    userChangedRef.current = true;
-    creditAmount.decrement();
-  };
-
-  const handleSubmit = () => {
+  const handleContinue = () => {
     if (!salary.salaryValue || salary.salaryError) {
       salary.handleSalaryBlur();
       return;
     }
 
-    dispatch(clearError());
-    dispatch(
-      updateUser({
-        loan_application: {
-          sum: creditAmount.amountValue,
-          date: selectedTerm.value,
-          target: selectedTarget.value,
-          salary: salary.salaryValue,
-        },
-      })
+    if (isAuthenticated) {
+      dispatch(clearError());
+      dispatch(updateUser({ loan_application: getCurrentFormData() }));
+      navigate("/account/loan_applications");
+      window.location.reload();
+    } else {
+      saveDraft(getCurrentFormData());
+      setOpenAuthMenu(true);
+    }
+  };
+
+  if (status === "loading" || status === "failed") {
+    return (
+      <section className={style.credit} id="credit">
+        <CreditSceleton />
+      </section>
     );
+  }
+
+  const handleMouseDown = (e) => {
+    e.preventDefault();
   };
 
   return (
     <section className={style.credit} id="credit">
       <div className={style.credit__wrapper}>
         <h2 className={style.credit__title}>
-          Укажите сумму, срок и цель вашего кредита
+          Укажите сумму, сроки и цель вашего кредита
         </h2>
+        {/* <p className={style.credit__desc}>{data.description}</p> */}
 
         <div className={style.credit__main}>
           <form
-            className={`credit__main__form ${style.credit__main__form__special}`}
+            className="credit__main__form"
             onSubmit={(e) => e.preventDefault()}
           >
-            <CreditAmountSection
-              value={creditAmount.displayAmount}
-              onChange={handleAmountChange}
-              onFocus={creditAmount.handleAmountFocus}
-              onBlur={creditAmount.handleAmountBlur}
-              onIncrement={handleIncrement}
-              onDecrement={handleDecrement}
-              selectedTerm={selectedTerm}
-              onTermSelect={handleTermSelect}
-              termOptions={TERMS}
-              termRef={termRef}
-              openDropdown={openDropdown}
-              onToggleDropdown={() => toggleDropdown("term")}
-              styles={style}
-            />
+            <div className="credit__main__form__elem">
+              <CreditAmountInput
+                value={creditAmount.displayAmount}
+                onChange={creditAmount.handleAmountChange}
+                onFocus={creditAmount.handleAmountFocus}
+                onBlur={creditAmount.handleAmountBlur}
+                onIncrement={creditAmount.increment}
+                onDecrement={creditAmount.decrement}
+              />
 
-            <CreditTargetSection
-              selectedTarget={selectedTarget}
-              onTargetSelect={handleTargetSelect}
-              targetOptions={TARGETS}
-              targetRef={targetRef}
-              openDropdown={openDropdown}
-              onToggleDropdown={() => toggleDropdown("target")}
-              styles={style}
-            />
+              <div className="credit__main__data">
+                <DropdownSelector
+                  ref={termRef}
+                  label="На срок"
+                  selected={selectedTerm}
+                  options={TERMS}
+                  isOpen={openDropdown}
+                  onToggle={() => toggleDropdown("term")}
+                  onSelect={handleTermSelect}
+                  dropdownType="term"
+                  ariaLabel="Выбрать срок кредита"
+                />
+              </div>
+            </div>
 
-            <CreditSalaryInput
-              value={salary.displaySalary}
-              error={salary.salaryError}
-              onChange={handleSalaryChange}
-              onFocus={salary.handleSalaryFocus}
-              onBlur={salary.handleSalaryBlur}
-              onKeyDown={salary.handleKeyDown}
-              styles={style}
-            />
+            <div className="credit__main__form__other">
+              <DropdownSelector
+                ref={targetRef}
+                label="Цель кредита"
+                selected={selectedTarget}
+                options={TARGETS}
+                isOpen={openDropdown}
+                onToggle={() => toggleDropdown("target")}
+                onSelect={handleTargetSelect}
+                dropdownType="target"
+                ariaLabel="Выбрать цель кредита"
+              />
+
+              <SalaryInput
+                value={salary.displaySalary}
+                error={salary.salaryError}
+                onChange={salary.handleSalaryChange}
+                onFocus={salary.handleSalaryFocus}
+                onBlur={salary.handleSalaryBlur}
+                onKeyDown={salary.handleKeyDown}
+              />
+            </div>
+
+            <div className={style.credit__button}>
+              <button
+                type="button"
+                className={style.credit__buttons__continue}
+                onMouseDown={handleMouseDown}
+                onClick={handleContinue}
+              >
+                Продолжить
+              </button>
+            </div>
           </form>
-        </div>
 
-        {filesStatus === "succeeded" && (
-          <CreditFooter
-            filesData={filesData}
-            onSubmit={handleSubmit}
-            styles={style}
-          />
-        )}
+          {/* <Notification text="Авторизация через Госуслуги находится в процессе разработки и скоро будет доступна" /> */}
+        </div>
       </div>
     </section>
   );

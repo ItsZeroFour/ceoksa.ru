@@ -64,7 +64,7 @@ const RealAddress = () => {
   const cityPlaceholder =
     screenWidth < 780
       ? "Нас. пункт, улица, дом, кв."
-      : "Нас. пункт, улица, дом, квартира";
+      : "Нас. пункт, улица, дом, кв.";
 
   return (
     <div className={style.real_address}>
