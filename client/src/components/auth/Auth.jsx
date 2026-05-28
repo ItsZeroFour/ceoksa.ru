@@ -16,6 +16,7 @@ import {
   initiateAuth,
   verifyCode,
 } from "../../redux/slices/auth/mobileAuthSlice";
+import { fetchMe } from "../../redux/slices/auth/authSlice";
 
 const Auth = ({ setOpenAuthMenu }) => {
   const { theme } = useTheme();
@@ -132,6 +133,7 @@ const Auth = ({ setOpenAuthMenu }) => {
     const result = await dispatch(verifyCode({ auth_req_id, code: smsCode }));
     console.log("[Auth] handleSubmitCode: verify result", {
       requestStatus: result.meta.requestStatus,
+      payload: result.payload,
       auth_req_id,
     });
 
@@ -140,6 +142,23 @@ const Auth = ({ setOpenAuthMenu }) => {
     if (result.meta.requestStatus === "rejected") {
       setIsAuthLoading(false);
       codeInput.setError();
+      return;
+    }
+
+    // Сервер ждёт notification от МТС до 15 сек и при успехе сам выставляет
+    // cookie. Если authenticated:true — авторизация уже завершена, идём в
+    // кабинет без polling.
+    if (result.payload?.authenticated) {
+      isAuthSucceededRef.current = true;
+      try {
+        await dispatch(fetchMe());
+      } catch (e) {
+        console.warn("fetchMe после verify не удался:", e);
+      }
+      setIsAuthLoading(false);
+      setOpenAuthMenu(false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      navigate("/account/loan_applications");
       return;
     }
 

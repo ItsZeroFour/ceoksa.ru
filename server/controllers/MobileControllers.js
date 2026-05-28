@@ -238,8 +238,60 @@ export const verifySmsCode = async (req, res) => {
       );
       emitStatusChange(auth_req_id, "verifying");
 
+      // Ждём notification от МТС до 15 сек, чтобы вернуть user+cookie прямо
+      // отсюда. Это убирает зависимость от клиентского polling — после verify
+      // юзер получает финальный ответ за один запрос.
+      console.log("[verifySmsCode] Ожидаем notification от МТС...", { auth_req_id });
+      const finalStatus = await waitForStatusChange(auth_req_id, 15_000);
+      console.log("[verifySmsCode] Завершено ожидание", { auth_req_id, finalStatus });
+
+      const fresh = await AuthTransaction.findOne({ auth_req_id });
+
+      if (fresh?.status === "success") {
+        const user = await User.findOne({ mts_sub: fresh.sub });
+        if (user) {
+          const appToken = jwt.sign(
+            { userId: user._id, phone: user.phone },
+            process.env.APP_SECRET,
+            { expiresIn: "7d" }
+          );
+          res.cookie("app_token", appToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "Lax",
+            path: "/",
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+          });
+          console.log("[verifySmsCode] Cookie выставлено, авторизация завершена", {
+            auth_req_id,
+            userId: user._id,
+          });
+          return res.json({
+            success: true,
+            authenticated: true,
+            user: {
+              id: user._id,
+              phone: user.phone,
+              fullName: user.fullName,
+              email: user.email,
+            },
+          });
+        }
+      }
+
+      if (fresh?.status === "failed") {
+        return res.status(400).json({
+          error: fresh.error || "auth_failed",
+          message: fresh.error_description || "Аутентификация не удалась",
+          can_retry: fresh.can_retry || false,
+        });
+      }
+
+      // notification ещё не пришёл (или транзакция всё ещё verifying) —
+      // отдаём управление клиентскому polling
       res.json({
         success: true,
+        authenticated: false,
         message: "Код подтверждения принят, ожидайте завершения аутентификации",
       });
     } else {
