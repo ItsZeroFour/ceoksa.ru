@@ -34,7 +34,11 @@ const authTransactionSchema = new mongoose.Schema(
     access_token: String,
     id_token: String,
     sub: String,
-    expires_at: Date,
+    // TTL: документ удаляется ровно в момент expires_at (которое = createdAt + expires_in от МТС).
+    // Раньше TTL висел на createdAt с фиксированным значением; mongoose не пересоздаёт TTL-индекс
+    // при изменении схемы, поэтому в Atlas мог остаться старый индекс на 300с — из-за этого
+    // транзакции пропадали и polling получал 404. Старый индекс дропается в server.js при старте.
+    expires_at: { type: Date, expires: 0 },
     error: String,
     error_description: String,
     client_notification_token: String,
@@ -42,12 +46,6 @@ const authTransactionSchema = new mongoose.Schema(
     can_retry: { type: Boolean, default: false },
     retry_auth_req_id: { type: String, default: null },
     previous_auth_req_id: { type: String, default: null },
-
-    createdAt: {
-      type: Date,
-      default: Date.now,
-      expires: 3600,
-    },
   },
   {
     timestamps: true,

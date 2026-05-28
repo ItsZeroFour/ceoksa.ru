@@ -20,7 +20,11 @@
       "PowerShell(Get-ChildItem -Path \"D:\\\\PACK\\\\Programming\\\\React\\\\ceoksa.ru\\\\client\\\\src\" -Recurse -File | ForEach-Object { $_.Extension } | Sort-Object -Unique)",
       "Bash(npx --no-install eslint src/App.js src/utils/lazyWithRetry.js src/components/ChunkErrorBoundary/ChunkErrorBoundary.js)",
       "Bash(git --no-pager diff -- client/src/App.js)",
-      "Bash(git check-ignore *)"
+      "Bash(git check-ignore *)",
+      "Bash(node --check controllers/MobileControllers.js)",
+      "Bash(node --check models/AuthTransaction.js)",
+      "Bash(node --check server.js)",
+      "Bash(node --check src/hooks/useAuthPolling.js)"
     ]
   }
 }

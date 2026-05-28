@@ -15,6 +15,7 @@ import { fileURLToPath } from "url";
 import multer from "multer";
 import MobileRoutes from "./routes/mobileRoutes.js";
 import { getJwks } from "./controllers/MobileControllers.js";
+import AuthTransaction from "./models/AuthTransaction.js";
 import cookieParser from "cookie-parser";
 
 import AuthRoutes from "./routes/authRoutes.js";
@@ -122,6 +123,25 @@ async function start() {
         console.log("Mongo db connection successfully");
       })
       .catch((err) => console.log(err));
+
+    // Старый TTL-индекс на createdAt (expires=300) удалял транзакции авторизации
+    // быстрее, чем успевал прийти notification от МТС. Дропаем его, чтобы остался
+    // только новый TTL на expires_at. Mongoose не пересоздаёт TTL-индексы автоматически.
+    try {
+      const indexes = await AuthTransaction.collection.indexes();
+      for (const idx of indexes) {
+        if (idx.key && idx.key.createdAt === 1 && typeof idx.expireAfterSeconds === "number") {
+          console.log(
+            `[startup] Дропаю устаревший TTL-индекс ${idx.name} (expireAfterSeconds=${idx.expireAfterSeconds}) на createdAt`
+          );
+          await AuthTransaction.collection.dropIndex(idx.name);
+        }
+      }
+      await AuthTransaction.syncIndexes();
+      console.log("[startup] Индексы AuthTransaction синхронизированы");
+    } catch (idxErr) {
+      console.warn("[startup] Не удалось обновить индексы AuthTransaction:", idxErr.message);
+    }
 
     if (process.env.MTS_RIM_CLIENT_ID && process.env.MTS_RIM_CLIENT_SECRET) {
       startRimTokenAutoRefresh().catch((err) =>
