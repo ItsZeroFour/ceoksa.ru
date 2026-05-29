@@ -104,18 +104,23 @@ app.use("/ocr", OcrRoutes);
 app.use("/rim", RimRoutes);
 
 app.post("/logout", (req, res) => {
-  // Параметры должны совпадать с теми, с которыми ставилась кука в finalizeAuth.
-  // Иначе браузер не удалит её и юзер останется залогинен после reload.
-  const cookieOptions = {
+  // Чистим куку по всем путям, на которых она исторически могла быть выставлена:
+  //   "/"       — verifySmsCode / finalizeAuth и текущий authComplete
+  //   "/auth"   — старый authComplete (до фикса) ставил куку с default-path
+  // Если опции не совпадают с теми, с которыми кука была установлена,
+  // браузер её НЕ удалит, поэтому покрываем оба варианта.
+  const baseOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "Lax",
-    path: "/",
   };
+  const paths = ["/", "/auth"];
 
-  res.clearCookie("app_token", cookieOptions);
-  // Подстраховка на случай, если где-то осталась кука без httpOnly или с другими опциями
-  res.cookie("app_token", "", { ...cookieOptions, maxAge: 0, expires: new Date(0) });
+  for (const path of paths) {
+    const opts = { ...baseOptions, path };
+    res.clearCookie("app_token", opts);
+    res.cookie("app_token", "", { ...opts, maxAge: 0, expires: new Date(0) });
+  }
 
   console.log("[logout] Выход выполнен. hadCookie:", !!req.cookies?.app_token);
   res.json({ success: true, message: "Вышли из системы" });
