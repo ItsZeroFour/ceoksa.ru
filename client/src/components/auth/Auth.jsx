@@ -90,6 +90,18 @@ const Auth = ({ setOpenAuthMenu }) => {
     }
   }, [flow]);
 
+  // Запасной таймер: если за 30 секунд на push_wait не пришёл ни sms_sent,
+  // ни success/failed — принудительно переключаем на ввод кода. SMS у юзера
+  // обычно уже на руках, а poller продолжает работать в фоне и подхватит
+  // финальный success/failed как обычно.
+  useEffect(() => {
+    if (currentStep !== "push_wait") return;
+    const timer = setTimeout(() => {
+      setCurrentStep("code");
+    }, 30_000);
+    return () => clearTimeout(timer);
+  }, [currentStep]);
+
   useEffect(() => {
     isSubmittingRef.current = false;
   }, [currentStep]);

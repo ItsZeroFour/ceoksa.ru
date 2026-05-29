@@ -37,7 +37,8 @@
       "Bash(node -e \"const acorn=require\\('acorn-jsx'\\); const fs=require\\('fs'\\); const p=require\\('acorn'\\).Parser.extend\\(acorn\\(\\)\\); for \\(const f of ['src/components/left_panel/LeftPanel.jsx','src/components/mobile_left_panel/MobileLeftPanel.jsx']\\) { try { p.parse\\(fs.readFileSync\\(f,'utf8'\\), {sourceType:'module', ecmaVersion:'latest'}\\); console.log\\('OK', f\\); } catch\\(e\\) { console.error\\('FAIL', f, e.message\\); process.exit\\(1\\); } }\")",
       "Bash(node -e \"const acorn=require\\('acorn-jsx'\\); const fs=require\\('fs'\\); const p=require\\('acorn'\\).Parser.extend\\(acorn\\(\\)\\); const files=['src/components/auth/Auth.jsx','src/components/left_panel/LeftPanel.jsx','src/components/mobile_left_panel/MobileLeftPanel.jsx','src/redux/slices/auth/authSlice.js','src/redux/slices/auth/mobileAuthSlice.js','src/hooks/useAuthPolling.js']; let ok=true; for \\(const f of files\\) { try { p.parse\\(fs.readFileSync\\(f,'utf8'\\), {sourceType:'module', ecmaVersion:'latest'}\\); console.log\\('OK', f\\); } catch\\(e\\) { console.error\\('FAIL', f, e.message\\); ok=false; } } process.exit\\(ok?0:1\\);\")",
       "Bash(git show *)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(node -e \"const acorn=require\\('acorn-jsx'\\); const fs=require\\('fs'\\); const p=require\\('acorn'\\).Parser.extend\\(acorn\\(\\)\\); try { p.parse\\(fs.readFileSync\\('src/components/auth/Auth.jsx','utf8'\\), {sourceType:'module', ecmaVersion:'latest'}\\); console.log\\('OK'\\); } catch\\(e\\) { console.error\\(e.message\\); process.exit\\(1\\); }\")"
     ]
   }
 }
