@@ -35,18 +35,12 @@ const MobileLeftPanel = () => {
 
   const { theme } = useTheme();
 
-  const handleLogout = async () => {
-    // Cookie app_token — httpOnly: JS не может её удалить, может только
-    // сервер. После очистки cookie делаем хард-reload для гарантированного
-    // сброса всего in-memory стейта (Redux/axios/fetchMe-кэш).
-    // Мгновенный UX: сначала optimistic redux + закрытие меню, потом сеть.
+  const handleLogout = () => {
+    // Cookie не httpOnly — удаляем её прямо из JS.
     dispatch(logout());
     setOpenMenu(false);
-    try {
-      await axios.post("/logout");
-    } catch (err) {
-      console.warn("Logout request failed:", err?.message);
-    }
+    document.cookie = "app_token=; Path=/; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    axios.post("/logout").catch(() => {});
     window.location.replace("/");
   };
 
