@@ -34,11 +34,6 @@ const authTransactionSchema = new mongoose.Schema(
     access_token: String,
     id_token: String,
     sub: String,
-    // _id пользователя, к которому привязана эта попытка авторизации.
-    // Проставляется в handleNotification после успешного сопоставления/создания
-    // юзера. Используется в verifySmsCode/finalizeAuth, чтобы подписать JWT
-    // строго для нужного аккаунта без повторного поиска.
-    user_id: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     // TTL: документ удаляется ровно в момент expires_at (которое = createdAt + expires_in от МТС).
     // Раньше TTL висел на createdAt с фиксированным значением; mongoose не пересоздаёт TTL-индекс
     // при изменении схемы, поэтому в Atlas мог остаться старый индекс на 300с — из-за этого

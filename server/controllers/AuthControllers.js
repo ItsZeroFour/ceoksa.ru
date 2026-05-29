@@ -23,8 +23,8 @@ export const authComplete = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    // path: "/" обязателен — иначе кука уйдёт с дефолтным path "/auth"
-    // и /logout не сможет её удалить (опции должны совпадать).
+    // path:"/" обязателен — без него cookie уйдёт с дефолтным path "/auth",
+    // и /logout не сможет её сбросить (опции должны совпадать).
     res.cookie("app_token", appToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

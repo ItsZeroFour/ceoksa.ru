@@ -29,6 +29,10 @@ const authSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.isAuth = false;
+      // status оставляем "succeeded" — иначе ProtectedRoute залипнет
+      // на <Loading /> для прямых заходов на /account/*, т.к. fetchMe
+      // не перезапускается без reload. При user=null guard сразу
+      // редиректит на "/".
     },
     patchUser: (state, action) => {
       state.user = { ...state.user, ...action.payload };

@@ -36,16 +36,20 @@ const MobileLeftPanel = () => {
 
   const { theme } = useTheme();
 
-  const handleLogout = () => {
-    // Мгновенный выход: чистим redux, закрываем меню и уходим на главную
-    // через react-router (без полной перезагрузки). Серверный POST /logout
-    // (только сбрасывает cookie) уходит в фоне.
+  const handleLogout = async () => {
+    // Cookie app_token — httpOnly: JS не может её удалить, может только
+    // сервер. Поэтому await обязателен, иначе после reload сессия
+    // восстановится через fetchMe.
+    //
+    // Мгновенный UX: сначала optimistic redux + закрытие меню, потом сеть.
     dispatch(logout());
     setOpenMenu(false);
-    navigate("/", { replace: true });
-    axios.post("/logout").catch((err) => {
+    try {
+      await axios.post("/logout");
+    } catch (err) {
       console.warn("Logout request failed:", err?.message);
-    });
+    }
+    navigate("/", { replace: true });
   };
 
   return (

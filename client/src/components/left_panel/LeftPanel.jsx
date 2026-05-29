@@ -29,15 +29,20 @@ const LeftPanel = () => {
   const togglePersonal = () => setIsPersonalOpen(!isPersonalOpen);
   const isActive = (path) => location.pathname === `/account${path}`;
 
-  const handleLogout = () => {
-    // Оптимистичный выход: сразу чистим redux и уходим на главную,
-    // а серверный POST /logout (он только сбрасывает cookie) шлём в фоне.
-    // Раньше await + window.location.assign давали лаг ~сетевая задержка + reload.
+  const handleLogout = async () => {
+    // Cookie app_token — httpOnly: JS не может её удалить, может только
+    // сервер через Set-Cookie в ответе на /logout. Поэтому await обязателен —
+    // без него на reload fetchMe увидит живую cookie и вернёт в кабинет.
+    //
+    // Мгновенный UX обеспечиваем оптимистичной сменой Redux до сетевого
+    // запроса: интерфейс сразу показывает «вышли», пока сервер чистит cookie.
     dispatch(logout());
-    navigate("/", { replace: true });
-    axios.post("/logout").catch((err) => {
+    try {
+      await axios.post("/logout");
+    } catch (err) {
       console.warn("Logout request failed:", err?.message);
-    });
+    }
+    navigate("/", { replace: true });
   };
 
   return (
