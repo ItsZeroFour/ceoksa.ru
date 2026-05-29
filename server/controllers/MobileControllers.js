@@ -222,8 +222,64 @@ export const verifySmsCode = async (req, res) => {
         { status: "verifying" }
       );
 
-      res.json({
+      // Inline-ожидание notification от МТС (до 10 секунд).
+      // После того как МТС подтвердил код, он шлёт асинхронный
+      // notification с id_token. Опрашиваем БД каждые 500 мс — если
+      // status стал success, ставим cookie прямо здесь и возвращаем юзера
+      // в одном запросе (без зависимости от клиентского polling).
+      const waitDeadline = Date.now() + 10_000;
+      let finalTxn = null;
+      while (Date.now() < waitDeadline) {
+        await new Promise((r) => setTimeout(r, 500));
+        finalTxn = await AuthTransaction.findOne({ auth_req_id });
+        if (!finalTxn) break;
+        if (finalTxn.status === "success" || finalTxn.status === "failed") break;
+      }
+
+      if (finalTxn?.status === "success") {
+        const user = await User.findOne({ phone: finalTxn.phone });
+        if (user) {
+          const appToken = jwt.sign(
+            { userId: user._id, phone: user.phone },
+            process.env.APP_SECRET,
+            { expiresIn: "7d" }
+          );
+          res.cookie("app_token", appToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "Lax",
+            path: "/",
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+          });
+          console.log("[verifySmsCode] notification получен в течение запроса, cookie выставлено:", {
+            auth_req_id,
+            userId: user._id,
+          });
+          return res.json({
+            success: true,
+            authenticated: true,
+            user: {
+              id: user._id,
+              phone: user.phone,
+              fullName: user.fullName,
+              email: user.email,
+            },
+          });
+        }
+      }
+
+      if (finalTxn?.status === "failed") {
+        return res.status(400).json({
+          error: finalTxn.error || "auth_failed",
+          message: finalTxn.error_description || "Аутентификация не удалась",
+          can_retry: finalTxn.can_retry || false,
+        });
+      }
+
+      // notification ещё не пришёл — отдаём управление клиентскому polling
+      return res.json({
         success: true,
+        authenticated: false,
         message: "Код подтверждения принят, ожидайте завершения аутентификации",
       });
     } else {

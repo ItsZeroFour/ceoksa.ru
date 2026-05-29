@@ -16,6 +16,7 @@ import {
   initiateAuth,
   verifyCode,
 } from "../../redux/slices/auth/mobileAuthSlice";
+import { fetchMe } from "../../redux/slices/auth/authSlice";
 
 const Auth = ({ setOpenAuthMenu }) => {
   const { theme } = useTheme();
@@ -169,6 +170,23 @@ const Auth = ({ setOpenAuthMenu }) => {
     if (result.meta.requestStatus === "rejected") {
       setIsAuthLoading(false);
       codeInput.setError();
+      return;
+    }
+
+    // Сервер мог успеть получить notification от МТС в течение запроса
+    // и выставить cookie прямо здесь. Если authenticated === true —
+    // авторизация уже завершена, не нужен polling.
+    if (result.payload?.authenticated) {
+      isAuthSucceededRef.current = true;
+      try {
+        await dispatch(fetchMe());
+      } catch (e) {
+        console.warn("fetchMe после verify не удался:", e);
+      }
+      setIsAuthLoading(false);
+      setOpenAuthMenu(false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      navigate("/account/loan_applications");
       return;
     }
 
