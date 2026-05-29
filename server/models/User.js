@@ -20,6 +20,13 @@ const UserSchema = new mongoose.Schema(
       type: Date,
     },
 
+    // Серверный «отзыв» всех ранее выданных JWT для этого юзера.
+    // /logout проставляет = now; authMe отклоняет токены с iat < этого значения.
+    // Гарантирует логаут даже если браузер не удалил cookie.
+    lastLogoutAt: {
+      type: Date,
+    },
+
     fullName: String,
     email: String,
     loan_rating: String,

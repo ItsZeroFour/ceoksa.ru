@@ -24,6 +24,8 @@ import ValidateBICRoutes from "./routes/validateBICRoutes.js";
 import OcrRoutes from "./routes/ocrRoutes.js";
 import RimRoutes from "./routes/rimRoutes.js";
 import { startRimTokenAutoRefresh } from "./utils/mtsRimToken.js";
+import jwt from "jsonwebtoken";
+import User from "./models/User.js";
 
 /* ROUTES */
 const app = express();
@@ -103,37 +105,51 @@ app.use("/validate", ValidateBICRoutes);
 app.use("/ocr", OcrRoutes);
 app.use("/rim", RimRoutes);
 
-app.post("/logout", (req, res) => {
-  // Браузер удалит cookie только если ВСЕ атрибуты Set-Cookie совпадают
-  // с теми, с которыми она была установлена. res.clearCookie часто промахивается
-  // по SameSite/Secure/Domain, особенно при смешанных prod/dev средах и
-  // legacy куках с дефолтным path. Поэтому шлём напрямую несколько
-  // Set-Cookie заголовков, перекрывающих все исторические варианты.
-  const paths = ["/", "/auth", "/mobile", "/api"];
-  const sameSiteVariants = ["Lax", "Strict", "None"];
+app.post("/logout", async (req, res) => {
+  // Серверный отзыв сессии: даже если cookie уцелеет в браузере (из-за
+  // proxy_cookie_path или другого квирка), authMiddleware/verifyToken
+  // отклонят токен потому что его iat < user.lastLogoutAt.
+  try {
+    const token = req.cookies?.app_token;
+    if (token) {
+      const decoded = jwt.verify(token, process.env.APP_SECRET);
+      if (decoded?.userId) {
+        await User.findByIdAndUpdate(decoded.userId, { lastLogoutAt: new Date() });
+        console.log("[logout] lastLogoutAt обновлён для userId:", decoded.userId);
+      }
+    }
+  } catch (err) {
+    console.warn("[logout] Не удалось обновить lastLogoutAt:", err?.message);
+  }
+
+  // Cookie удаляется только если Set-Cookie совпадает по name+domain+path
+  // (HttpOnly/Secure/SameSite на идентичность НЕ влияют, но если cookie
+  // была Secure — то и delete должен быть Secure, иначе HTTP-only браузер
+  // не примет). Покрываем все реально использованные пути.
   const isProd = process.env.NODE_ENV === "production";
   const expired = "Thu, 01 Jan 1970 00:00:00 GMT";
-  const cookies = [];
 
-  for (const p of paths) {
-    for (const ss of sameSiteVariants) {
-      // Secure обязателен с SameSite=None, иначе браузер игнорит
-      const parts = [
-        `app_token=`,
-        `Path=${p}`,
-        `Expires=${expired}`,
-        `Max-Age=0`,
-        `HttpOnly`,
-        `SameSite=${ss}`,
+  // Пути из всех версий кода + возможный nginx proxy_cookie_path
+  const paths = ["/", "/auth", "/mobile", "/api", "/api/"];
+
+  const cookies = paths.flatMap((p) => {
+    const base = `app_token=; Path=${p}; Expires=${expired}; Max-Age=0`;
+    if (isProd) {
+      // В prod cookie ставилась Secure+SameSite=Lax — повторяем точно.
+      // Плюс fallback без SameSite (legacy) и SameSite=None (cross-site).
+      return [
+        `${base}; HttpOnly; Secure; SameSite=Lax`,
+        `${base}; HttpOnly; Secure`,
+        `${base}; HttpOnly; Secure; SameSite=None`,
       ];
-      if (isProd || ss === "None") parts.push("Secure");
-      cookies.push(parts.join("; "));
     }
-  }
+    // В dev cookie ставилась без Secure, SameSite=Lax
+    return [`${base}; HttpOnly; SameSite=Lax`, `${base}; HttpOnly`];
+  });
 
   res.setHeader("Set-Cookie", cookies);
 
-  console.log("[logout] Очищены cookie:", { count: cookies.length });
+  console.log("[logout] Set-Cookie заголовков отправлено:", cookies.length);
   res.json({ success: true, message: "Вышли из системы" });
 });
 
