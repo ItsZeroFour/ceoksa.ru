@@ -28,21 +28,13 @@ const LeftPanel = () => {
   const togglePersonal = () => setIsPersonalOpen(!isPersonalOpen);
   const isActive = (path) => location.pathname === `/account${path}`;
 
-  const handleLogout = async () => {
-    // Cookie app_token — httpOnly: JS не может её удалить, может только
-    // сервер через Set-Cookie в ответе на /logout. Поэтому await обязателен.
-    //
-    // После сетевого запроса делаем ХАРДОВЫЙ reload (replace) — он гарантирует:
-    //   1. чистый mount App → свежий fetchMe против уже очищенной cookie,
-    //   2. удаление любого in-memory кэша Redux/axios,
-    //   3. невозможность back-кнопкой вернуться на /account/* со старым стейтом.
-    // Мгновенный UX обеспечивает оптимистичный dispatch(logout()) ДО сети.
+  const handleLogout = () => {
+    // Cookie не httpOnly — удаляем её прямо из JS, мгновенно.
+    // Серверный /logout отправляем fire-and-forget (бьёт lastLogoutAt как
+    // backup), не ждём ответа. Дальше — хард reload.
     dispatch(logout());
-    try {
-      await axios.post("/logout");
-    } catch (err) {
-      console.warn("Logout request failed:", err?.message);
-    }
+    document.cookie = "app_token=; Path=/; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    axios.post("/logout").catch(() => {});
     window.location.replace("/");
   };
 

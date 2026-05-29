@@ -244,8 +244,9 @@ export const verifySmsCode = async (req, res) => {
             process.env.APP_SECRET,
             { expiresIn: "7d" }
           );
+          // НЕ httpOnly: фронт сам удаляет cookie при логауте через
+          // document.cookie. Серверная защита остаётся через User.lastLogoutAt.
           res.cookie("app_token", appToken, {
-            httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "Lax",
             path: "/",
@@ -633,10 +634,8 @@ export const finalizeAuth = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    // path:"/" обязателен — без него cookie уходит с дефолтным path "/mobile",
-    // и /logout (clearCookie с path "/") не сможет её удалить.
+    // НЕ httpOnly: фронт сам удаляет cookie при логауте через document.cookie.
     res.cookie("app_token", appToken, {
-      httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "Lax",
       path: "/",

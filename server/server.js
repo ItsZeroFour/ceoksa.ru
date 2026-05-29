@@ -106,57 +106,21 @@ app.use("/ocr", OcrRoutes);
 app.use("/rim", RimRoutes);
 
 app.post("/logout", (req, res) => {
-  // Cookie clear через Set-Cookie. Браузер удалит cookie только если
-  // совпадают name+domain+path. Покрываем все исторические комбинации.
-  const isProd = process.env.NODE_ENV === "production";
-  const expired = "Thu, 01 Jan 1970 00:00:00 GMT";
-  const paths = ["/", "/auth", "/mobile", "/api", "/api/"];
-  // Domain пробуем: без атрибута (host-only — основной случай) и с явным
-  // хостом (на случай если cookie была установлена с Domain=).
-  const host = req.hostname || "";
-  const domains = host ? [null, host, "." + host] : [null];
+  // Cookie теперь НЕ httpOnly — фронт сам её удаляет через document.cookie.
+  // Здесь только best-effort серверный отзыв через User.lastLogoutAt,
+  // на случай если cookie каким-то образом выживет в браузере.
+  res.json({ success: true });
 
-  for (const p of paths) {
-    for (const domain of domains) {
-      const base = `app_token=; Path=${p}; Expires=${expired}; Max-Age=0`;
-      const domainPart = domain ? `; Domain=${domain}` : "";
-
-      const variants = isProd
-        ? [
-            `${base}${domainPart}; HttpOnly; Secure; SameSite=Lax`,
-            `${base}${domainPart}; HttpOnly; Secure`,
-            `${base}${domainPart}; HttpOnly; Secure; SameSite=None`,
-            `${base}${domainPart}; Secure; SameSite=Lax`,
-          ]
-        : [
-            `${base}${domainPart}; HttpOnly; SameSite=Lax`,
-            `${base}${domainPart}; HttpOnly`,
-            `${base}${domainPart}; SameSite=Lax`,
-          ];
-
-      // res.append корректно добавляет отдельные Set-Cookie заголовки,
-      // в отличие от setHeader(arr), который в некоторых прокси-конфигурациях
-      // может склеиваться в один заголовок.
-      for (const v of variants) res.append("Set-Cookie", v);
-    }
-  }
-
-  res.json({ success: true, message: "Вышли из системы" });
-
-  // Серверный отзыв сессии — fire-and-forget, после ответа клиенту.
-  // Backup для случая если cookie не удалится в браузере: verifyToken
-  // отклонит токен по iat < lastLogoutAt. Если DB медленная — это
-  // не задерживает ответ /logout, юзер не ждёт.
   const token = req.cookies?.app_token;
   if (!token) return;
   try {
     const decoded = jwt.verify(token, process.env.APP_SECRET);
     if (decoded?.userId) {
-      User.findByIdAndUpdate(decoded.userId, { lastLogoutAt: new Date() })
-        .then(() => console.log("[logout] lastLogoutAt записан:", decoded.userId))
-        .catch((err) => console.warn("[logout] DB update failed:", err?.message));
+      User.findByIdAndUpdate(decoded.userId, { lastLogoutAt: new Date() }).catch(
+        (err) => console.warn("[logout] DB update failed:", err?.message)
+      );
     }
-  } catch (err) {
+  } catch (_) {
     // токен невалиден — отзывать нечего
   }
 });

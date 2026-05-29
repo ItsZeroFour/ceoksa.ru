@@ -23,10 +23,8 @@ export const authComplete = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    // path:"/" обязателен — без него cookie уйдёт с дефолтным path "/auth",
-    // и /logout не сможет её сбросить (опции должны совпадать).
+    // НЕ httpOnly: фронт сам удаляет cookie при логауте через document.cookie.
     res.cookie("app_token", appToken, {
-      httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "Lax",
       path: "/",
