@@ -8,7 +8,7 @@ import { ReactComponent as Rate } from "../../assets/icons/left_panel/rate.svg";
 import { ReactComponent as Profile } from "../../assets/icons/left_panel/profile.svg";
 import { ReactComponent as Angle } from "../../assets/icons/left_panel/angle.svg";
 import { ReactComponent as SignOut } from "../../assets/icons/left_panel/signout.svg";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import logo from "../../assets/logo.svg";
 import logoDark from "../../assets/logo-dark.svg";
@@ -26,6 +26,7 @@ const personalItems = [
 
 const MobileLeftPanel = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isPersonalOpen, setIsPersonalOpen] = useState(true);
   const { openMenu, setOpenMenu } = useMenu();
@@ -35,16 +36,16 @@ const MobileLeftPanel = () => {
 
   const { theme } = useTheme();
 
-  const handleLogout = async () => {
-    try {
-      await axios.post("/logout");
-    } catch (err) {
-      console.warn("Logout request failed (продолжаем):", err?.message);
-    }
+  const handleLogout = () => {
+    // Мгновенный выход: чистим redux, закрываем меню и уходим на главную
+    // через react-router (без полной перезагрузки). Серверный POST /logout
+    // (только сбрасывает cookie) уходит в фоне.
     dispatch(logout());
     setOpenMenu(false);
-    // hard-redirect: гарантированно сбрасываем кэшированный state и cookies
-    window.location.assign("/");
+    navigate("/", { replace: true });
+    axios.post("/logout").catch((err) => {
+      console.warn("Logout request failed:", err?.message);
+    });
   };
 
   return (
