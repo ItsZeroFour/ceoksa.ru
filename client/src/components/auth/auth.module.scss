@@ -192,35 +192,6 @@
       }
     }
 
-    .auth__push_actions {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      align-items: center;
-      margin-top: 8px;
-    }
-
-    .auth__push_link {
-      background: transparent;
-      border: none;
-      color: var(--color-blue);
-      font-size: 14px;
-      cursor: pointer;
-      padding: 6px 10px;
-      text-decoration: underline;
-
-      &:hover {
-        opacity: 0.8;
-      }
-    }
-
-    .auth__push_error {
-      color: #e04646;
-      font-size: 14px;
-      margin-top: 12px;
-      text-align: center;
-    }
-
     @media (max-width: 430px) {
       gap: 12px;
     }
