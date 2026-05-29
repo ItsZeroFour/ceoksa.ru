@@ -304,12 +304,32 @@ export const handleNotification = async (req, res) => {
     }
 
     if (error) {
+      // КРИТИЧНО: МТС может прислать ошибку push-flow ПОСЛЕ того, как уже
+      // переключился на SMS-fallback (status=sms_sent) или уже идёт верификация
+      // кода (status=verifying). В этих случаях ошибка push устарела —
+      // не перезаписываем активный SMS-флоу в failed, иначе клиент,
+      // который уже ввёл/вводит код, получит «Не удалось войти».
+      if (
+        transaction.status === "sms_sent" ||
+        transaction.status === "verifying"
+      ) {
+        console.warn(
+          `[handleNotification] Игнорируем push-ошибку: статус уже ${transaction.status}`,
+          { auth_req_id, error, error_description }
+        );
+        return res.status(204).end();
+      }
+
+      // 'client timeout' тоже даём ретраить: устройство просто не ответило,
+      // юзер сам выбрал не подтверждать или не получил push — это не фатально.
       const canRetry =
         error === "access_denied" &&
         typeof error_description === "string" &&
         (error_description.includes("client cancelled") ||
           error_description.includes("user_denied") ||
-          error_description.includes("cancelled"));
+          error_description.includes("cancelled") ||
+          error_description.includes("client timeout") ||
+          error_description.includes("timeout"));
 
       console.warn(`[handleNotification] Аутентификация не удалась:`, {
         auth_req_id,

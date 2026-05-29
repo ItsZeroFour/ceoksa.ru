@@ -48,7 +48,14 @@ const Auth = ({ setOpenAuthMenu }) => {
       window.scrollTo({ top: 0, behavior: "smooth" });
       navigate("/account/loan_applications");
     },
-    onSmsRequired: () => {},
+    // Прямой переход на экран ввода кода в момент, когда poller увидел
+    // status=sms_sent. Дублирует useEffect на flow, но не зависит от
+    // редьюсер→re-render→effect цепочки — переход срабатывает мгновенно
+    // в callback'е поллинга. Идемпотентно: повторный setCurrentStep("code")
+    // безвреден.
+    onSmsRequired: () => {
+      setCurrentStep("code");
+    },
     onError: ({ status, canRetry }) => {
       setIsAuthLoading(false);
 
