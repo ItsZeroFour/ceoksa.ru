@@ -104,21 +104,36 @@ app.use("/ocr", OcrRoutes);
 app.use("/rim", RimRoutes);
 
 app.post("/logout", (req, res) => {
-  // Чистим cookie по всем путям, где она исторически могла быть выставлена:
-  //   "/"       — финальный путь после фикса (finalizeAuth, authComplete)
-  //   "/auth"   — старый authComplete без явного path
-  //   "/mobile" — старый finalizeAuth без явного path
-  // Опции должны точно совпадать с тем, как cookie была установлена,
-  // иначе браузер её НЕ удалит.
-  const baseOptions = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "Lax",
-  };
-  for (const p of ["/", "/auth", "/mobile"]) {
-    res.clearCookie("app_token", { ...baseOptions, path: p });
+  // Браузер удалит cookie только если ВСЕ атрибуты Set-Cookie совпадают
+  // с теми, с которыми она была установлена. res.clearCookie часто промахивается
+  // по SameSite/Secure/Domain, особенно при смешанных prod/dev средах и
+  // legacy куках с дефолтным path. Поэтому шлём напрямую несколько
+  // Set-Cookie заголовков, перекрывающих все исторические варианты.
+  const paths = ["/", "/auth", "/mobile", "/api"];
+  const sameSiteVariants = ["Lax", "Strict", "None"];
+  const isProd = process.env.NODE_ENV === "production";
+  const expired = "Thu, 01 Jan 1970 00:00:00 GMT";
+  const cookies = [];
+
+  for (const p of paths) {
+    for (const ss of sameSiteVariants) {
+      // Secure обязателен с SameSite=None, иначе браузер игнорит
+      const parts = [
+        `app_token=`,
+        `Path=${p}`,
+        `Expires=${expired}`,
+        `Max-Age=0`,
+        `HttpOnly`,
+        `SameSite=${ss}`,
+      ];
+      if (isProd || ss === "None") parts.push("Secure");
+      cookies.push(parts.join("; "));
+    }
   }
 
+  res.setHeader("Set-Cookie", cookies);
+
+  console.log("[logout] Очищены cookie:", { count: cookies.length });
   res.json({ success: true, message: "Вышли из системы" });
 });
 

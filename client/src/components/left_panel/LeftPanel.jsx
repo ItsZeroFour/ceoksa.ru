@@ -8,7 +8,7 @@ import { ReactComponent as Rate } from "../../assets/icons/left_panel/rate.svg";
 import { ReactComponent as Profile } from "../../assets/icons/left_panel/profile.svg";
 import { ReactComponent as Angle } from "../../assets/icons/left_panel/angle.svg";
 import { ReactComponent as SignOut } from "../../assets/icons/left_panel/signout.svg";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import axios from "../../utils/axios";
 import { logout } from "../../redux/slices/auth/authSlice";
@@ -22,7 +22,6 @@ const personalItems = [
 
 const LeftPanel = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isPersonalOpen, setIsPersonalOpen] = useState(true);
 
@@ -31,18 +30,20 @@ const LeftPanel = () => {
 
   const handleLogout = async () => {
     // Cookie app_token — httpOnly: JS не может её удалить, может только
-    // сервер через Set-Cookie в ответе на /logout. Поэтому await обязателен —
-    // без него на reload fetchMe увидит живую cookie и вернёт в кабинет.
+    // сервер через Set-Cookie в ответе на /logout. Поэтому await обязателен.
     //
-    // Мгновенный UX обеспечиваем оптимистичной сменой Redux до сетевого
-    // запроса: интерфейс сразу показывает «вышли», пока сервер чистит cookie.
+    // После сетевого запроса делаем ХАРДОВЫЙ reload (replace) — он гарантирует:
+    //   1. чистый mount App → свежий fetchMe против уже очищенной cookie,
+    //   2. удаление любого in-memory кэша Redux/axios,
+    //   3. невозможность back-кнопкой вернуться на /account/* со старым стейтом.
+    // Мгновенный UX обеспечивает оптимистичный dispatch(logout()) ДО сети.
     dispatch(logout());
     try {
       await axios.post("/logout");
     } catch (err) {
       console.warn("Logout request failed:", err?.message);
     }
-    navigate("/", { replace: true });
+    window.location.replace("/");
   };
 
   return (
