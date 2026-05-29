@@ -385,6 +385,15 @@ export const handleNotification = async (req, res) => {
     }
 
     try {
+      // Защита от E11000: mts_sub имеет unique-sparse индекс. Если этот sub
+      // уже привязан к другому юзеру (с другим телефоном) — upsert ниже упадёт
+      // и транзакция уйдёт в failed. Сначала снимаем sub со всех «не своих»
+      // аккаунтов, чтобы текущий телефон мог его получить.
+      await User.updateMany(
+        { mts_sub: decoded.sub, phone: { $ne: transaction.phone } },
+        { $unset: { mts_sub: "" } }
+      );
+
       const userResult = await User.findOneAndUpdate(
         { phone: transaction.phone },
         {

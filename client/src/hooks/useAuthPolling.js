@@ -73,16 +73,37 @@ export const useAuthPolling = ({ onSuccess, onError, onSmsRequired }) => {
             clearInterval(intervalRef.current);
             intervalRef.current = null;
 
-            try {
-              await dispatch(finalizeAuth(authReqId));
-              await new Promise((resolve) => setTimeout(resolve, 300));
-              const me = await dispatch(fetchMe());
-
-              if (me.meta.requestStatus === "fulfilled") {
-                onSuccess?.();
-              } else {
-                throw new Error("fetchMe failed after finalize");
+            // finalize → fetchMe с ретраями. dispatch(finalizeAuth) не
+            // бросает при rejected — нужно проверять requestStatus явно,
+            // иначе fetchMe вызовется без cookie и упадёт 401, а юзер
+            // получит «finalize_error» без видимого ответа.
+            const tryLogin = async () => {
+              for (let attempt = 1; attempt <= 3; attempt++) {
+                const fin = await dispatch(finalizeAuth(authReqId));
+                if (fin.meta.requestStatus !== "fulfilled") {
+                  console.warn(
+                    `[polling] finalizeAuth attempt ${attempt} rejected:`,
+                    fin.payload
+                  );
+                  await new Promise((r) => setTimeout(r, 500));
+                  continue;
+                }
+                await new Promise((r) => setTimeout(r, 200));
+                const me = await dispatch(fetchMe());
+                if (me.meta.requestStatus === "fulfilled") return true;
+                console.warn(
+                  `[polling] fetchMe attempt ${attempt} rejected:`,
+                  me.payload
+                );
+                await new Promise((r) => setTimeout(r, 500));
               }
+              return false;
+            };
+
+            try {
+              const ok = await tryLogin();
+              if (ok) onSuccess?.();
+              else throw new Error("finalize/fetchMe failed after retries");
             } catch (finalizeError) {
               console.error("Ошибка финализации:", finalizeError);
               onError?.({ status: "finalize_error", canRetry: false });
