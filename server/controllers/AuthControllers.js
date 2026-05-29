@@ -41,6 +41,15 @@ export const authComplete = async (req, res) => {
 };
 
 export const authMe = async (req, res) => {
+  // Запрещаем кэширование на всех уровнях (браузер, прокси, CDN).
+  // Без этих заголовков nginx/Cloudflare могут хранить ответ
+  // до 5 минут — и после логаута fetchMe получает кешированный 200
+  // с данными юзера, хотя cookie уже нет. Это и было причиной того,
+  // что сессия «отваливалась только через 5 минут».
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private, max-age=0");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+
   try {
     const user = await User.findById(req.userId);
 
