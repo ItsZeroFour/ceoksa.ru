@@ -8,7 +8,7 @@ import { ReactComponent as Rate } from "../../assets/icons/left_panel/rate.svg";
 import { ReactComponent as Profile } from "../../assets/icons/left_panel/profile.svg";
 import { ReactComponent as Angle } from "../../assets/icons/left_panel/angle.svg";
 import { ReactComponent as SignOut } from "../../assets/icons/left_panel/signout.svg";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import logo from "../../assets/logo.svg";
 import logoDark from "../../assets/logo-dark.svg";
@@ -26,7 +26,6 @@ const personalItems = [
 
 const MobileLeftPanel = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isPersonalOpen, setIsPersonalOpen] = useState(true);
   const { openMenu, setOpenMenu } = useMenu();
@@ -38,9 +37,8 @@ const MobileLeftPanel = () => {
 
   const handleLogout = async () => {
     // Cookie app_token — httpOnly: JS не может её удалить, может только
-    // сервер. Поэтому await обязателен, иначе после reload сессия
-    // восстановится через fetchMe.
-    //
+    // сервер. После очистки cookie делаем хард-reload для гарантированного
+    // сброса всего in-memory стейта (Redux/axios/fetchMe-кэш).
     // Мгновенный UX: сначала optimistic redux + закрытие меню, потом сеть.
     dispatch(logout());
     setOpenMenu(false);
@@ -49,7 +47,7 @@ const MobileLeftPanel = () => {
     } catch (err) {
       console.warn("Logout request failed:", err?.message);
     }
-    navigate("/", { replace: true });
+    window.location.replace("/");
   };
 
   return (
