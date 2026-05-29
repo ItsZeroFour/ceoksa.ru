@@ -105,52 +105,60 @@ app.use("/validate", ValidateBICRoutes);
 app.use("/ocr", OcrRoutes);
 app.use("/rim", RimRoutes);
 
-app.post("/logout", async (req, res) => {
-  // Серверный отзыв сессии: даже если cookie уцелеет в браузере (из-за
-  // proxy_cookie_path или другого квирка), authMiddleware/verifyToken
-  // отклонят токен потому что его iat < user.lastLogoutAt.
-  try {
-    const token = req.cookies?.app_token;
-    if (token) {
-      const decoded = jwt.verify(token, process.env.APP_SECRET);
-      if (decoded?.userId) {
-        await User.findByIdAndUpdate(decoded.userId, { lastLogoutAt: new Date() });
-        console.log("[logout] lastLogoutAt обновлён для userId:", decoded.userId);
-      }
-    }
-  } catch (err) {
-    console.warn("[logout] Не удалось обновить lastLogoutAt:", err?.message);
-  }
-
-  // Cookie удаляется только если Set-Cookie совпадает по name+domain+path
-  // (HttpOnly/Secure/SameSite на идентичность НЕ влияют, но если cookie
-  // была Secure — то и delete должен быть Secure, иначе HTTP-only браузер
-  // не примет). Покрываем все реально использованные пути.
+app.post("/logout", (req, res) => {
+  // Cookie clear через Set-Cookie. Браузер удалит cookie только если
+  // совпадают name+domain+path. Покрываем все исторические комбинации.
   const isProd = process.env.NODE_ENV === "production";
   const expired = "Thu, 01 Jan 1970 00:00:00 GMT";
-
-  // Пути из всех версий кода + возможный nginx proxy_cookie_path
   const paths = ["/", "/auth", "/mobile", "/api", "/api/"];
+  // Domain пробуем: без атрибута (host-only — основной случай) и с явным
+  // хостом (на случай если cookie была установлена с Domain=).
+  const host = req.hostname || "";
+  const domains = host ? [null, host, "." + host] : [null];
 
-  const cookies = paths.flatMap((p) => {
-    const base = `app_token=; Path=${p}; Expires=${expired}; Max-Age=0`;
-    if (isProd) {
-      // В prod cookie ставилась Secure+SameSite=Lax — повторяем точно.
-      // Плюс fallback без SameSite (legacy) и SameSite=None (cross-site).
-      return [
-        `${base}; HttpOnly; Secure; SameSite=Lax`,
-        `${base}; HttpOnly; Secure`,
-        `${base}; HttpOnly; Secure; SameSite=None`,
-      ];
+  for (const p of paths) {
+    for (const domain of domains) {
+      const base = `app_token=; Path=${p}; Expires=${expired}; Max-Age=0`;
+      const domainPart = domain ? `; Domain=${domain}` : "";
+
+      const variants = isProd
+        ? [
+            `${base}${domainPart}; HttpOnly; Secure; SameSite=Lax`,
+            `${base}${domainPart}; HttpOnly; Secure`,
+            `${base}${domainPart}; HttpOnly; Secure; SameSite=None`,
+            `${base}${domainPart}; Secure; SameSite=Lax`,
+          ]
+        : [
+            `${base}${domainPart}; HttpOnly; SameSite=Lax`,
+            `${base}${domainPart}; HttpOnly`,
+            `${base}${domainPart}; SameSite=Lax`,
+          ];
+
+      // res.append корректно добавляет отдельные Set-Cookie заголовки,
+      // в отличие от setHeader(arr), который в некоторых прокси-конфигурациях
+      // может склеиваться в один заголовок.
+      for (const v of variants) res.append("Set-Cookie", v);
     }
-    // В dev cookie ставилась без Secure, SameSite=Lax
-    return [`${base}; HttpOnly; SameSite=Lax`, `${base}; HttpOnly`];
-  });
+  }
 
-  res.setHeader("Set-Cookie", cookies);
-
-  console.log("[logout] Set-Cookie заголовков отправлено:", cookies.length);
   res.json({ success: true, message: "Вышли из системы" });
+
+  // Серверный отзыв сессии — fire-and-forget, после ответа клиенту.
+  // Backup для случая если cookie не удалится в браузере: verifyToken
+  // отклонит токен по iat < lastLogoutAt. Если DB медленная — это
+  // не задерживает ответ /logout, юзер не ждёт.
+  const token = req.cookies?.app_token;
+  if (!token) return;
+  try {
+    const decoded = jwt.verify(token, process.env.APP_SECRET);
+    if (decoded?.userId) {
+      User.findByIdAndUpdate(decoded.userId, { lastLogoutAt: new Date() })
+        .then(() => console.log("[logout] lastLogoutAt записан:", decoded.userId))
+        .catch((err) => console.warn("[logout] DB update failed:", err?.message));
+    }
+  } catch (err) {
+    // токен невалиден — отзывать нечего
+  }
 });
 
 /* START FUNCTION */
