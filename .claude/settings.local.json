@@ -24,7 +24,14 @@
       "Bash(node --check controllers/MobileControllers.js)",
       "Bash(node --check models/AuthTransaction.js)",
       "Bash(node --check server.js)",
-      "Bash(node --check src/hooks/useAuthPolling.js)"
+      "Bash(node --check src/hooks/useAuthPolling.js)",
+      "Bash(python -c \"from docx import Document; d=Document\\('doc.docx'\\); print\\('\\\\n'.join\\(p.text for p in d.paragraphs\\)\\)\")",
+      "Bash(where python *)",
+      "Bash(where python3 *)",
+      "Bash(where pwsh *)",
+      "Bash(C:/Users/lanin/AppData/Local/Programs/Python/Python313/python.exe -c \"import zipfile, re; z=zipfile.ZipFile\\('D:/PACK/Programming/React/ceoksa.ru/doc.docx'\\); x=z.read\\('word/document.xml'\\).decode\\('utf-8'\\); t=re.sub\\(r'<w:p[^>]*>', '\\\\n', x\\); t=re.sub\\(r'<[^>]+>', '', t\\); print\\(t\\)\")",
+      "Bash(C:/Users/lanin/AppData/Local/Programs/Python/Python313/python.exe *)",
+      "Bash(node --check controllers/AuthControllers.js)"
     ]
   }
 }

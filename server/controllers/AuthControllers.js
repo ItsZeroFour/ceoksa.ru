@@ -13,16 +13,23 @@ export const authComplete = async (req, res) => {
 
     const user = await User.findOne({ phone: transaction.phone });
 
+    if (!user) {
+      return res.status(404).json({ error: "Пользователь не найден" });
+    }
+
     const appToken = jwt.sign(
       { userId: user._id, phone: user.phone },
       process.env.APP_SECRET,
       { expiresIn: "7d" }
     );
 
+    // path: "/" обязателен — иначе кука уйдёт с дефолтным path "/auth"
+    // и /logout не сможет её удалить (опции должны совпадать).
     res.cookie("app_token", appToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "Lax",
+      path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 

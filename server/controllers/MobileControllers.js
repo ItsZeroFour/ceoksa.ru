@@ -248,7 +248,23 @@ export const verifySmsCode = async (req, res) => {
       const fresh = await AuthTransaction.findOne({ auth_req_id });
 
       if (fresh?.status === "success") {
-        const user = await User.findOne({ mts_sub: fresh.sub });
+        // Берём пользователя СТРОГО по user_id, который handleNotification
+        // зафиксировал на транзакции. Это исключает любую возможность
+        // подписать JWT для чужого аккаунта. Phone-fallback оставлен для
+        // транзакций, созданных до миграции на user_id.
+        const user = fresh.user_id
+          ? await User.findById(fresh.user_id)
+          : await User.findOne({ phone: fresh.phone });
+        if (user && user.phone !== fresh.phone) {
+          console.error(
+            "[verifySmsCode] Несовпадение телефона у user и transaction:",
+            { user_phone: user.phone, txn_phone: fresh.phone }
+          );
+          return res.status(409).json({
+            error: "phone_mismatch",
+            message: "Несоответствие профиля и транзакции",
+          });
+        }
         if (user) {
           const appToken = jwt.sign(
             { userId: user._id, phone: user.phone },
@@ -435,21 +451,69 @@ export const handleNotification = async (req, res) => {
       return res.status(204).end();
     }
 
+    let resolvedUser = null;
     try {
-      const userResult = await User.findOneAndUpdate(
-        { phone: transaction.phone },
-        {
-          $set: { mts_sub: decoded.sub, lastAuthAt: new Date() },
-          $setOnInsert: {
-            phone: transaction.phone,
-            total_loans: 0,
-            is_loan_arrears: false,
-            total_debt: 0,
-          },
-        },
-        { upsert: true, new: true }
-      );
-      console.log("[handleNotification] User upsert OK. userId:", userResult?._id);
+      // Резолв аккаунта по спецификации МТС Mobile ID:
+      //   1. По mts_sub — это канонический идентификатор абонента (см. doc.docx, шаг 20).
+      //      Если юзер заходит повторно (даже сменив телефон у оператора) — найдём по sub.
+      //   2. По phone — fallback для legacy-юзеров, у которых sub ещё не привязан.
+      //   3. Иначе — создаём нового пользователя (регистрация при первом входе).
+      //
+      // Главный инвариант: телефон у resolvedUser ВСЕГДА равен transaction.phone
+      // (тому, что пользователь ввёл в форме и который МТС подтвердил OTP/push).
+      // Это гарантирует, что мы никогда не пустим юзера в чужой аккаунт.
+      const userBySub = await User.findOne({ mts_sub: decoded.sub });
+
+      if (userBySub) {
+        if (userBySub.phone === transaction.phone) {
+          userBySub.lastAuthAt = new Date();
+          await userBySub.save();
+          resolvedUser = userBySub;
+          console.log("[handleNotification] User найден по mts_sub:", userBySub._id);
+        } else {
+          // Этот sub раньше был привязан к другому телефону. По спецификации
+          // sub стабилен для абонента, но пользователь сейчас аутентифицировал
+          // ИМЕННО transaction.phone (МТС шлёт OTP/push только на введённый номер).
+          // Безопасно: снимаем sub со старого аккаунта, чтобы переиспользовать
+          // его для аккаунта с актуальным номером (или создадим новый ниже).
+          console.warn(
+            "[handleNotification] mts_sub был на другом телефоне, переносим:",
+            { sub: decoded.sub, old_phone: userBySub.phone, new_phone: transaction.phone }
+          );
+          // $unset обязателен — иначе unique-sparse индекс заблокирует
+          // повторное использование sub'а ниже.
+          await User.updateOne({ _id: userBySub._id }, { $unset: { mts_sub: "" } });
+        }
+      }
+
+      if (!resolvedUser) {
+        const userByPhone = await User.findOne({ phone: transaction.phone });
+        if (userByPhone) {
+          userByPhone.mts_sub = decoded.sub;
+          userByPhone.lastAuthAt = new Date();
+          await userByPhone.save();
+          resolvedUser = userByPhone;
+          console.log(
+            "[handleNotification] User найден по phone, привязали mts_sub:",
+            userByPhone._id
+          );
+        }
+      }
+
+      if (!resolvedUser) {
+        resolvedUser = await User.create({
+          phone: transaction.phone,
+          mts_sub: decoded.sub,
+          lastAuthAt: new Date(),
+          total_loans: 0,
+          is_loan_arrears: false,
+          total_debt: 0,
+        });
+        console.log(
+          "[handleNotification] Новый пользователь зарегистрирован:",
+          resolvedUser._id
+        );
+      }
     } catch (userError) {
       console.error(
         "[handleNotification] Ошибка upsert User:",
@@ -473,7 +537,13 @@ export const handleNotification = async (req, res) => {
 
     const updateResult = await AuthTransaction.findOneAndUpdate(
       { auth_req_id },
-      { status: "success", access_token, id_token, sub: decoded.sub },
+      {
+        status: "success",
+        access_token,
+        id_token,
+        sub: decoded.sub,
+        user_id: resolvedUser._id,
+      },
       { new: true }
     );
     emitStatusChange(auth_req_id, "success");
@@ -595,7 +665,9 @@ export const checkAuthStatus = async (req, res) => {
     };
 
     if (transaction.status === "success") {
-      const user = await User.findOne({ mts_sub: transaction.sub });
+      const user = transaction.user_id
+        ? await User.findById(transaction.user_id)
+        : await User.findOne({ phone: transaction.phone });
       if (user) {
         response.user = {
           id: user._id,
@@ -649,16 +721,34 @@ export const finalizeAuth = async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ mts_sub: transaction.sub });
+    const user = transaction.user_id
+      ? await User.findById(transaction.user_id)
+      : await User.findOne({ phone: transaction.phone });
 
     if (!user) {
       console.warn(
-        "[finalizeAuth] Пользователь не найден. sub:",
-        transaction.sub
+        "[finalizeAuth] Пользователь не найден. user_id:",
+        transaction.user_id,
+        "phone:",
+        transaction.phone
       );
       return res.status(404).json({
         error: "not_found",
         message: "Пользователь не найден",
+      });
+    }
+
+    // Защита от race-condition / манипуляций транзакцией:
+    // user, на которого подпишем JWT, обязан иметь тот же телефон,
+    // что указан в транзакции. Иначе — отказ.
+    if (user.phone !== transaction.phone) {
+      console.error(
+        "[finalizeAuth] Несовпадение телефона у user и transaction:",
+        { user_phone: user.phone, txn_phone: transaction.phone }
+      );
+      return res.status(409).json({
+        error: "phone_mismatch",
+        message: "Несоответствие профиля и транзакции",
       });
     }
 
