@@ -8,7 +8,7 @@ import { ReactComponent as Rate } from "../../assets/icons/left_panel/rate.svg";
 import { ReactComponent as Profile } from "../../assets/icons/left_panel/profile.svg";
 import { ReactComponent as Angle } from "../../assets/icons/left_panel/angle.svg";
 import { ReactComponent as SignOut } from "../../assets/icons/left_panel/signout.svg";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import axios from "../../utils/axios";
 import { logout } from "../../redux/slices/auth/authSlice";
@@ -22,20 +22,22 @@ const personalItems = [
 
 const LeftPanel = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isPersonalOpen, setIsPersonalOpen] = useState(true);
 
   const togglePersonal = () => setIsPersonalOpen(!isPersonalOpen);
   const isActive = (path) => location.pathname === `/account${path}`;
 
-  const handleLogout = async () => {
-    try {
-      await axios.post("/logout");
-    } catch (err) {
-      console.warn("Logout request failed (продолжаем):", err?.message);
-    }
+  const handleLogout = () => {
+    // Оптимистичный выход: сразу чистим redux и уходим на главную,
+    // а серверный POST /logout (он только сбрасывает cookie) шлём в фоне.
+    // Раньше await + window.location.assign давали лаг ~сетевая задержка + reload.
     dispatch(logout());
-    window.location.assign("/");
+    navigate("/", { replace: true });
+    axios.post("/logout").catch((err) => {
+      console.warn("Logout request failed:", err?.message);
+    });
   };
 
   return (
