@@ -31,7 +31,9 @@
       "Bash(where pwsh *)",
       "Bash(C:/Users/lanin/AppData/Local/Programs/Python/Python313/python.exe -c \"import zipfile, re; z=zipfile.ZipFile\\('D:/PACK/Programming/React/ceoksa.ru/doc.docx'\\); x=z.read\\('word/document.xml'\\).decode\\('utf-8'\\); t=re.sub\\(r'<w:p[^>]*>', '\\\\n', x\\); t=re.sub\\(r'<[^>]+>', '', t\\); print\\(t\\)\")",
       "Bash(C:/Users/lanin/AppData/Local/Programs/Python/Python313/python.exe *)",
-      "Bash(node --check controllers/AuthControllers.js)"
+      "Bash(node --check controllers/AuthControllers.js)",
+      "Bash(npx --no-install babel --presets @babel/preset-react,@babel/preset-env src/components/auth/Auth.jsx -o /dev/null)",
+      "Bash(node -e \"const acorn=require\\('acorn-jsx'\\); const fs=require\\('fs'\\); const p=require\\('acorn'\\).Parser.extend\\(acorn\\(\\)\\); try { p.parse\\(fs.readFileSync\\('src/components/auth/Auth.jsx','utf8'\\), {sourceType:'module', ecmaVersion:'latest'}\\); console.log\\('syntax OK'\\); } catch\\(e\\) { console.error\\('PARSE FAIL', e.message\\); process.exit\\(1\\); }\")"
     ]
   }
 }

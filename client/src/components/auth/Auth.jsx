@@ -22,6 +22,7 @@ const Auth = ({ setOpenAuthMenu }) => {
   const { theme } = useTheme();
   const [currentStep, setCurrentStep] = useState("phone");
   const [isAuthLoading, setIsAuthLoading] = useState(false);
+  const [pushError, setPushError] = useState(null);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -52,6 +53,26 @@ const Auth = ({ setOpenAuthMenu }) => {
     onSmsRequired: () => {},
     onError: ({ status, canRetry }) => {
       setIsAuthLoading(false);
+
+      // На push_wait у пользователя нет поля кода, и codeInput.setError()
+      // не даёт никакого визуального эффекта. Поэтому при любой ошибке
+      // на этом шаге выходим из режима ожидания и показываем причину,
+      // чтобы пользователь не залипал на "Подтвердите вход" навечно.
+      if (currentStep === "push_wait") {
+        authPolling.stopPolling();
+        if (canRetry || status === "expired" || status === "not_found") {
+          codeInput.reset();
+          setCurrentStep("phone");
+          phoneInput.setRetryHint(true);
+        } else {
+          setPushError(
+            status === "finalize_error"
+              ? "Не удалось завершить вход. Попробуйте ещё раз."
+              : "PUSH не подтверждён. Попробуйте ещё раз."
+          );
+        }
+        return;
+      }
 
       if (canRetry || status === "expired" || status === "not_found") {
         authPolling.stopPolling();
@@ -90,6 +111,7 @@ const Auth = ({ setOpenAuthMenu }) => {
 
   const handleSendSms = async () => {
     const clearPhone = phoneInput.getCleanPhone();
+    setPushError(null);
     const result = await dispatch(initiateAuth(clearPhone));
 
     if (result.meta.requestStatus === "fulfilled") {
@@ -171,9 +193,18 @@ const Auth = ({ setOpenAuthMenu }) => {
     codeInput.reset();
     phoneInput.reset();
     setCurrentStep("phone");
+    setPushError(null);
     resendTimer.reset();
     authPolling.stopPolling();
     isAuthSucceededRef.current = false;
+  };
+
+  // Ручной переход с push_wait на ввод кода: если PUSH не пришёл,
+  // пользователь может перейти к экрану кода и ждать SMS-fallback от МТС.
+  // Polling продолжаем — статус sms_sent / success обработаются как обычно.
+  const handleSwitchToCode = () => {
+    setPushError(null);
+    setCurrentStep("code");
   };
 
   return (
@@ -212,6 +243,26 @@ const Auth = ({ setOpenAuthMenu }) => {
                   <br />
                   Нажмите «Принять» в уведомлении на телефоне.
                 </p>
+                {pushError && (
+                  <p className={style.auth__push_error}>{pushError}</p>
+                )}
+              </div>
+
+              <div className={style.auth__push_actions}>
+                <button
+                  type="button"
+                  className={style.auth__push_link}
+                  onClick={handleSwitchToCode}
+                >
+                  Ввести код из SMS
+                </button>
+                <button
+                  type="button"
+                  className={style.auth__push_link}
+                  onClick={handleBackToPhone}
+                >
+                  Изменить номер
+                </button>
               </div>
             </div>
           )}
