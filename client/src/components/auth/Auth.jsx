@@ -27,6 +27,10 @@ const Auth = ({ setOpenAuthMenu }) => {
 
   const isSubmittingRef = useRef(false);
   const isAuthSucceededRef = useRef(false);
+  // Сохраняем «чистый» номер в момент первой отправки. На code-step
+  // input телефона размонтирован → IMask уничтожен → phoneInput.getCleanPhone()
+  // вернёт просто "7", и /mobile/auth/init упадёт 400.
+  const submittedPhoneRef = useRef("");
 
   const { data: filesData, status: filesStatus } = useSelector(
     (state) => state.files
@@ -108,6 +112,7 @@ const Auth = ({ setOpenAuthMenu }) => {
 
   const handleSendSms = async () => {
     const clearPhone = phoneInput.getCleanPhone();
+    submittedPhoneRef.current = clearPhone;
     const result = await dispatch(initiateAuth(clearPhone));
 
     if (result.meta.requestStatus === "fulfilled") {
@@ -128,12 +133,22 @@ const Auth = ({ setOpenAuthMenu }) => {
   const handleResendCode = async () => {
     if (resendTimer.isDisabled) return;
 
-    const clearPhone = phoneInput.getCleanPhone();
+    // submittedPhoneRef хранит номер с момента первой отправки;
+    // на code-step phoneInput.getCleanPhone() уже не работает.
+    const clearPhone = submittedPhoneRef.current || phoneInput.getCleanPhone();
+    if (!/^7\d{10}$/.test(clearPhone)) {
+      console.warn("[handleResendCode] Нет валидного номера для повторной отправки");
+      return;
+    }
     const result = await dispatch(initiateAuth(clearPhone));
 
     if (result.meta.requestStatus === "fulfilled") {
+      const { auth_req_id } = result.payload;
       codeInput.reset();
       resendTimer.start();
+      // У старой транзакции auth_req_id протух — рестартим поллинг с новым
+      authPolling.stopPolling();
+      if (auth_req_id) authPolling.startPolling(auth_req_id);
     }
   };
 
@@ -168,6 +183,7 @@ const Auth = ({ setOpenAuthMenu }) => {
     resendTimer.reset();
     authPolling.stopPolling();
     isAuthSucceededRef.current = false;
+    submittedPhoneRef.current = "";
   };
 
   return (
