@@ -44,11 +44,15 @@ export const useAuthPolling = ({ onSuccess, onError, onSmsRequired }) => {
       const myPollId = pollIdRef.current;
 
       const loop = async () => {
+        console.log(`[poll] start ${authReqId.slice(0, 8)} (id=${myPollId})`);
+        let iter = 0;
         while (
           !stoppedRef.current &&
           !isHandledRef.current &&
           pollIdRef.current === myPollId
         ) {
+          iter += 1;
+          console.log(`[poll] iter#${iter} (id=${myPollId})`);
           if (Date.now() > deadlineRef.current) {
             isHandledRef.current = true;
             onError?.({ status: "expired", canRetry: true });
@@ -95,6 +99,7 @@ export const useAuthPolling = ({ onSuccess, onError, onSmsRequired }) => {
 
           notFoundCountRef.current = 0;
           const { status, can_retry } = res.payload || {};
+          console.log(`[poll] ${authReqId.slice(0, 8)} → ${status}`);
 
           // push_failed: PUSH не доставлен/отклонён — переключаем экран на SMS
           // (idle-state «ожидаем SMS»). Polling продолжается до sms_sent / failed.
@@ -141,6 +146,9 @@ export const useAuthPolling = ({ onSuccess, onError, onSmsRequired }) => {
           // pending / verifying — ждём дальше.
           await gapTo(startedAt);
         }
+        console.log(
+          `[poll] loop EXIT (id=${myPollId}, stopped=${stoppedRef.current}, handled=${isHandledRef.current}, currentId=${pollIdRef.current})`
+        );
       };
 
       loop().catch((e) => {

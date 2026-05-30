@@ -92,19 +92,26 @@ const Auth = ({ setOpenAuthMenu }) => {
     });
   }, []);
 
-  // Резервный канал перехода: если flow обновился в redux раньше,
-  // чем onSmsRequired сработал (или из-за re-mount), синхронизируем экран.
-  // sms_waiting: PUSH сорвался, ждём smsotp; sms: smsotp пришло.
+  // КРИТИЧНАЯ СТРАХОВКА: переключение экрана по фактическому статусу
+  // транзакции из redux. Срабатывает ВСЕГДА, когда poll вернул sms_sent
+  // или push_failed — независимо от того, успел ли onSmsRequired-колбэк
+  // (если поллинг по какой-то причине прервался, redux всё равно
+  // обновился из последнего successful response).
   useEffect(() => {
-    if (currentStep === "push_wait" && (flow === "sms" || flow === "sms_waiting")) {
-      setSmsWaiting(flow === "sms_waiting");
-      setCurrentStep("code");
+    if (status === "sms_sent") {
+      if (currentStep !== "code") {
+        console.log("[Auth] status=sms_sent → переключаем на code");
+        setCurrentStep("code");
+      }
+      if (smsWaiting) setSmsWaiting(false);
+    } else if (status === "push_failed") {
+      if (currentStep !== "code") {
+        console.log("[Auth] status=push_failed → переключаем на code (waiting)");
+        setCurrentStep("code");
+      }
+      if (!smsWaiting) setSmsWaiting(true);
     }
-    if (currentStep === "code" && flow === "sms" && smsWaiting) {
-      // smsotp пришло, пока мы уже на code-экране — активируем ввод.
-      setSmsWaiting(false);
-    }
-  }, [flow, currentStep, smsWaiting]);
+  }, [status, currentStep, smsWaiting]);
 
   useEffect(() => {
     isSubmittingRef.current = false;
