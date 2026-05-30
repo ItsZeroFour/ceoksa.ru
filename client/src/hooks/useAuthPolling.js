@@ -9,29 +9,30 @@ import { fetchMe } from "../redux/slices/auth/authSlice";
 const MAX_NOT_FOUND_IN_A_ROW = 5;
 // Жёсткий лимит времени поллинга (с запасом к expires_in=140с от МТС).
 const POLL_DEADLINE_MS = 150_000;
-// Минимальная задержка между запросами (для не-long-poll ответов).
-const POLL_MIN_GAP_MS = 800;
-// Задержка после rejected, чтобы не задудосить сервер.
+// Минимальная задержка между запросами (если ответ пришёл быстрее long-poll).
+const POLL_MIN_GAP_MS = 500;
+// Задержка после ошибки/rejected.
 const POLL_BACKOFF_MS = 1500;
 
+// setTimeout-chain поллинг: каждый тик — независимая итерация event loop.
+// Это устойчивее, чем длинный while-loop внутри одной async-функции
+// (в т.ч. к подвисанию dispatch/axios, к re-render'ам и stale-closure
+// проблемам). Внутреннее состояние держится в refs, поэтому переходы между
+// itererациями переживают любой React-цикл.
 export const useAuthPolling = ({ onSuccess, onError, onSmsRequired }) => {
   const dispatch = useDispatch();
   const stoppedRef = useRef(false);
   const isHandledRef = useRef(false);
   const notFoundCountRef = useRef(0);
   const deadlineRef = useRef(0);
-  // smsScreenShownRef — чтобы не дёргать onSmsRequired повторно
-  // при каждом тике polling после первого срабатывания.
+  // smsScreenShownRef — чтобы дёргать onSmsRequired({waitingForSms:true})
+  // только один раз при первом push_failed.
   const smsScreenShownRef = useRef(false);
-  // Текущий «запущенный поллинг» помечается id'шником — это позволяет
-  // безопасно прервать старый цикл при перезапуске polling
-  // (например, после handleResendCode → новый auth_req_id).
+  // Идентификатор активного цикла. При новом startPolling/stopPolling
+  // инкрементится, чтобы старые отложенные tick-и могли определить,
+  // что они устарели и просто завершиться.
   const pollIdRef = useRef(0);
-
-  const finish = useCallback(() => {
-    stoppedRef.current = true;
-    isHandledRef.current = true;
-  }, []);
+  const timeoutRef = useRef(null);
 
   const startPolling = useCallback(
     (authReqId) => {
@@ -42,139 +43,145 @@ export const useAuthPolling = ({ onSuccess, onError, onSmsRequired }) => {
       deadlineRef.current = Date.now() + POLL_DEADLINE_MS;
       pollIdRef.current += 1;
       const myPollId = pollIdRef.current;
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
 
-      const loop = async () => {
-        console.log(`[poll] start ${authReqId.slice(0, 8)} (id=${myPollId})`);
-        let iter = 0;
-        while (
-          !stoppedRef.current &&
-          !isHandledRef.current &&
-          pollIdRef.current === myPollId
+      console.log(`[poll] start ${authReqId.slice(0, 8)} (id=${myPollId})`);
+
+      const scheduleNext = (delayMs) => {
+        if (stoppedRef.current || isHandledRef.current) return;
+        if (pollIdRef.current !== myPollId) return;
+        timeoutRef.current = setTimeout(tick, Math.max(delayMs, 0));
+      };
+
+      const tick = async () => {
+        if (
+          stoppedRef.current ||
+          isHandledRef.current ||
+          pollIdRef.current !== myPollId
         ) {
-          iter += 1;
-          console.log(`[poll] iter#${iter} (id=${myPollId})`);
-          if (Date.now() > deadlineRef.current) {
-            isHandledRef.current = true;
-            onError?.({ status: "expired", canRetry: true });
-            return;
-          }
+          console.log(
+            `[poll] tick SKIP (stopped=${stoppedRef.current}, handled=${isHandledRef.current}, idMatch=${pollIdRef.current === myPollId})`
+          );
+          return;
+        }
 
-          const startedAt = Date.now();
-          let res;
-          try {
-            res = await dispatch(checkStatus(authReqId));
-          } catch (e) {
-            console.warn("Polling exception (продолжаем):", e?.message);
-            await sleep(POLL_BACKOFF_MS);
-            continue;
-          }
+        if (Date.now() > deadlineRef.current) {
+          isHandledRef.current = true;
+          console.warn("[poll] deadline reached, error=expired");
+          onError?.({ status: "expired", canRetry: true });
+          return;
+        }
 
+        const startedAt = Date.now();
+        let res;
+        try {
+          res = await dispatch(checkStatus(authReqId));
+        } catch (e) {
+          console.warn("[poll] dispatch threw:", e?.message);
+          scheduleNext(POLL_BACKOFF_MS);
+          return;
+        }
+
+        if (
+          stoppedRef.current ||
+          isHandledRef.current ||
+          pollIdRef.current !== myPollId
+        ) {
+          console.log("[poll] tick: stopped after dispatch — exit");
+          return;
+        }
+
+        if (res.meta.requestStatus === "rejected") {
+          const errorPayload = res.payload || {};
+          console.warn(
+            `[poll] rejected (${errorPayload.error || "network"})`
+          );
+          if (errorPayload.error === "not_found") {
+            notFoundCountRef.current += 1;
+            if (notFoundCountRef.current >= MAX_NOT_FOUND_IN_A_ROW) {
+              isHandledRef.current = true;
+              onError?.({ status: "not_found", canRetry: true });
+              return;
+            }
+          }
+          scheduleNext(POLL_BACKOFF_MS);
+          return;
+        }
+
+        notFoundCountRef.current = 0;
+        const { status, can_retry } = res.payload || {};
+        const elapsed = Date.now() - startedAt;
+        console.log(
+          `[poll] ${authReqId.slice(0, 8)} → ${status} (${elapsed}ms)`
+        );
+
+        if (status === "push_failed") {
+          if (!smsScreenShownRef.current) {
+            smsScreenShownRef.current = true;
+            onSmsRequired?.({ waitingForSms: true });
+          }
+          scheduleNext(POLL_MIN_GAP_MS);
+          return;
+        }
+
+        if (status === "sms_sent") {
+          smsScreenShownRef.current = true;
+          onSmsRequired?.({ waitingForSms: false });
+          scheduleNext(POLL_MIN_GAP_MS);
+          return;
+        }
+
+        if (status === "success") {
+          isHandledRef.current = true;
+          const ok = await tryLogin(dispatch, authReqId);
           if (
             stoppedRef.current ||
-            isHandledRef.current ||
             pollIdRef.current !== myPollId
           ) {
             return;
           }
-
-          if (res.meta.requestStatus === "rejected") {
-            const errorPayload = res.payload || {};
-            if (errorPayload.error === "not_found") {
-              notFoundCountRef.current += 1;
-              console.warn(
-                `checkStatus 404 (not_found) ${notFoundCountRef.current}/${MAX_NOT_FOUND_IN_A_ROW}`
-              );
-              if (notFoundCountRef.current >= MAX_NOT_FOUND_IN_A_ROW) {
-                isHandledRef.current = true;
-                onError?.({ status: "not_found", canRetry: true });
-                return;
-              }
-              await sleep(POLL_BACKOFF_MS);
-              continue;
-            }
-            console.warn("checkStatus rejected, продолжаем polling...");
-            await sleep(POLL_BACKOFF_MS);
-            continue;
-          }
-
-          notFoundCountRef.current = 0;
-          const { status, can_retry } = res.payload || {};
-          console.log(`[poll] ${authReqId.slice(0, 8)} → ${status}`);
-
-          // push_failed: PUSH не доставлен/отклонён — переключаем экран на SMS
-          // (idle-state «ожидаем SMS»). Polling продолжается до sms_sent / failed.
-          if (status === "push_failed") {
-            if (!smsScreenShownRef.current) {
-              smsScreenShownRef.current = true;
-              onSmsRequired?.({ waitingForSms: true });
-            }
-            await gapTo(startedAt);
-            continue;
-          }
-
-          if (status === "sms_sent") {
-            smsScreenShownRef.current = true;
-            onSmsRequired?.({ waitingForSms: false });
-            await gapTo(startedAt);
-            continue;
-          }
-
-          if (status === "success") {
-            isHandledRef.current = true;
-            // finalize → fetchMe с ретраями. dispatch(finalizeAuth) не
-            // бросает при rejected — нужно проверять requestStatus явно,
-            // иначе fetchMe вызовется без cookie и упадёт 401, а юзер
-            // получит «finalize_error» без видимого ответа.
-            const ok = await tryLogin(dispatch, authReqId);
-            if (ok) onSuccess?.();
-            else onError?.({ status: "finalize_error", canRetry: false });
-            return;
-          }
-
-          if (status === "failed") {
-            isHandledRef.current = true;
-            onError?.({ status: "failed", canRetry: can_retry || false });
-            return;
-          }
-
-          if (status === "expired") {
-            isHandledRef.current = true;
-            onError?.({ status: "expired", canRetry: true });
-            return;
-          }
-
-          // pending / verifying — ждём дальше.
-          await gapTo(startedAt);
+          if (ok) onSuccess?.();
+          else onError?.({ status: "finalize_error", canRetry: false });
+          return;
         }
-        console.log(
-          `[poll] loop EXIT (id=${myPollId}, stopped=${stoppedRef.current}, handled=${isHandledRef.current}, currentId=${pollIdRef.current})`
-        );
+
+        if (status === "failed") {
+          isHandledRef.current = true;
+          onError?.({ status: "failed", canRetry: can_retry || false });
+          return;
+        }
+
+        if (status === "expired") {
+          isHandledRef.current = true;
+          onError?.({ status: "expired", canRetry: true });
+          return;
+        }
+
+        // pending / verifying — следующая итерация после короткого зазора.
+        // Если long-poll вернулся почти мгновенно (например, без wait
+        // или 304-кешем) — дать паузу POLL_MIN_GAP_MS, иначе сразу.
+        scheduleNext(Math.max(POLL_MIN_GAP_MS - elapsed, 0));
       };
 
-      loop().catch((e) => {
-        console.error("[useAuthPolling] loop crashed:", e);
-      });
+      // Первый тик — без задержки.
+      timeoutRef.current = setTimeout(tick, 0);
     },
     [dispatch, onSuccess, onError, onSmsRequired]
   );
 
   const stopPolling = useCallback(() => {
     stoppedRef.current = true;
-    pollIdRef.current += 1; // инвалидируем текущий цикл
+    pollIdRef.current += 1;
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
   }, []);
 
   return { startPolling, stopPolling };
-};
-
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
-// Если ответ пришёл слишком быстро (без long-poll, скажем 50мс),
-// не хлестать сервер — выдержать минимальный интервал между запросами.
-const gapTo = async (startedAt) => {
-  const elapsed = Date.now() - startedAt;
-  if (elapsed < POLL_MIN_GAP_MS) {
-    await sleep(POLL_MIN_GAP_MS - elapsed);
-  }
 };
 
 const tryLogin = async (dispatch, authReqId) => {
@@ -185,14 +192,14 @@ const tryLogin = async (dispatch, authReqId) => {
         `[polling] finalizeAuth attempt ${attempt} rejected:`,
         fin.payload
       );
-      await sleep(500);
+      await new Promise((r) => setTimeout(r, 500));
       continue;
     }
-    await sleep(200);
+    await new Promise((r) => setTimeout(r, 200));
     const me = await dispatch(fetchMe());
     if (me.meta.requestStatus === "fulfilled") return true;
     console.warn(`[polling] fetchMe attempt ${attempt} rejected:`, me.payload);
-    await sleep(500);
+    await new Promise((r) => setTimeout(r, 500));
   }
   return false;
 };

@@ -604,6 +604,17 @@ const LONG_POLL_MS = 10000;
 const POLL_TICK_MS = 400;
 
 export const checkAuthStatus = async (req, res) => {
+  // КРИТИЧНО: запрещаем браузерам/прокси кешировать ответы.
+  // Без этого один и тот же URL /mobile/auth/status/<id>?wait=1 может
+  // отдавать закешированный {status:"pending"} и polling «замораживается»:
+  // клиент видит свежий ответ, но он не дёргает наш сервер.
+  res.setHeader(
+    "Cache-Control",
+    "no-store, no-cache, must-revalidate, private, max-age=0"
+  );
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+
   try {
     const { auth_req_id } = req.params;
     const wait = req.query.wait === "1" || req.query.wait === "true";

@@ -35,12 +35,19 @@ export const checkStatus = createAsyncThunk(
   "mobileAuth/status",
   async (auth_req_id, { rejectWithValue }) => {
     try {
+      // _t=<timestamp> — cache-bust: каждый запрос имеет уникальный URL,
+      // браузер не отдаст закешированный ответ. Долгий polling одного и
+      // того же URL без этого превращался в no-op для МТС-абонента.
       const response = await axios.get(
-        `${API}/mobile/auth/status/${auth_req_id}?wait=1`,
+        `${API}/mobile/auth/status/${auth_req_id}?wait=1&_t=${Date.now()}`,
         {
           withCredentials: true,
-          // Сервер long-poll'ит до 20 сек по wait=1 — держим запас.
-          timeout: 30000,
+          // Сервер long-poll'ит до 10 сек по wait=1 — держим запас.
+          timeout: 20000,
+          headers: {
+            "Cache-Control": "no-cache",
+            Pragma: "no-cache",
+          },
         }
       );
       return response.data;
