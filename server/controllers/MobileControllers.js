@@ -24,6 +24,39 @@ const validateBearerToken = (req, expectedToken) => {
   return token === expectedToken;
 };
 
+// Grace-период между PUSH-ошибкой и переводом в failed:
+// МТС может отправить sms_otp_notification сразу после ошибки PUSH
+// (если оператор поддерживает SMS-OTP fallback). За это время статус
+// push_failed может смениться на sms_sent через handleSmsOtp.
+const PUSH_TO_SMS_GRACE_MS = 15000;
+
+const schedulePushFailedTimeout = (auth_req_id) => {
+  setTimeout(async () => {
+    try {
+      const txn = await AuthTransaction.findOne({ auth_req_id });
+      if (!txn) return;
+      if (txn.status !== "push_failed") return;
+      await AuthTransaction.findOneAndUpdate(
+        { auth_req_id, status: "push_failed" },
+        {
+          status: "failed",
+          error: txn.error || "push_no_fallback",
+          error_description:
+            txn.error_description ||
+            "PUSH не доставлен и SMS-fallback недоступен",
+          can_retry: true,
+        }
+      );
+      console.warn(
+        "[push-timeout] PUSH без SMS-fallback за grace-период — failed:",
+        auth_req_id
+      );
+    } catch (e) {
+      console.warn("[push-timeout] Ошибка:", e.message);
+    }
+  }, PUSH_TO_SMS_GRACE_MS);
+};
+
 export const initiateAuth = async (req, res) => {
   try {
     const { phone } = req.body;
@@ -134,12 +167,26 @@ export const handleSmsOtp = async (req, res) => {
       });
     }
 
+    // SMS пришло — гасим возможные push-ошибки (status=push_failed → sms_sent).
+    // Если транзакция уже success/failed (терминал) — не перетираем.
+    if (transaction.status === "success" || transaction.status === "failed") {
+      console.warn(
+        `[handleSmsOtp] Игнорируем — транзакция уже терминальная: ${transaction.status}`,
+        { auth_req_id }
+      );
+      return res.status(200).end();
+    }
+
     await AuthTransaction.findOneAndUpdate(
       { auth_req_id },
       {
         status: "sms_sent",
         smsotp_endpoint,
         send_payload: send,
+        // Сбрасываем поля push-ошибки — теперь идём по SMS-флоу.
+        error: null,
+        error_description: null,
+        can_retry: false,
       }
     );
     res.status(200).end();
@@ -366,9 +413,14 @@ export const handleNotification = async (req, res) => {
       // кода (status=verifying). В этих случаях ошибка push устарела —
       // не перезаписываем активный SMS-флоу в failed, иначе клиент,
       // который уже ввёл/вводит код, получит «Не удалось войти».
+      // Также не трогаем терминальные success/failed/expired, чтобы поздняя
+      // нотификация не воскресила или не оттранзитила терминальный статус.
       if (
         transaction.status === "sms_sent" ||
-        transaction.status === "verifying"
+        transaction.status === "verifying" ||
+        transaction.status === "success" ||
+        transaction.status === "failed" ||
+        transaction.status === "expired"
       ) {
         console.warn(
           `[handleNotification] Игнорируем push-ошибку: статус уже ${transaction.status}`,
@@ -377,29 +429,54 @@ export const handleNotification = async (req, res) => {
         return res.status(204).end();
       }
 
-      // 'client timeout' тоже даём ретраить: устройство просто не ответило,
-      // юзер сам выбрал не подтверждать или не получил push — это не фатально.
-      const canRetry =
-        error === "access_denied" &&
-        typeof error_description === "string" &&
-        (error_description.includes("client cancelled") ||
-          error_description.includes("user_denied") ||
-          error_description.includes("cancelled") ||
-          error_description.includes("client timeout") ||
-          error_description.includes("timeout"));
+      const desc = typeof error_description === "string" ? error_description : "";
 
-      console.warn(`[handleNotification] Аутентификация не удалась:`, {
-        auth_req_id,
-        error,
-        error_description,
-        canRetry,
-        phone: transaction.phone,
-      });
+      // Терминальные ошибки, при которых ни PUSH, ни SMS работать не будут:
+      // оператор неизвестен, не подключен к Мобильному ID, активная транзакция
+      // уже идёт. В этих кейсах сразу failed без grace.
+      const isTerminal =
+        desc.includes("unknown mobile network operator") ||
+        desc.includes("not registered for mobile network operator") ||
+        desc.includes("unsupported mobile network operator") ||
+        desc.includes("user is busy with another transaction");
+
+      if (isTerminal) {
+        console.warn("[handleNotification] Терминальная ошибка:", {
+          auth_req_id,
+          error,
+          error_description,
+        });
+        await AuthTransaction.findOneAndUpdate(
+          { auth_req_id },
+          {
+            status: "failed",
+            error,
+            error_description,
+            can_retry: false,
+          }
+        );
+        return res.status(204).end();
+      }
+
+      // Любая другая push-ошибка (delivery timeout, client cancelled, user_denied,
+      // оператор без PUSH) → переводим в push_failed и ждём sms_otp_notification.
+      // Параллельно запускаем grace-таймер: если SMS не придёт за окно — failed.
+      console.warn(
+        `[handleNotification] PUSH не удался → push_failed, ждём SMS-fallback:`,
+        { auth_req_id, error, error_description, phone: transaction.phone }
+      );
 
       await AuthTransaction.findOneAndUpdate(
         { auth_req_id },
-        { status: "failed", error, error_description, can_retry: canRetry }
+        {
+          status: "push_failed",
+          error,
+          error_description,
+          can_retry: true,
+        }
       );
+
+      schedulePushFailedTimeout(auth_req_id);
 
       return res.status(204).end();
     }
@@ -485,15 +562,18 @@ export const handleNotification = async (req, res) => {
       return res.status(204).end();
     }
 
+    // Атомарно: переводим в success только если транзакция не была уже
+    // финализирована (success/expired). Это защищает от ретраев нотификаций
+    // и от рассинхрона, если юзер уже ушёл с expired-экрана.
     const updateResult = await AuthTransaction.findOneAndUpdate(
-      { auth_req_id },
+      { auth_req_id, status: { $nin: ["success", "expired"] } },
       { status: "success", access_token, id_token, sub: decoded.sub },
       { new: true }
     );
 
     console.log("[handleNotification] Транзакция переведена в success:", {
       auth_req_id,
-      found: !!updateResult,
+      updated: !!updateResult,
       finalStatus: updateResult?.status,
     });
 
@@ -511,10 +591,24 @@ export const handleNotification = async (req, res) => {
   }
 };
 
+// Статусы, при которых клиенту ничего не нужно делать, кроме как ждать —
+// long-poll крутится до изменения статуса или таймаута.
+const WAITING_STATUSES = new Set(["pending", "verifying"]);
+
+// Long-poll: сервер держит запрос до изменения статуса (или таймаута),
+// чтобы переходы PUSH→push_failed→sms_sent→success доходили мгновенно,
+// а не через 1.5-2 сек клиентского polling.
+const LONG_POLL_MS = 20000;
+const POLL_TICK_MS = 400;
+
 export const checkAuthStatus = async (req, res) => {
   try {
     const { auth_req_id } = req.params;
-    const transaction = await AuthTransaction.findOne({ auth_req_id });
+    const wait = req.query.wait === "1" || req.query.wait === "true";
+
+    const fetchTxn = () => AuthTransaction.findOne({ auth_req_id });
+
+    let transaction = await fetchTxn();
 
     if (!transaction) {
       const total = await AuthTransaction.countDocuments();
@@ -535,6 +629,39 @@ export const checkAuthStatus = async (req, res) => {
         error: "not_found",
         message: "Транзакция не найдена",
       });
+    }
+
+    // Long-poll: пока статус «ждущий», ждём изменения до LONG_POLL_MS.
+    if (wait && WAITING_STATUSES.has(transaction.status)) {
+      const deadline = Date.now() + LONG_POLL_MS;
+      while (Date.now() < deadline) {
+        await new Promise((r) => setTimeout(r, POLL_TICK_MS));
+        if (req.aborted || res.writableEnded) return;
+        const fresh = await fetchTxn();
+        if (!fresh) {
+          transaction = null;
+          break;
+        }
+        if (!WAITING_STATUSES.has(fresh.status)) {
+          transaction = fresh;
+          break;
+        }
+        // Проверка истечения внутри long-poll
+        if (
+          fresh.expires_at &&
+          new Date() > fresh.expires_at &&
+          fresh.status === "pending"
+        ) {
+          transaction = fresh;
+          break;
+        }
+      }
+      if (!transaction) {
+        return res.status(404).json({
+          error: "not_found",
+          message: "Транзакция не найдена",
+        });
+      }
     }
 
     if (
@@ -572,7 +699,6 @@ export const checkAuthStatus = async (req, res) => {
           lastAuthAt: user.lastAuthAt,
         };
       }
-
     }
 
     if (transaction.status === "failed") {
@@ -582,6 +708,13 @@ export const checkAuthStatus = async (req, res) => {
       console.warn(
         `[checkAuthStatus] Статус failed. error: ${transaction.error}, can_retry: ${response.can_retry}`
       );
+    }
+
+    if (transaction.status === "push_failed") {
+      // Клиент покажет SMS-экран и продолжит polling до sms_sent или failed.
+      response.error = transaction.error;
+      response.error_description = transaction.error_description;
+      response.can_retry = transaction.can_retry || false;
     }
 
     res.json(response);
