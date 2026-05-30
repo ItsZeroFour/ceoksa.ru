@@ -16,6 +16,7 @@ import {
   initiateAuth,
   verifyCode,
 } from "../../redux/slices/auth/mobileAuthSlice";
+import { fetchMe } from "../../redux/slices/auth/authSlice";
 
 const Auth = ({ setOpenAuthMenu }) => {
   const { theme } = useTheme();
@@ -27,6 +28,10 @@ const Auth = ({ setOpenAuthMenu }) => {
 
   const isSubmittingRef = useRef(false);
   const isAuthSucceededRef = useRef(false);
+  // Сохраняем «чистый» номер в момент первой отправки. На code-step
+  // input телефона размонтирован → IMask уничтожен → phoneInput.getCleanPhone()
+  // вернёт просто "7", и /mobile/auth/init упадёт 400.
+  const submittedPhoneRef = useRef("");
 
   const { data: filesData, status: filesStatus } = useSelector(
     (state) => state.files
@@ -48,11 +53,18 @@ const Auth = ({ setOpenAuthMenu }) => {
       window.scrollTo({ top: 0, behavior: "smooth" });
       navigate("/account/loan_applications");
     },
-    onSmsRequired: () => {},
+    // Прямой переход на экран ввода кода в момент, когда poller увидел
+    // status=sms_sent. Дублирует useEffect на flow, но не зависит от
+    // редьюсер→re-render→effect цепочки — переход срабатывает мгновенно
+    // в callback'е поллинга. Идемпотентно: повторный setCurrentStep("code")
+    // безвреден.
+    onSmsRequired: () => {
+      setCurrentStep("code");
+    },
     onError: ({ status, canRetry }) => {
       setIsAuthLoading(false);
 
-      if (canRetry || status === "expired") {
+      if (canRetry || status === "expired" || status === "not_found") {
         authPolling.stopPolling();
         codeInput.reset();
         setCurrentStep("phone");
@@ -83,12 +95,25 @@ const Auth = ({ setOpenAuthMenu }) => {
     }
   }, [flow]);
 
+  // Запасной таймер: если за 30 секунд на push_wait не пришёл ни sms_sent,
+  // ни success/failed — принудительно переключаем на ввод кода. SMS у юзера
+  // обычно уже на руках, а poller продолжает работать в фоне и подхватит
+  // финальный success/failed как обычно.
+  useEffect(() => {
+    if (currentStep !== "push_wait") return;
+    const timer = setTimeout(() => {
+      setCurrentStep("code");
+    }, 30_000);
+    return () => clearTimeout(timer);
+  }, [currentStep]);
+
   useEffect(() => {
     isSubmittingRef.current = false;
   }, [currentStep]);
 
   const handleSendSms = async () => {
     const clearPhone = phoneInput.getCleanPhone();
+    submittedPhoneRef.current = clearPhone;
     const result = await dispatch(initiateAuth(clearPhone));
 
     if (result.meta.requestStatus === "fulfilled") {
@@ -109,12 +134,22 @@ const Auth = ({ setOpenAuthMenu }) => {
   const handleResendCode = async () => {
     if (resendTimer.isDisabled) return;
 
-    const clearPhone = phoneInput.getCleanPhone();
+    // submittedPhoneRef хранит номер с момента первой отправки;
+    // на code-step phoneInput.getCleanPhone() уже не работает.
+    const clearPhone = submittedPhoneRef.current || phoneInput.getCleanPhone();
+    if (!/^7\d{10}$/.test(clearPhone)) {
+      console.warn("[handleResendCode] Нет валидного номера для повторной отправки");
+      return;
+    }
     const result = await dispatch(initiateAuth(clearPhone));
 
     if (result.meta.requestStatus === "fulfilled") {
+      const { auth_req_id } = result.payload;
       codeInput.reset();
       resendTimer.start();
+      // У старой транзакции auth_req_id протух — рестартим поллинг с новым
+      authPolling.stopPolling();
+      if (auth_req_id) authPolling.startPolling(auth_req_id);
     }
   };
 
@@ -138,6 +173,23 @@ const Auth = ({ setOpenAuthMenu }) => {
       return;
     }
 
+    // Сервер мог успеть получить notification от МТС в течение запроса
+    // и выставить cookie прямо здесь. Если authenticated === true —
+    // авторизация уже завершена, не нужен polling.
+    if (result.payload?.authenticated) {
+      isAuthSucceededRef.current = true;
+      try {
+        await dispatch(fetchMe());
+      } catch (e) {
+        console.warn("fetchMe после verify не удался:", e);
+      }
+      setIsAuthLoading(false);
+      setOpenAuthMenu(false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      navigate("/account/loan_applications");
+      return;
+    }
+
     authPolling.startPolling(auth_req_id);
   };
   handleSubmitCodeRef.current = handleSubmitCode;
@@ -149,6 +201,7 @@ const Auth = ({ setOpenAuthMenu }) => {
     resendTimer.reset();
     authPolling.stopPolling();
     isAuthSucceededRef.current = false;
+    submittedPhoneRef.current = "";
   };
 
   return (

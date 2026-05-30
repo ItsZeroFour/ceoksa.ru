@@ -61,13 +61,22 @@ export const initiateAuth = async (req, res) => {
 
     const { auth_req_id, expires_in, hhe_uri } = response.data;
 
-    await AuthTransaction.create({
+    const created = await AuthTransaction.create({
       auth_req_id,
       correlation_id: correlationId,
       phone,
       status: "pending",
       client_notification_token: clientNotificationToken,
       expires_at: new Date(Date.now() + expires_in * 1000),
+    });
+
+    console.log("[initiateAuth] Транзакция создана:", {
+      auth_req_id,
+      phone,
+      expires_in,
+      createdAt: created.createdAt,
+      expires_at: created.expires_at,
+      hasHheUri: !!hhe_uri,
     });
 
     res.json({
@@ -191,16 +200,87 @@ export const verifySmsCode = async (req, res) => {
 
 
 
+    console.log("[verifySmsCode] Отправляем код в МТС", {
+      auth_req_id,
+      endpoint: transaction.smsotp_endpoint,
+    });
+
     const response = await axios.post(transaction.smsotp_endpoint, payload, {
       headers: { "Content-Type": "application/json" },
       validateStatus: () => true,
     });
 
+    console.log("[verifySmsCode] Ответ МТС:", {
+      auth_req_id,
+      status: response.status,
+      dataPreview: JSON.stringify(response.data).slice(0, 300),
+    });
 
     if (response.status === 200) {
+      await AuthTransaction.findOneAndUpdate(
+        { auth_req_id },
+        { status: "verifying" }
+      );
 
-      res.json({
+      // Inline-ожидание notification от МТС (до 10 секунд).
+      // После того как МТС подтвердил код, он шлёт асинхронный
+      // notification с id_token. Опрашиваем БД каждые 500 мс — если
+      // status стал success, ставим cookie прямо здесь и возвращаем юзера
+      // в одном запросе (без зависимости от клиентского polling).
+      const waitDeadline = Date.now() + 10_000;
+      let finalTxn = null;
+      while (Date.now() < waitDeadline) {
+        await new Promise((r) => setTimeout(r, 500));
+        finalTxn = await AuthTransaction.findOne({ auth_req_id });
+        if (!finalTxn) break;
+        if (finalTxn.status === "success" || finalTxn.status === "failed") break;
+      }
+
+      if (finalTxn?.status === "success") {
+        const user = await User.findOne({ phone: finalTxn.phone });
+        if (user) {
+          const appToken = jwt.sign(
+            { userId: user._id, phone: user.phone },
+            process.env.APP_SECRET,
+            { expiresIn: "7d" }
+          );
+          // НЕ httpOnly: фронт сам удаляет cookie при логауте через
+          // document.cookie. Серверная защита остаётся через User.lastLogoutAt.
+          res.cookie("app_token", appToken, {
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "Lax",
+            path: "/",
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+          });
+          console.log("[verifySmsCode] notification получен в течение запроса, cookie выставлено:", {
+            auth_req_id,
+            userId: user._id,
+          });
+          return res.json({
+            success: true,
+            authenticated: true,
+            user: {
+              id: user._id,
+              phone: user.phone,
+              fullName: user.fullName,
+              email: user.email,
+            },
+          });
+        }
+      }
+
+      if (finalTxn?.status === "failed") {
+        return res.status(400).json({
+          error: finalTxn.error || "auth_failed",
+          message: finalTxn.error_description || "Аутентификация не удалась",
+          can_retry: finalTxn.can_retry || false,
+        });
+      }
+
+      // notification ещё не пришёл — отдаём управление клиентскому polling
+      return res.json({
         success: true,
+        authenticated: false,
         message: "Код подтверждения принят, ожидайте завершения аутентификации",
       });
     } else {
@@ -226,13 +306,21 @@ export const verifySmsCode = async (req, res) => {
 
 export const handleNotification = async (req, res) => {
   try {
+    console.log("[handleNotification] === ВХОД ===", {
+      contentType: req.headers["content-type"],
+      hasAuth: !!req.headers["authorization"],
+      bodyKeys: Object.keys(req.body || {}),
+      bodyPreview: JSON.stringify(req.body).slice(0, 500),
+    });
+
     const { auth_req_id, id_token, access_token, error, error_description } =
       req.body;
 
-
-
     if (!auth_req_id) {
-      console.warn("[handleNotification] Отсутствует auth_req_id");
+      console.warn(
+        "[handleNotification] Отсутствует auth_req_id. body:",
+        req.body
+      );
       return res.status(400).json({
         error: "invalid_request",
         message: "Отсутствует auth_req_id",
@@ -249,6 +337,15 @@ export const handleNotification = async (req, res) => {
       });
     }
 
+    console.log("[handleNotification] Найдена транзакция:", {
+      auth_req_id,
+      status: transaction.status,
+      phone: transaction.phone,
+      hasError: !!error,
+      hasIdToken: !!id_token,
+      hasAccessToken: !!access_token,
+    });
+
     if (
       transaction.client_notification_token &&
       !validateBearerToken(req, transaction.client_notification_token)
@@ -264,12 +361,32 @@ export const handleNotification = async (req, res) => {
     }
 
     if (error) {
+      // КРИТИЧНО: МТС может прислать ошибку push-flow ПОСЛЕ того, как уже
+      // переключился на SMS-fallback (status=sms_sent) или уже идёт верификация
+      // кода (status=verifying). В этих случаях ошибка push устарела —
+      // не перезаписываем активный SMS-флоу в failed, иначе клиент,
+      // который уже ввёл/вводит код, получит «Не удалось войти».
+      if (
+        transaction.status === "sms_sent" ||
+        transaction.status === "verifying"
+      ) {
+        console.warn(
+          `[handleNotification] Игнорируем push-ошибку: статус уже ${transaction.status}`,
+          { auth_req_id, error, error_description }
+        );
+        return res.status(204).end();
+      }
+
+      // 'client timeout' тоже даём ретраить: устройство просто не ответило,
+      // юзер сам выбрал не подтверждать или не получил push — это не фатально.
       const canRetry =
         error === "access_denied" &&
         typeof error_description === "string" &&
         (error_description.includes("client cancelled") ||
           error_description.includes("user_denied") ||
-          error_description.includes("cancelled"));
+          error_description.includes("cancelled") ||
+          error_description.includes("client timeout") ||
+          error_description.includes("timeout"));
 
       console.warn(`[handleNotification] Аутентификация не удалась:`, {
         auth_req_id,
@@ -298,19 +415,69 @@ export const handleNotification = async (req, res) => {
     let decoded;
     try {
       decoded = await verifyIdToken(id_token);
-
+      console.log("[handleNotification] id_token верифицирован. sub:", decoded.sub);
     } catch (verifyError) {
       console.error(
         "[handleNotification] Ошибка верификации id_token:",
         verifyError.message
       );
 
-      await AuthTransaction.findOneAndUpdate(
+      const updFail = await AuthTransaction.findOneAndUpdate(
         { auth_req_id },
         {
           status: "failed",
           error: "token_verification_failed",
           error_description: verifyError.message,
+          can_retry: false,
+        },
+        { new: true }
+      );
+
+      console.warn(
+        "[handleNotification] Транзакция переведена в failed. updateResult:",
+        !!updFail
+      );
+
+      return res.status(204).end();
+    }
+
+    try {
+      // Защита от E11000: mts_sub имеет unique-sparse индекс. Если этот sub
+      // уже привязан к другому юзеру (с другим телефоном) — upsert ниже упадёт
+      // и транзакция уйдёт в failed. Сначала снимаем sub со всех «не своих»
+      // аккаунтов, чтобы текущий телефон мог его получить.
+      await User.updateMany(
+        { mts_sub: decoded.sub, phone: { $ne: transaction.phone } },
+        { $unset: { mts_sub: "" } }
+      );
+
+      const userResult = await User.findOneAndUpdate(
+        { phone: transaction.phone },
+        {
+          $set: { mts_sub: decoded.sub, lastAuthAt: new Date() },
+          $setOnInsert: {
+            phone: transaction.phone,
+            total_loans: 0,
+            is_loan_arrears: false,
+            total_debt: 0,
+          },
+        },
+        { upsert: true, new: true }
+      );
+      console.log("[handleNotification] User upsert OK. userId:", userResult?._id);
+    } catch (userError) {
+      console.error(
+        "[handleNotification] Ошибка upsert User:",
+        userError.code,
+        userError.message
+      );
+
+      await AuthTransaction.findOneAndUpdate(
+        { auth_req_id },
+        {
+          status: "failed",
+          error: "user_upsert_failed",
+          error_description: userError.message,
           can_retry: false,
         }
       );
@@ -318,31 +485,25 @@ export const handleNotification = async (req, res) => {
       return res.status(204).end();
     }
 
-    await User.findOneAndUpdate(
-      { phone: transaction.phone },
-      {
-        $set: { mts_sub: decoded.sub, lastAuthAt: new Date() },
-        $setOnInsert: {
-          phone: transaction.phone,
-          total_loans: 0,
-          is_loan_arrears: false,
-          total_debt: 0,
-        },
-      },
-      { upsert: true, new: true }
-    );
-
-
-
-    await AuthTransaction.findOneAndUpdate(
+    const updateResult = await AuthTransaction.findOneAndUpdate(
       { auth_req_id },
-      { status: "success", access_token, id_token, sub: decoded.sub }
+      { status: "success", access_token, id_token, sub: decoded.sub },
+      { new: true }
     );
 
+    console.log("[handleNotification] Транзакция переведена в success:", {
+      auth_req_id,
+      found: !!updateResult,
+      finalStatus: updateResult?.status,
+    });
 
     res.status(204).end();
   } catch (error) {
-    console.error("[handleNotification] Критическая ошибка:", error.message);
+    console.error(
+      "[handleNotification] Критическая ошибка:",
+      error.message,
+      error.stack
+    );
     res.status(500).json({
       error: "server_error",
       message: error.message,
@@ -356,7 +517,20 @@ export const checkAuthStatus = async (req, res) => {
     const transaction = await AuthTransaction.findOne({ auth_req_id });
 
     if (!transaction) {
-      console.warn("[checkAuthStatus] Транзакция не найдена:", auth_req_id);
+      const total = await AuthTransaction.countDocuments();
+      const recent = await AuthTransaction.find({})
+        .sort({ createdAt: -1 })
+        .limit(3)
+        .select("auth_req_id status createdAt expires_at");
+      console.warn("[checkAuthStatus] Транзакция не найдена:", auth_req_id, {
+        totalInDb: total,
+        recentInDb: recent.map((t) => ({
+          id: t.auth_req_id,
+          status: t.status,
+          createdAt: t.createdAt,
+          expires_at: t.expires_at,
+        })),
+      });
       return res.status(404).json({
         error: "not_found",
         message: "Транзакция не найдена",
@@ -384,7 +558,10 @@ export const checkAuthStatus = async (req, res) => {
     };
 
     if (transaction.status === "success") {
-      const user = await User.findOne({ mts_sub: transaction.sub });
+      // По телефону транзакции — handleNotification сделал upsert User
+      // именно по phone, так что юзер гарантированно тот, что ввёл номер.
+      // Поиск по mts_sub давал чужой аккаунт при коллизии sub'ов.
+      const user = await User.findOne({ phone: transaction.phone });
       if (user) {
         response.user = {
           id: user._id,
@@ -438,12 +615,12 @@ export const finalizeAuth = async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ mts_sub: transaction.sub });
+    const user = await User.findOne({ phone: transaction.phone });
 
     if (!user) {
       console.warn(
-        "[finalizeAuth] Пользователь не найден. sub:",
-        transaction.sub
+        "[finalizeAuth] Пользователь не найден. phone:",
+        transaction.phone
       );
       return res.status(404).json({
         error: "not_found",
@@ -457,10 +634,11 @@ export const finalizeAuth = async (req, res) => {
       { expiresIn: "7d" }
     );
 
+    // НЕ httpOnly: фронт сам удаляет cookie при логауте через document.cookie.
     res.cookie("app_token", appToken, {
-      httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "Lax",
+      path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 

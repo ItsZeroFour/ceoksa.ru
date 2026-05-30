@@ -7,7 +7,11 @@ import { ReactComponent as Money } from "../../assets/icons/left_panel/money.svg
 import { ReactComponent as Rate } from "../../assets/icons/left_panel/rate.svg";
 import { ReactComponent as Profile } from "../../assets/icons/left_panel/profile.svg";
 import { ReactComponent as Angle } from "../../assets/icons/left_panel/angle.svg";
+import { ReactComponent as SignOut } from "../../assets/icons/left_panel/signout.svg";
 import { Link, useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import axios from "../../utils/axios";
+import { logout } from "../../redux/slices/auth/authSlice";
 
 const personalItems = [
   { icon: <List />, text: "Заявка на кредит", path: "/loan_applications" },
@@ -18,10 +22,21 @@ const personalItems = [
 
 const LeftPanel = () => {
   const location = useLocation();
+  const dispatch = useDispatch();
   const [isPersonalOpen, setIsPersonalOpen] = useState(true);
 
   const togglePersonal = () => setIsPersonalOpen(!isPersonalOpen);
   const isActive = (path) => location.pathname === `/account${path}`;
+
+  const handleLogout = () => {
+    // Cookie не httpOnly — удаляем её прямо из JS, мгновенно.
+    // Серверный /logout отправляем fire-and-forget (бьёт lastLogoutAt как
+    // backup), не ждём ответа. Дальше — хард reload.
+    dispatch(logout());
+    document.cookie = "app_token=; Path=/; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    axios.post("/logout").catch(() => {});
+    window.location.replace("/");
+  };
 
   return (
     <section className={style.left_panel}>
@@ -70,6 +85,15 @@ const LeftPanel = () => {
             </motion.div>
           </li>
         </ul>
+
+        <button
+          type="button"
+          className={style.left_panel__signout}
+          onClick={handleLogout}
+        >
+          <SignOut />
+          <p>Выйти</p>
+        </button>
       </div>
     </section>
   );

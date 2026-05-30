@@ -19,10 +19,11 @@ export const verifyCode = createAsyncThunk(
   "mobileAuth/verify",
   async ({ auth_req_id, code }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${API}/mobile/auth/verify`, {
-        auth_req_id,
-        code,
-      });
+      const response = await axios.post(
+        `${API}/mobile/auth/verify`,
+        { auth_req_id, code },
+        { withCredentials: true, timeout: 25000 }
+      );
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response?.data);
@@ -36,7 +37,11 @@ export const checkStatus = createAsyncThunk(
     try {
       const response = await axios.get(
         `${API}/mobile/auth/status/${auth_req_id}`,
-        { withCredentials: true }
+        {
+          withCredentials: true,
+          // сервер long-poll'ит до 25 сек, держим запас
+          timeout: 35000,
+        }
       );
       return response.data;
     } catch (err) {

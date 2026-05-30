@@ -13,16 +13,21 @@ export const authComplete = async (req, res) => {
 
     const user = await User.findOne({ phone: transaction.phone });
 
+    if (!user) {
+      return res.status(404).json({ error: "Пользователь не найден" });
+    }
+
     const appToken = jwt.sign(
       { userId: user._id, phone: user.phone },
       process.env.APP_SECRET,
       { expiresIn: "7d" }
     );
 
+    // НЕ httpOnly: фронт сам удаляет cookie при логауте через document.cookie.
     res.cookie("app_token", appToken, {
-      httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "Lax",
+      path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -36,6 +41,15 @@ export const authComplete = async (req, res) => {
 };
 
 export const authMe = async (req, res) => {
+  // Запрещаем кэширование на всех уровнях (браузер, прокси, CDN).
+  // Без этих заголовков nginx/Cloudflare могут хранить ответ
+  // до 5 минут — и после логаута fetchMe получает кешированный 200
+  // с данными юзера, хотя cookie уже нет. Это и было причиной того,
+  // что сессия «отваливалась только через 5 минут».
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private, max-age=0");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+
   try {
     const user = await User.findById(req.userId);
 

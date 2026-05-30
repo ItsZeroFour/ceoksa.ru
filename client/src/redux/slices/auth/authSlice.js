@@ -10,7 +10,16 @@ export const fetchMe = createAsyncThunk(
   "auth/fetchMe",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${API}/auth/me`);
+      // Cache-busting + явные no-cache заголовки — чтобы ни Cloudflare,
+      // ни nginx, ни браузерный disk-cache не отдали старый ответ
+      // /auth/me с user data после того как cookie уже умерла.
+      const response = await axios.get(`${API}/auth/me`, {
+        params: { _t: Date.now() },
+        headers: {
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+          Pragma: "no-cache",
+        },
+      });
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response?.data);
@@ -29,6 +38,10 @@ const authSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.isAuth = false;
+      // status оставляем "succeeded" — иначе ProtectedRoute залипнет
+      // на <Loading /> для прямых заходов на /account/*, т.к. fetchMe
+      // не перезапускается без reload. При user=null guard сразу
+      // редиректит на "/".
     },
     patchUser: (state, action) => {
       state.user = { ...state.user, ...action.payload };
