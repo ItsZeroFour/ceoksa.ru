@@ -22,6 +22,9 @@ const Auth = ({ setOpenAuthMenu }) => {
   const { theme } = useTheme();
   const [currentStep, setCurrentStep] = useState("phone");
   const [isAuthLoading, setIsAuthLoading] = useState(false);
+  // smsWaiting=true: PUSH сорвался, мы на SMS-экране, но smsotp_endpoint
+  // от МТС ещё не пришёл → ввод кода ещё не активен, показываем спиннер.
+  const [smsWaiting, setSmsWaiting] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -37,7 +40,7 @@ const Auth = ({ setOpenAuthMenu }) => {
     (state) => state.files
   );
 
-  const { auth_req_id, hhe_uri, flow } = useSelector(
+  const { auth_req_id, hhe_uri, flow, status } = useSelector(
     (state) => state.mobileAuth
   );
 
@@ -54,11 +57,12 @@ const Auth = ({ setOpenAuthMenu }) => {
       navigate("/account/loan_applications");
     },
     // Прямой переход на экран ввода кода в момент, когда poller увидел
-    // status=sms_sent. Дублирует useEffect на flow, но не зависит от
-    // редьюсер→re-render→effect цепочки — переход срабатывает мгновенно
-    // в callback'е поллинга. Идемпотентно: повторный setCurrentStep("code")
-    // безвреден.
-    onSmsRequired: () => {
+    // status=sms_sent или status=push_failed. waitingForSms=true означает,
+    // что мы на SMS-экране, но smsotp_endpoint ещё не пришёл — показываем
+    // спиннер, ввод кода будет активирован, когда придёт sms_sent.
+    // Идемпотентно: повторный setCurrentStep("code") безвреден.
+    onSmsRequired: ({ waitingForSms } = {}) => {
+      setSmsWaiting(!!waitingForSms);
       setCurrentStep("code");
     },
     onError: ({ status, canRetry }) => {
@@ -88,24 +92,19 @@ const Auth = ({ setOpenAuthMenu }) => {
     });
   }, []);
 
+  // Резервный канал перехода: если flow обновился в redux раньше,
+  // чем onSmsRequired сработал (или из-за re-mount), синхронизируем экран.
+  // sms_waiting: PUSH сорвался, ждём smsotp; sms: smsotp пришло.
   useEffect(() => {
-    if (flow === "sms" && currentStep === "push_wait") {
-      authPolling.stopPolling();
+    if (currentStep === "push_wait" && (flow === "sms" || flow === "sms_waiting")) {
+      setSmsWaiting(flow === "sms_waiting");
       setCurrentStep("code");
     }
-  }, [flow]);
-
-  // Запасной таймер: если за 30 секунд на push_wait не пришёл ни sms_sent,
-  // ни success/failed — принудительно переключаем на ввод кода. SMS у юзера
-  // обычно уже на руках, а poller продолжает работать в фоне и подхватит
-  // финальный success/failed как обычно.
-  useEffect(() => {
-    if (currentStep !== "push_wait") return;
-    const timer = setTimeout(() => {
-      setCurrentStep("code");
-    }, 30_000);
-    return () => clearTimeout(timer);
-  }, [currentStep]);
+    if (currentStep === "code" && flow === "sms" && smsWaiting) {
+      // smsotp пришло, пока мы уже на code-экране — активируем ввод.
+      setSmsWaiting(false);
+    }
+  }, [flow, currentStep, smsWaiting]);
 
   useEffect(() => {
     isSubmittingRef.current = false;
@@ -147,7 +146,12 @@ const Auth = ({ setOpenAuthMenu }) => {
       const { auth_req_id } = result.payload;
       codeInput.reset();
       resendTimer.start();
-      // У старой транзакции auth_req_id протух — рестартим поллинг с новым
+      // Юзер УЖЕ на code-экране — оставляем его там, но в waiting-state:
+      // новая транзакция в pending, ждём sms_sent через polling.
+      // Если придёт push_failed — onSmsRequired подтвердит waitingForSms.
+      // Если сразу sms_sent — onSmsRequired снимет waiting.
+      setSmsWaiting(true);
+      // У старой транзакции auth_req_id протух — рестартим поллинг с новым.
       authPolling.stopPolling();
       if (auth_req_id) authPolling.startPolling(auth_req_id);
     }
@@ -156,6 +160,9 @@ const Auth = ({ setOpenAuthMenu }) => {
   const handleSubmitCode = async () => {
     if (isSubmittingRef.current) return;
     if (isAuthSucceededRef.current) return;
+    // smsotp_endpoint ещё не пришёл от МТС — sms_sent впереди.
+    // Защита от авто-сабмита в случае, если код вдруг попал в input.
+    if (smsWaiting) return;
 
     const smsCode = codeInput.getCode();
     if (!smsCode || smsCode.length !== 4) return;
@@ -198,6 +205,7 @@ const Auth = ({ setOpenAuthMenu }) => {
     codeInput.reset();
     phoneInput.reset();
     setCurrentStep("phone");
+    setSmsWaiting(false);
     resendTimer.reset();
     authPolling.stopPolling();
     isAuthSucceededRef.current = false;
@@ -261,6 +269,7 @@ const Auth = ({ setOpenAuthMenu }) => {
               resendTimer={resendTimer.timeLeft}
               styles={style}
               isLoading={isAuthLoading}
+              waitingForSms={smsWaiting}
             />
           )}
         </div>

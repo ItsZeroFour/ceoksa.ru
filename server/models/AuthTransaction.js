@@ -20,6 +20,10 @@ const authTransactionSchema = new mongoose.Schema(
       type: String,
       enum: [
         "pending",
+        // PUSH дал ошибку (delivery/timeout/operator no-push), но мы ещё ждём
+        // sms_otp_notification от МТС — оператор может авто-фолбэкнуть на SMS.
+        // По истечении grace-периода без SMS — переводим в "failed".
+        "push_failed",
         "sms_sent",
         "verifying",
         "success",

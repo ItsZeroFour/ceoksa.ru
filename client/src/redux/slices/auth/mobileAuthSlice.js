@@ -36,11 +36,11 @@ export const checkStatus = createAsyncThunk(
   async (auth_req_id, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `${API}/mobile/auth/status/${auth_req_id}`,
+        `${API}/mobile/auth/status/${auth_req_id}?wait=1`,
         {
           withCredentials: true,
-          // сервер long-poll'ит до 25 сек, держим запас
-          timeout: 35000,
+          // Сервер long-poll'ит до 20 сек по wait=1 — держим запас.
+          timeout: 30000,
         }
       );
       return response.data;
@@ -114,6 +114,11 @@ const mobileAuthSlice = createSlice({
       .addCase(checkStatus.fulfilled, (state, action) => {
         const { status, user, error, error_description, can_retry } =
           action.payload;
+
+        if (status === "push_failed") {
+          // PUSH сорвался — UI переключился на SMS-экран, ждём smsotp.
+          state.flow = "sms_waiting";
+        }
 
         if (status === "sms_sent") {
           state.flow = "sms";
