@@ -595,10 +595,12 @@ export const handleNotification = async (req, res) => {
 // long-poll крутится до изменения статуса или таймаута.
 const WAITING_STATUSES = new Set(["pending", "verifying"]);
 
-// Long-poll: сервер держит запрос до изменения статуса (или таймаута),
-// чтобы переходы PUSH→push_failed→sms_sent→success доходили мгновенно,
-// а не через 1.5-2 сек клиентского polling.
-const LONG_POLL_MS = 20000;
+// Long-poll: сервер держит запрос до изменения статуса (или таймаута).
+// Окно 10с — компромисс между быстротой реакции (для переходов
+// PUSH→push_failed→sms_sent→success) и устойчивостью к разрывам
+// connection между клиентом и сервером (нестабильный мобильный интернет,
+// прокси с idle-таймаутами и т.п.).
+const LONG_POLL_MS = 10000;
 const POLL_TICK_MS = 400;
 
 export const checkAuthStatus = async (req, res) => {
