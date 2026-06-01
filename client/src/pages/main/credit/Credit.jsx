@@ -156,6 +156,17 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
     if (loanApplication.salary) {
       salary.setSalaryValue(loanApplication.salary);
     }
+
+    // Сумма кредита тоже должна подтянуться из БД, иначе при монтировании
+    // компонента до прихода auth-данных initialSum уходит в дефолт 500 000
+    // и остаётся таким — другие поля тут обновляются через setSelected*,
+    // а creditAmount без явного setAmountValue застревает.
+    if (
+      typeof loanApplication.sum === "number" &&
+      loanApplication.sum !== creditAmount.amountValue
+    ) {
+      creditAmount.setAmountValue(loanApplication.sum);
+    }
   }, [authStatus, loanApplication]);
 
   const handleTermSelect = (term) => {
@@ -170,7 +181,27 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
     setOpenDropdown(null);
   };
 
-  const handleContinue = () => {
+  // Оборачиваем handlers суммы и зарплаты, чтобы тоже взводить
+  // userChangedRef → debouncedUpdate начинает работать после правок
+  // этих полей (раньше срабатывал только после выбора срока/цели).
+  const handleAmountChangeWrapped = (e) => {
+    userChangedRef.current = true;
+    creditAmount.handleAmountChange(e);
+  };
+  const handleAmountIncrement = () => {
+    userChangedRef.current = true;
+    creditAmount.increment();
+  };
+  const handleAmountDecrement = () => {
+    userChangedRef.current = true;
+    creditAmount.decrement();
+  };
+  const handleSalaryChangeWrapped = (e) => {
+    userChangedRef.current = true;
+    salary.handleSalaryChange(e);
+  };
+
+  const handleContinue = async () => {
     if (!salary.salaryValue || salary.salaryError) {
       salary.handleSalaryBlur();
       return;
@@ -178,9 +209,16 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
 
     if (isAuthenticated) {
       dispatch(clearError());
-      dispatch(updateUser({ loan_application: getCurrentFormData() }));
+      // Дожидаемся ответа сервера ДО navigate — иначе reload/navigate
+      // мог обрывать запрос на лету и сумма не успевала сохраниться.
+      try {
+        await dispatch(
+          updateUser({ loan_application: getCurrentFormData() })
+        ).unwrap();
+      } catch (err) {
+        console.warn("[handleContinue] updateUser failed:", err);
+      }
       navigate("/account/loan_applications");
-      window.location.reload();
     } else {
       saveDraft(getCurrentFormData());
       setOpenAuthMenu(true);
@@ -214,11 +252,11 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
               <div className="credit__main__form__elem">
                 <CreditAmountInput
                   value={creditAmount.displayAmount}
-                  onChange={creditAmount.handleAmountChange}
+                  onChange={handleAmountChangeWrapped}
                   onFocus={creditAmount.handleAmountFocus}
                   onBlur={creditAmount.handleAmountBlur}
-                  onIncrement={creditAmount.increment}
-                  onDecrement={creditAmount.decrement}
+                  onIncrement={handleAmountIncrement}
+                  onDecrement={handleAmountDecrement}
                 />
 
                 <div className="credit__main__data">
@@ -252,7 +290,7 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
                 <SalaryInput
                   value={salary.displaySalary}
                   error={salary.salaryError}
-                  onChange={salary.handleSalaryChange}
+                  onChange={handleSalaryChangeWrapped}
                   onFocus={salary.handleSalaryFocus}
                   onBlur={salary.handleSalaryBlur}
                   onKeyDown={salary.handleKeyDown}

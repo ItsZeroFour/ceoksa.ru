@@ -35,12 +35,19 @@ export const checkStatus = createAsyncThunk(
   "mobileAuth/status",
   async (auth_req_id, { rejectWithValue }) => {
     try {
+      // _t=<timestamp> — cache-bust: каждый запрос имеет уникальный URL,
+      // браузер не отдаст закешированный ответ. Долгий polling одного и
+      // того же URL без этого превращался в no-op для МТС-абонента.
       const response = await axios.get(
-        `${API}/mobile/auth/status/${auth_req_id}`,
+        `${API}/mobile/auth/status/${auth_req_id}?wait=1&_t=${Date.now()}`,
         {
           withCredentials: true,
-          // сервер long-poll'ит до 25 сек, держим запас
-          timeout: 35000,
+          // Сервер long-poll'ит до 10 сек по wait=1 — держим запас.
+          timeout: 20000,
+          headers: {
+            "Cache-Control": "no-cache",
+            Pragma: "no-cache",
+          },
         }
       );
       return response.data;
@@ -114,6 +121,11 @@ const mobileAuthSlice = createSlice({
       .addCase(checkStatus.fulfilled, (state, action) => {
         const { status, user, error, error_description, can_retry } =
           action.payload;
+
+        if (status === "push_failed") {
+          // PUSH сорвался — UI переключился на SMS-экран, ждём smsotp.
+          state.flow = "sms_waiting";
+        }
 
         if (status === "sms_sent") {
           state.flow = "sms";
