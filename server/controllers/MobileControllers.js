@@ -601,12 +601,7 @@ const WAITING_STATUSES = new Set(["pending", "verifying"]);
 // connection между клиентом и сервером (нестабильный мобильный интернет,
 // прокси с idle-таймаутами и т.п.).
 const LONG_POLL_MS = 10000;
-// Шаг опроса БД внутри long-poll. 150мс вместо 400мс — после подтверждения
-// PUSH (handleNotification ставит success) клиент получает ответ заметно
-// быстрее. Запрос — простой indexed findOne, нагрузка незначительна.
-// Не меняет SMS-логику: статусы sms_sent/push_failed не в WAITING_STATUSES
-// и так отдаются мгновенно; ускоряется только детект success/verifying.
-const POLL_TICK_MS = 150;
+const POLL_TICK_MS = 400;
 
 export const checkAuthStatus = async (req, res) => {
   // КРИТИЧНО: запрещаем браузерам/прокси кешировать ответы.

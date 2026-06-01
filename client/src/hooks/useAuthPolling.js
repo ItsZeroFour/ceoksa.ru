@@ -195,9 +195,7 @@ const tryLogin = async (dispatch, authReqId) => {
       await new Promise((r) => setTimeout(r, 500));
       continue;
     }
-    // Cookie app_token из Set-Cookie уже применён браузером к моменту, когда
-    // промис finalizeAuth зарезолвился, — fetchMe сразу несёт токен.
-    // Лишняя пауза перед первым fetchMe не нужна (тормозила вход после PUSH).
+    await new Promise((r) => setTimeout(r, 200));
     const me = await dispatch(fetchMe());
     if (me.meta.requestStatus === "fulfilled") return true;
     console.warn(`[polling] fetchMe attempt ${attempt} rejected:`, me.payload);
