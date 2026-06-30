@@ -15,6 +15,7 @@ import { fetchFiles } from "../../redux/slices/strapi/FilesSlide";
 import {
   initiateAuth,
   verifyCode,
+  resetAuth,
 } from "../../redux/slices/auth/mobileAuthSlice";
 import { fetchMe } from "../../redux/slices/auth/authSlice";
 
@@ -106,7 +107,9 @@ const Auth = ({ setOpenAuthMenu }) => {
       if (smsWaiting) setSmsWaiting(false);
     } else if (status === "push_failed") {
       if (currentStep !== "code") {
-        console.log("[Auth] status=push_failed → переключаем на code (waiting)");
+        console.log(
+          "[Auth] status=push_failed → переключаем на code (waiting)"
+        );
         setCurrentStep("code");
       }
       if (!smsWaiting) setSmsWaiting(true);
@@ -144,7 +147,9 @@ const Auth = ({ setOpenAuthMenu }) => {
     // на code-step phoneInput.getCleanPhone() уже не работает.
     const clearPhone = submittedPhoneRef.current || phoneInput.getCleanPhone();
     if (!/^7\d{10}$/.test(clearPhone)) {
-      console.warn("[handleResendCode] Нет валидного номера для повторной отправки");
+      console.warn(
+        "[handleResendCode] Нет валидного номера для повторной отправки"
+      );
       return;
     }
     const result = await dispatch(initiateAuth(clearPhone));
@@ -211,10 +216,11 @@ const Auth = ({ setOpenAuthMenu }) => {
   const handleBackToPhone = () => {
     codeInput.reset();
     phoneInput.reset();
+    authPolling.stopPolling();
+    dispatch(resetAuth());
     setCurrentStep("phone");
     setSmsWaiting(false);
     resendTimer.reset();
-    authPolling.stopPolling();
     isAuthSucceededRef.current = false;
     submittedPhoneRef.current = "";
   };
