@@ -51,7 +51,7 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
 
   const initialTarget =
     TARGETS.find(
-      (t) => t.value === (loanApplication?.target ?? draft?.target)
+      (t) => t.value === (loanApplication?.target ?? draft?.target),
     ) ?? TARGETS[0];
 
   const [selectedTerm, setSelectedTerm] = useState(initialTerm);
@@ -202,6 +202,8 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
   };
 
   const handleContinue = async () => {
+    window.ym(111120961, "reachGoal", "zayavka-glabnaya");
+
     if (!salary.salaryValue || salary.salaryError) {
       salary.handleSalaryBlur();
       return;
@@ -213,7 +215,7 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
       // мог обрывать запрос на лету и сумма не успевала сохраниться.
       try {
         await dispatch(
-          updateUser({ loan_application: getCurrentFormData() })
+          updateUser({ loan_application: getCurrentFormData() }),
         ).unwrap();
       } catch (err) {
         console.warn("[handleContinue] updateUser failed:", err);

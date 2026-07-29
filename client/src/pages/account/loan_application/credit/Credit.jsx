@@ -202,6 +202,7 @@ const Credit = ({ setOpenAuthMenu, openAuthMenu }) => {
   };
 
   const handleContinue = async () => {
+    window.ym(111120961, "reachGoal", "zayavka-accaunt");
     if (!salary.salaryValue || salary.salaryError) {
       salary.handleSalaryBlur();
       return;

@@ -56,6 +56,7 @@ const Verification = () => {
   };
 
   const handleRetry = () => {
+    window.ym(111120961, "reachGoal", "verificazia-povtor");
     setProcessingState(null);
     dispatch(resetRim());
     dispatch(startVerification());
