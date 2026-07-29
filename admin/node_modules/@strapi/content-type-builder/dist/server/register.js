@@ -1,0 +1,39 @@
+'use strict';
+
+var utils = require('@strapi/utils');
+
+var register = (async ({ strapi })=>{
+    const aiEnabledConfig = strapi.config.get('admin.ai.enabled') !== false;
+    const isAIEnabled = aiEnabledConfig && strapi.ee.features.isEnabled('cms-ai');
+    if (isAIEnabled) {
+        const s3Domains = [
+            'strapi-ai-staging.s3.us-east-1.amazonaws.com',
+            'strapi-ai-production.s3.us-east-1.amazonaws.com'
+        ];
+        const defaultImgSrc = utils.CSP_DEFAULTS['img-src'];
+        const defaultMediaSrc = utils.CSP_DEFAULTS['media-src'];
+        // Extend the security middleware configuration to include S3 domains + defaults
+        const middlewares = strapi.config.get('middlewares');
+        const configuredMiddlewares = utils.extendMiddlewareConfiguration(middlewares, {
+            name: 'strapi::security',
+            config: {
+                contentSecurityPolicy: {
+                    directives: {
+                        'img-src': [
+                            ...defaultImgSrc,
+                            ...s3Domains
+                        ],
+                        'media-src': [
+                            ...defaultMediaSrc,
+                            ...s3Domains
+                        ]
+                    }
+                }
+            }
+        });
+        strapi.config.set('middlewares', configuredMiddlewares);
+    }
+});
+
+module.exports = register;
+//# sourceMappingURL=register.js.map

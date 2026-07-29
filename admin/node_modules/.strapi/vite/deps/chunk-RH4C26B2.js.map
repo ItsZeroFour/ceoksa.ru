@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../@strapi/plugin-cloud/admin/src/pluginId.ts"],
+  "sourcesContent": ["export const pluginId = 'cloud';\n"],
+  "mappings": ";AAAO,IAAMA,WAAW;",
+  "names": ["pluginId"]
+}

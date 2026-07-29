@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../@strapi/email/dist/admin/translations/cs.json.mjs"],
+  "sourcesContent": ["var cs = {};\n\nexport { cs as default };\n//# sourceMappingURL=cs.json.mjs.map\n"],
+  "mappings": ";;;AAAA,IAAI,KAAK,CAAC;",
+  "names": []
+}

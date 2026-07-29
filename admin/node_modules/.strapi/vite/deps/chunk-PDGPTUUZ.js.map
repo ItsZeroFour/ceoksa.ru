@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../@strapi/email/admin/src/constants.ts"],
+  "sourcesContent": ["export const PERMISSIONS = {\n  // This permission regards the main component (App) and is used to tell\n  // If the plugin link should be displayed in the menu\n  // And also if the plugin is accessible. This use case is found when a user types the url of the\n  // plugin directly in the browser\n  settings: [{ action: 'plugin::email.settings.read', subject: null }],\n};\n"],
+  "mappings": ";IAAaA,cAAc;;;;;EAKzBC,UAAU;IAAC;MAAEC,QAAQ;MAA+BC,SAAS;IAAK;EAAE;AACtE;",
+  "names": ["PERMISSIONS", "settings", "action", "subject"]
+}

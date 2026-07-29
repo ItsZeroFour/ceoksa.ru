@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../@strapi/admin/admin/src/core/utils/basename.ts"],
+  "sourcesContent": ["export const getBasename = () => (process.env.ADMIN_PATH ?? '').replace(window.location.origin, '');\n"],
+  "mappings": ";IAAaA,cAAc,OAAOC,QAAQC,IAAIC,cAAc,IAAIC,QAAQC,OAAOC,SAASC,QAAQ,EAAI;",
+  "names": ["getBasename", "process", "env", "ADMIN_PATH", "replace", "window", "location", "origin"]
+}

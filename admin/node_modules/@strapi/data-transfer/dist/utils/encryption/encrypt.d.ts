@@ -1,0 +1,13 @@
+/// <reference types="node" />
+import { Cipheriv } from 'crypto';
+import { Algorithm } from '../../../types';
+/**
+ * It creates a cipher instance used for encryption
+ *
+ * @param key - The encryption key
+ * @param algorithm - The algorithm to use to create the Cipher
+ *
+ * @returns A {@link Cipheriv} instance created with the given key & algorithm
+ */
+export declare const createEncryptionCipher: (key: string, algorithm?: Algorithm) => Cipheriv;
+//# sourceMappingURL=encrypt.d.ts.map

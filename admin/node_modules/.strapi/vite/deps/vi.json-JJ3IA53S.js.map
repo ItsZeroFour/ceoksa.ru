@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../@strapi/email/dist/admin/translations/vi.json.mjs"],
+  "sourcesContent": ["var vi = {};\n\nexport { vi as default };\n//# sourceMappingURL=vi.json.mjs.map\n"],
+  "mappings": ";;;AAAA,IAAI,KAAK,CAAC;",
+  "names": []
+}

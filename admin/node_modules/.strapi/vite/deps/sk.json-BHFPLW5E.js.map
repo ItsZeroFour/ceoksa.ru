@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../@strapi/email/dist/admin/translations/sk.json.mjs"],
+  "sourcesContent": ["var sk = {};\n\nexport { sk as default };\n//# sourceMappingURL=sk.json.mjs.map\n"],
+  "mappings": ";;;AAAA,IAAI,KAAK,CAAC;",
+  "names": []
+}

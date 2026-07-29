@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../@strapi/email/dist/admin/translations/pt-BR.json.mjs"],
+  "sourcesContent": ["var ptBR = {};\n\nexport { ptBR as default };\n//# sourceMappingURL=pt-BR.json.mjs.map\n"],
+  "mappings": ";;;AAAA,IAAI,OAAO,CAAC;",
+  "names": []
+}

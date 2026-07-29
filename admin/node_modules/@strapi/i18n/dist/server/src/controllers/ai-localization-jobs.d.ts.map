@@ -1,0 +1,1 @@
+{"version":3,"file":"ai-localization-jobs.d.ts","sourceRoot":"","sources":["../../../../server/src/controllers/ai-localization-jobs.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,IAAI,EAAE,MAAM,eAAe,CAAC;AAE1C,QAAA,MAAM,kCAAkC,eAAgB;IAAE,MAAM,EAAE,KAAK,MAAM,CAAA;CAAE;IAK3E;;;OAGG;6BAC4B,GAAG;IAkBlC;;;OAGG;iCACgC,GAAG;CAmBzC,CAAC;AAEF,eAAe,kCAAkC,CAAC"}

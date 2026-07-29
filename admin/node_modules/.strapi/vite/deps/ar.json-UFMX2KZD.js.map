@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../@strapi/email/dist/admin/translations/ar.json.mjs"],
+  "sourcesContent": ["var ar = {};\n\nexport { ar as default };\n//# sourceMappingURL=ar.json.mjs.map\n"],
+  "mappings": ";;;AAAA,IAAI,KAAK,CAAC;",
+  "names": []
+}

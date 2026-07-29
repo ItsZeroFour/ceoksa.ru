@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../@strapi/email/dist/admin/translations/id.json.mjs"],
+  "sourcesContent": ["var id = {};\n\nexport { id as default };\n//# sourceMappingURL=id.json.mjs.map\n"],
+  "mappings": ";;;AAAA,IAAI,KAAK,CAAC;",
+  "names": []
+}

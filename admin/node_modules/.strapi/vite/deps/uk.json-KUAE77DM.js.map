@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../@strapi/review-workflows/dist/admin/translations/uk.json.mjs"],
+  "sourcesContent": ["var uk = {\n    \"settings.page.title\": \"Робочі процеси перегляду\",\n    \"settings.page.subtitle\": \"{count, plural, one {# етап} other {# етапів}}\",\n    \"settings.page.isLoading\": \"Завантаження робочого процесу\",\n    \"settings.page.delete.confirm.body\": \"Усі записи, призначені для видалених етапів, будуть переміщені на попередній етап. Ви впевнені, що хочете зберегти?\",\n    \"settings.stage.name.label\": \"Назва етапу\",\n    \"settings.not-available\": \"Робочі процеси перегляду доступні лише в рамках Enterprise Edition. Оновіть план, щоб створювати та керувати робочими процесами.\",\n    \"settings.review-workflows.workflow.stageRequiredToPublish.label\": \"Необхідний етап для публікації\",\n    \"settings.review-workflows.workflow.stageRequiredToPublish.any\": \"Будь-який етап\",\n    \"settings.review-workflows.workflow.stageRequiredToPublish.hint\": \"Запобігає публікації записів, якщо вони не знаходяться на необхідному етапі.\"\n};\n\nexport { uk as default };\n//# sourceMappingURL=uk.json.mjs.map\n"],
+  "mappings": ";;;AAAA,IAAI,KAAK;AAAA,EACL,uBAAuB;AAAA,EACvB,0BAA0B;AAAA,EAC1B,2BAA2B;AAAA,EAC3B,qCAAqC;AAAA,EACrC,6BAA6B;AAAA,EAC7B,0BAA0B;AAAA,EAC1B,mEAAmE;AAAA,EACnE,iEAAiE;AAAA,EACjE,kEAAkE;AACtE;",
+  "names": []
+}

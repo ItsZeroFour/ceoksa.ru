@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../@strapi/admin/admin/src/utils/strings.ts"],
+  "sourcesContent": ["const capitalise = (str: string): string => str.charAt(0).toUpperCase() + str.slice(1);\n\nfunction getByteSize(value: string) {\n  return new TextEncoder().encode(value).length;\n}\n\nexport { capitalise, getByteSize };\n"],
+  "mappings": ";AAAMA,IAAAA,aAAa,CAACC,QAAwBA,IAAIC,OAAO,CAAA,EAAGC,YAAW,IAAKF,IAAIG,MAAM,CAAA;AAEpF,SAASC,YAAYC,OAAa;AAChC,SAAO,IAAIC,YAAAA,EAAcC,OAAOF,KAAAA,EAAOG;AACzC;",
+  "names": ["capitalise", "str", "charAt", "toUpperCase", "slice", "getByteSize", "value", "TextEncoder", "encode", "length"]
+}

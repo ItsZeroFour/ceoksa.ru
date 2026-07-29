@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../@strapi/admin/ee/admin/src/pages/SettingsPage/pages/Users/components/ModalForm.tsx"],
+  "sourcesContent": ["import type { FormLayoutInputProps } from '../../../../../../../../admin/src/types/forms';\n\nexport const FORM_INITIAL_VALUES = {\n  ...(window.strapi.features.isEnabled(window.strapi.features.SSO)\n    ? {\n        useSSORegistration: true,\n      }\n    : {}),\n};\n\nexport const ROLE_LAYOUT = [\n  ...(window.strapi.features.isEnabled(window.strapi.features.SSO)\n    ? [\n        [\n          {\n            label: {\n              id: 'Settings.permissions.users.form.sso',\n              defaultMessage: 'Connect with SSO',\n            },\n            name: 'useSSORegistration',\n            type: 'boolean' as const,\n            size: 6,\n          },\n        ],\n      ]\n    : []),\n] satisfies FormLayoutInputProps[][];\n"],
+  "mappings": ";;;IAEaA,sBAAsB;EACjC,GAAIC,OAAOC,OAAOC,SAASC,UAAUH,OAAOC,OAAOC,SAASE,GAAG,IAC3D;IACEC,oBAAoB;EACtB,IACA,CAAA;AACN;IAEaC,cAAc;EACrBN,GAAAA,OAAOC,OAAOC,SAASC,UAAUH,OAAOC,OAAOC,SAASE,GAAG,IAC3D;IACE;MACE;QACEG,OAAO;UACLC,IAAI;UACJC,gBAAgB;QAClB;QACAC,MAAM;QACNC,MAAM;QACNC,MAAM;MACR;IACD;EACF,IACD,CAAA;;",
+  "names": ["FORM_INITIAL_VALUES", "window", "strapi", "features", "isEnabled", "SSO", "useSSORegistration", "ROLE_LAYOUT", "label", "id", "defaultMessage", "name", "type", "size"]
+}

@@ -1,0 +1,22 @@
+{
+    "kind": "singleType",
+    "collectionName": "preimushhestvas",
+    "info": {
+        "singularName": "preimushhestva",
+        "pluralName": "preimushhestvas",
+        "displayName": "Преимущества"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "advantages": {
+            "type": "dynamiczone",
+            "components": [
+                "advantages.preimushhestva"
+            ],
+            "required": true
+        }
+    }
+}
